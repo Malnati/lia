@@ -47,6 +47,8 @@ jobs:
 
       - name: Build frontend
         run: pnpm --filter @lia/web build
+        env:
+          VITE_API_MODE: mock
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

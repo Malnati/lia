@@ -7,6 +7,7 @@
     "**/*.spec.ts"
   ],
   "compilerOptions": {
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "incremental": false
   }
 }

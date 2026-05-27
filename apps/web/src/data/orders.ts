@@ -1,76 +1,92 @@
-import type { DentalOrder, OrderStage } from '../types';
+import type { Order, OrderCheckpoint } from '../types';
 
-export const workflowStages: OrderStage[] = [
-  { key: 'pickup_checkin', label: 'Retirada check-in', completed: true, actor: 'Juan Pérez', timestamp: '24/05/2026 08:30' },
-  { key: 'pickup_checkout', label: 'Retirada check-out', completed: true, actor: 'Juan Pérez', timestamp: '24/05/2026 09:15' },
-  { key: 'delivery_checkin', label: 'Entrega check-in', completed: true, actor: 'Ana López', timestamp: '25/05/2026 10:40' },
+export const workflowStages: OrderCheckpoint[] = [
+  { key: 'pickup_checkin', label: 'Retirada check-in', completed: true, actor: 'Juan Pérez', timestamp: '2026-05-24T08:30:00.000Z' },
+  { key: 'pickup_checkout', label: 'Retirada check-out', completed: true, actor: 'Juan Pérez', timestamp: '2026-05-24T09:15:00.000Z' },
+  { key: 'delivery_checkin', label: 'Entrega check-in', completed: true, actor: 'Ana López', timestamp: '2026-05-25T10:40:00.000Z' },
   { key: 'delivery_checkout', label: 'Entrega check-out', completed: false }
 ];
 
-export const initialOrders: DentalOrder[] = [
+export function createDefaultCheckpoints(): OrderCheckpoint[] {
+  return [
+    { key: 'pickup_checkin', label: 'Retirada check-in', completed: false },
+    { key: 'pickup_checkout', label: 'Retirada check-out', completed: false },
+    { key: 'delivery_checkin', label: 'Entrega check-in', completed: false },
+    { key: 'delivery_checkout', label: 'Entrega check-out', completed: false }
+  ];
+}
+
+export const initialOrders: Order[] = [
   {
     id: '1008',
-    type: 'Molde prótese',
-    customer: 'Carlos Martínez',
-    phone: '+595 981 123456',
-    address: 'San Lorenzo, Paraguay',
+    clientId: '1008',
+    product: 'Molde prótese',
+    customerName: 'Carlos Martínez',
+    customerPhone: '+595 981 123456',
+    deliveryAddress: 'San Lorenzo, Paraguay',
+    status: 'paid',
     paymentStatus: 'paid',
-    statusLabel: 'Pago',
-    stages: workflowStages,
+    checkpoints: workflowStages,
     notes: 'Instruções especiais na entrega.',
     pendingSync: true,
-    updatedAt: '25/05/2026 10:40'
+    version: 1,
+    createdAt: '2026-05-25T10:00:00.000Z',
+    updatedAt: '2026-05-25T10:40:00.000Z'
   },
   {
     id: '1007',
-    type: 'Molde prótese',
-    customer: 'María González',
-    phone: '+595 972 000111',
-    address: 'Asunción, Paraguay',
+    clientId: '1007',
+    product: 'Molde prótese',
+    customerName: 'María González',
+    customerPhone: '+595 972 000111',
+    deliveryAddress: 'Asunción, Paraguay',
+    status: 'picked_up',
     paymentStatus: 'pending',
-    statusLabel: 'Em andamento',
-    stages: workflowStages.map((stage, index) => ({ ...stage, completed: index === 0 })),
+    checkpoints: workflowStages.map((stage, index) => ({ ...stage, completed: index === 0 })),
     notes: 'Aguardando retirada check-out.',
     pendingSync: true,
-    updatedAt: '25/05/2026 09:10'
+    version: 1,
+    createdAt: '2026-05-25T09:00:00.000Z',
+    updatedAt: '2026-05-25T09:10:00.000Z'
   },
   {
     id: '1006',
-    type: 'Molde prótese',
-    customer: 'Laboratorio Dental Asunción',
-    phone: '+595 981 777222',
-    address: 'Fernando de la Mora, Paraguay',
+    clientId: '1006',
+    product: 'Molde prótese',
+    customerName: 'Laboratorio Dental Asunción',
+    customerPhone: '+595 981 777222',
+    deliveryAddress: 'Fernando de la Mora, Paraguay',
+    status: 'draft',
     paymentStatus: 'pending',
-    statusLabel: 'Aguardando',
-    stages: workflowStages.map((stage) => ({ ...stage, completed: false, actor: undefined, timestamp: undefined })),
+    checkpoints: createDefaultCheckpoints(),
     notes: 'Pedido criado offline.',
     pendingSync: true,
-    updatedAt: '25/05/2026 08:20'
+    version: 1,
+    createdAt: '2026-05-25T08:00:00.000Z',
+    updatedAt: '2026-05-25T08:20:00.000Z'
   }
 ];
 
-export function countPendingSync(orders: DentalOrder[]): number {
+export function countPendingSync(orders: Order[]): number {
   return orders.filter((order) => order.pendingSync).length;
 }
 
-export function createDraftOrder(sequence: number): DentalOrder {
+export function createDraftOrder(sequence: number): Order {
+  const now = new Date().toISOString();
   return {
     id: String(sequence),
-    type: 'Molde prótese',
-    customer: 'Novo cliente',
-    phone: '+595 981 000000',
-    address: 'Asunción, Paraguay',
-    paymentStatus: 'blocked_offline',
-    statusLabel: 'Offline pendente',
-    stages: workflowStages.map((stage) => ({ ...stage, completed: false, actor: undefined, timestamp: undefined })),
+    clientId: String(sequence),
+    product: 'Molde prótese',
+    customerName: 'Novo cliente',
+    customerPhone: '+595 981 000000',
+    deliveryAddress: 'Asunción, Paraguay',
+    status: 'draft',
+    paymentStatus: 'mock_pending',
+    checkpoints: createDefaultCheckpoints(),
     notes: 'Pedido salvo localmente aguardando sincronização.',
     pendingSync: true,
-    updatedAt: new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date())
+    version: 1,
+    createdAt: now,
+    updatedAt: now
   };
 }

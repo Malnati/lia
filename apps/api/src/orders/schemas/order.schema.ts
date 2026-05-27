@@ -27,6 +27,9 @@ export class OrderCheckpoint {
 
 @Schema({ timestamps: true })
 export class Order {
+  @Prop({ trim: true, index: true })
+  clientId?: string;
+
   @Prop({ required: true, trim: true })
   customerName: string;
 
@@ -42,8 +45,8 @@ export class Order {
   @Prop({ enum: orderStatuses, default: 'draft' })
   status: OrderStatus;
 
-  @Prop({ enum: ['pending', 'paid', 'failed'], default: 'pending' })
-  paymentStatus: 'pending' | 'paid' | 'failed';
+  @Prop({ enum: ['pending', 'paid', 'failed', 'mock_pending'], default: 'pending' })
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'mock_pending';
 
   @Prop({ default: false })
   pendingSync: boolean;
@@ -53,6 +56,9 @@ export class Order {
 
   @Prop({ default: '' })
   notes: string;
+
+  @Prop({ default: 1 })
+  version: number;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
