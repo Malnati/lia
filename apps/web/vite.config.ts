@@ -2,8 +2,12 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const publicBasePath = process.env.VITE_PUBLIC_BASE_PATH ?? '/';
+const base = publicBasePath.endsWith('/') ? publicBasePath : `${publicBasePath}/`;
+const navigateFallback = `${base}index.html`.replace('//', '/');
+
 export default defineConfig({
-  base: '/lia/',
+  base,
   plugins: [
     react(),
     VitePWA({
@@ -17,8 +21,8 @@ export default defineConfig({
         theme_color: '#087f83',
         background_color: '#ffffff',
         display: 'standalone',
-        scope: '/lia/',
-        start_url: '/lia/',
+        scope: base,
+        start_url: base,
         icons: [
           {
             src: 'icon.svg',
@@ -29,7 +33,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        navigateFallback: '/lia/index.html',
+        navigateFallback,
         globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
         runtimeCaching: [
           {

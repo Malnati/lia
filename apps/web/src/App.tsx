@@ -253,6 +253,10 @@ function LiaApp() {
     handleSync
   };
 
+  const baseUrl = import.meta.env.BASE_URL;
+  const appHref = baseUrl;
+  const adapterHref = `${baseUrl}mock/`;
+
   return (
     <main
       className="app-shell"
@@ -265,7 +269,7 @@ function LiaApp() {
         <header className="mobile-header">
           <button className="icon-button" aria-label="Abrir menu">☰</button>
           <strong className="brand">{tenantConfig.brandName}</strong>
-          <a className="mock-link" href="/lia/mock/">Mock</a>
+          <a className="mock-link" href={adapterHref}>Adapter</a>
         </header>
         <TenantBadge />
 
@@ -305,7 +309,7 @@ function LiaApp() {
 
           <DesktopContent view={view} {...sharedProps} />
         </div>
-        <footer className="api-note">Modo ativo: {apiMode}. Backend real separado; GitHub Pages usa somente mock. Mock: <a href="/lia/mock/">/lia/mock/</a></footer>
+        <footer className="api-note">Modo ativo: {apiMode}. Backend real alvo: https://api.aneety.com. Adapter legado: <a href={adapterHref}>{adapterHref}</a></footer>
       </section>
     </main>
   );
@@ -700,6 +704,7 @@ function OrderDetailCard({
 }
 
 function MockAdmin({ mode }: { mode: ApiMode }) {
+  const appHref = import.meta.env.BASE_URL;
   const [state, setState] = useState<string>('Carregando mock...');
   const [queue, setQueue] = useState<SyncQueueItem[]>([]);
 
@@ -721,15 +726,15 @@ function MockAdmin({ mode }: { mode: ApiMode }) {
   return (
     <main className="mock-page">
       <section className="mock-panel">
-        <a href="/lia/">← Voltar ao app</a>
-        <h1>Lia mock backend</h1>
-        <p>Modo ativo: <strong>{mode}</strong>. Este mock roda no IndexedDB do navegador; GitHub Pages não executa backend.</p>
+        <a href={appHref}>← Voltar ao app</a>
+        <h1>Lia adapter local legado</h1>
+        <p>Modo ativo: <strong>{mode}</strong>. Este adapter legado roda no IndexedDB do navegador; a arquitetura alvo usa Cloudflare Workers + Supabase.</p>
         <div className="mock-actions">
           <button className="primary-button" onClick={refresh}>Atualizar export</button>
           <button className="secondary-button" onClick={reset}>Resetar seed mock</button>
         </div>
         <p>Fila local pendente: {queue.length}</p>
-        <textarea readOnly value={state} aria-label="Export JSON do mock backend" />
+        <textarea readOnly value={state} aria-label="Export JSON do adapter local" />
       </section>
     </main>
   );

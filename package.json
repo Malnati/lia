@@ -2,7 +2,7 @@
   "name": "lia",
   "version": "0.1.0",
   "private": true,
-  "description": "Lia — PWA offline-first para pedidos, retirada, entrega e pagamento mock de moldes para prótese dentária.",
+  "description": "Lia — portal integrador em aneety.com para a plataforma multi-repo Supabase/Postgres.",
   "license": "MIT",
   "packageManager": "pnpm@10.33.2",
   "engines": {
@@ -17,7 +17,9 @@
     "lint": "pnpm --filter @lia/web lint",
     "test": "pnpm --filter @lia/web test",
     "preview:web": "pnpm --filter @lia/web preview",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:cloudflare": "VITE_PUBLIC_BASE_PATH=/ VITE_API_URL=https://api.aneety.com pnpm --filter @lia/web build",
+    "deploy:cloudflare": "pnpm build:cloudflare && pnpm dlx wrangler@latest pages deploy apps/web/dist --project-name=lia --branch=main"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0"

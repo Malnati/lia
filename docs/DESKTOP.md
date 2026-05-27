@@ -1,79 +1,33 @@
 # Guia desktop/admin — Lia
 
-Use este guia no painel desktop do app publicado em <https://malnati.github.io/lia/>. O GitHub Pages usa somente mock browser-side em IndexedDB; não há backend real neste repositório.
+## URL alvo
 
-## 1. Visão geral do painel
+- Portal: <https://aneety.com/>
+- Desktop operacional: <https://desktop.aneety.com/>
+- Dashboard administrativo: <https://dashboard.aneety.com/>
+- API real: <https://api.aneety.com/>
 
-1. Acesse <https://malnati.github.io/lia/> em viewport desktop.
-2. No painel **Painel administrativo Lia**, confira o chip **mock / Mock browser-side** no topo.
-3. Confira o badge **Operação Lia** e a indicação **White-label pronto para outras operações**.
-4. Use a navegação lateral para alternar entre **Pedidos**, **Novo pedido**, **Consultórios**, **Produção**, **Retirada**, **Entrega** e **Sincronização**.
-5. O cartão lateral **Offline pendente** mostra o volume de operações locais aguardando sync.
+## Fluxo operacional alvo
 
-## 2. Pedidos
+1. Acessar `desktop.aneety.com`.
+2. Entrar com Supabase Auth.
+3. Listar pedidos do tenant autorizado.
+4. Abrir pedido.
+5. Atualizar dados operacionais, status e checkpoints.
+6. Consultar/anexar fotos e assinaturas.
+7. Acompanhar pagamento e entrega.
+8. Sincronizar com `api.aneety.com`, persistindo no Supabase/Postgres.
 
-1. Abra **Pedidos** na navegação lateral.
-2. Selecione um cartão de pedido.
-3. Confira o detalhe com:
-   - linha do tempo operacional;
-   - dados do cliente;
-   - endereço;
-   - status de pagamento;
-   - observações;
-   - anexos offline.
-4. Edite **Observações** e clique em **Salvar edição** para enfileirar atualização offline.
+## Fluxo administrativo alvo
 
-## 3. Novo pedido
+1. Acessar `dashboard.aneety.com`.
+2. Entrar com perfil administrativo.
+3. Criar/editar/inativar usuários.
+4. Criar/editar perfis de acesso.
+5. Associar usuário, perfil e tenant.
+6. Configurar marca, cores, textos e operação white-label.
+7. Validar métricas por consultório, clínica ou bureau.
 
-1. Abra **Novo pedido**.
-2. Preencha **Cliente**, **Telefone**, **Endereço de entrega**, **Produto** e **Observações do pedido**.
-3. Clique em **Salvar novo pedido offline**.
-4. O pedido aparece em **Pedidos** e a operação `create_order` entra na fila local.
+## Estado atual
 
-## 4. Consultórios e moldes
-
-1. Abra **Consultórios**.
-2. Revise os KPIs de consultórios/clientes ativos, moldes em produção e pedidos aguardando conclusão.
-3. Use a lista para conferir quais consultórios pediram próteses e quais moldes ainda estão em fluxo.
-4. Mantenha essa tela como visão administrativa dos consultórios que pedem próteses e produzem moldes.
-
-## 5. Produção de próteses
-
-1. Abra **Produção**.
-2. Revise o pipeline da empresa de próteses.
-3. Confira os KPIs de pedidos no pipeline, próteses em produção e próteses prontas para entrega.
-4. Use a lista para priorizar produção e liberação para entrega.
-
-## 6. Retirada
-
-1. Selecione o pedido em **Pedidos**.
-2. Abra **Retirada**.
-3. Clique em **Marcar retirada check-in** quando o operador chegar ao local.
-4. Clique em **Marcar retirada check-out** ao concluir a coleta.
-5. Sincronize para gravar os checkpoints no mock backend.
-
-## 7. Entrega
-
-1. Selecione o pedido em **Pedidos**.
-2. Abra **Entrega**.
-3. Clique em **Marcar entrega check-in** quando o operador chegar ao destino.
-4. Clique em **Marcar entrega check-out** ao concluir a entrega.
-5. Sincronize para gravar os checkpoints no mock backend.
-
-## 8. Pagamento, fotos e assinatura
-
-1. Em **Pedidos**, abra o detalhe do pedido.
-2. Clique em **Criar pagamento mock** para registrar a intenção de pagamento no mock; a intenção só sincroniza se o pedido existir no mock.
-3. Use o campo de foto para anexar imagem do molde.
-4. Colete assinatura no canvas e clique em **Salvar assinatura**.
-5. Todas as ações entram na fila local e devem ser sincronizadas.
-
-## 9. Sincronização e inspeção do mock
-
-1. Abra **Sincronização**.
-2. Revise cada item pendente: operação, pedido, tentativas e possível mensagem de erro.
-3. Clique em **Sincronizar agora**.
-4. Se um item permanecer pendente, corrija a origem: criação de pedido exige cliente, telefone e endereço; checkpoints exigem pedido existente e `checkpointKey`; anexos exigem pedido existente e `attachmentId`; pagamento exige pedido existente e `orderId`; operações desconhecidas indicam fila local corrompida e devem ser removidas ou recriadas pelo fluxo correto.
-5. Abra <https://malnati.github.io/lia/mock/> diretamente ou pelo link **Mock**.
-6. Clique em **Atualizar export** para confirmar os dados gravados no mock.
-7. Use **Resetar seed mock** quando precisar voltar ao estado inicial.
+O desktop/dashboard ainda estão em scaffolds separados. O PWA legado deste repo serve apenas como histórico até os repos `lia-desktop` e `lia-dashboard` assumirem os fluxos reais.
