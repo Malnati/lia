@@ -121,6 +121,28 @@ describe('Lia local-first workflow', () => {
     });
   });
 
+  it('keeps checkpoint payloads without a key pending with a visible error', async () => {
+    await liaDb.syncQueue.add({
+      id: 'sync_invalid_checkpoint_payload_unit',
+      operation: 'update_checkpoint',
+      orderId: '1008',
+      payload: { input: { completed: true, actor: 'Teste sem chave' } },
+      createdAt: '2026-05-27T10:30:00.000Z',
+      attempts: 0
+    });
+
+    const result = await syncPendingItems(createApiClient('mock'));
+    const queue = await getPendingSyncItems();
+
+    expect(result).toEqual({ synced: 0, failed: 1 });
+    expect(queue).toHaveLength(1);
+    expect(queue[0]).toMatchObject({
+      id: 'sync_invalid_checkpoint_payload_unit',
+      attempts: 1,
+      lastError: 'Invalid checkpoint payload: checkpointKey is required'
+    });
+  });
+
   it('rejects mock payment intents for missing orders', async () => {
     await expect(createApiClient('mock').createPaymentIntent('missing-payment-order')).rejects.toThrow(
       'Mock order missing-payment-order not found'

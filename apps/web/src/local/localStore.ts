@@ -5,16 +5,17 @@ import {
   type ApiClient
 } from '../api/apiClient';
 import { liaDb } from './db';
-import type {
-  Attachment,
-  AttachmentInput,
-  CheckpointInput,
-  CheckpointKey,
-  CreateOrderInput,
-  Order,
-  SyncQueueItem,
-  SyncResult,
-  UpdateOrderInput
+import {
+  checkpointKeys,
+  type Attachment,
+  type AttachmentInput,
+  type CheckpointInput,
+  type CheckpointKey,
+  type CreateOrderInput,
+  type Order,
+  type SyncQueueItem,
+  type SyncResult,
+  type UpdateOrderInput
 } from '../types';
 
 const syncOperationPriority: Record<SyncQueueItem['operation'], number> = {
@@ -32,6 +33,22 @@ function syncPriority(operation: string): number {
 function assertSupportedSyncOperation(operation: unknown): asserts operation is SyncQueueItem['operation'] {
   if (typeof operation !== 'string' || !(operation in syncOperationPriority)) {
     throw new Error(`Unsupported sync operation: ${String(operation)}`);
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isCheckpointKey(value: unknown): value is CheckpointKey {
+  return typeof value === 'string' && checkpointKeys.includes(value as CheckpointKey);
+}
+
+function assertValidCheckpointPayload(
+  payload: unknown
+): asserts payload is { checkpointKey: CheckpointKey; input: CheckpointInput } {
+  if (!isRecord(payload) || !isCheckpointKey(payload.checkpointKey)) {
+    throw new Error('Invalid checkpoint payload: checkpointKey is required');
   }
 }
 
@@ -217,7 +234,8 @@ export async function syncPendingItems(apiClient: ApiClient): Promise<SyncResult
         await liaDb.orders.put({ ...remote, pendingSync: false });
       }
       if (item.operation === 'update_checkpoint') {
-        const payload = item.payload as { checkpointKey: CheckpointKey; input: CheckpointInput };
+        const payload = item.payload;
+        assertValidCheckpointPayload(payload);
         const remote = await apiClient.updateCheckpoint(item.orderId, payload.checkpointKey, payload.input);
         await liaDb.orders.put({ ...remote, pendingSync: false });
       }
