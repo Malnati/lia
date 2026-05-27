@@ -52,6 +52,12 @@ function assertValidCheckpointPayload(
   }
 }
 
+function assertValidAttachmentPayload(payload: unknown): asserts payload is { attachmentId: string } {
+  if (!isRecord(payload) || typeof payload.attachmentId !== 'string' || payload.attachmentId.trim().length === 0) {
+    throw new Error('Invalid attachment payload: attachmentId is required');
+  }
+}
+
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -240,7 +246,8 @@ export async function syncPendingItems(apiClient: ApiClient): Promise<SyncResult
         await liaDb.orders.put({ ...remote, pendingSync: false });
       }
       if (item.operation === 'upload_attachment') {
-        const payload = item.payload as { attachmentId: string };
+        const payload = item.payload;
+        assertValidAttachmentPayload(payload);
         const attachment = await liaDb.attachments.get(payload.attachmentId);
         if (!attachment?.blob) throw new Error(`Attachment ${payload.attachmentId} not found`);
         const syncedAttachment = await apiClient.uploadAttachment(item.orderId, {
