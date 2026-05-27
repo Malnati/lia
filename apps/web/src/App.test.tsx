@@ -62,6 +62,26 @@ describe('Lia PWA shell', () => {
     expect(within(syncPanel).getByText(/Itens pendentes/)).toBeInTheDocument();
     expect(within(syncPanel).getAllByText(/update_checkpoint|create_order/).length).toBeGreaterThan(0);
   });
+
+  it('exposes white-label operation metadata and admin screens from REQ.md', async () => {
+    render(<App />);
+
+    expect(await screen.findAllByText('Operação Lia')).not.toHaveLength(0);
+    expect(screen.getAllByText('White-label pronto para outras operações')[0]).toBeInTheDocument();
+
+    const mobile = screen.getByRole('region', { name: 'Aplicativo mobile Lia' });
+    const nav = within(mobile).getByRole('navigation', { name: 'Navegação principal' });
+
+    fireEvent.click(within(nav).getByRole('button', { name: /consultórios/i }));
+    const clinicsPanel = within(mobile).getByRole('region', { name: 'Consultórios e moldes' });
+    expect(within(clinicsPanel).getByText('Consultórios que pedem próteses')).toBeInTheDocument();
+    expect(within(clinicsPanel).getByText('Moldes em produção')).toBeInTheDocument();
+
+    fireEvent.click(within(nav).getByRole('button', { name: /produção/i }));
+    const productionPanel = within(mobile).getByRole('region', { name: 'Produção de próteses' });
+    expect(within(productionPanel).getByText('Controle da empresa de próteses')).toBeInTheDocument();
+    expect(within(productionPanel).getByText('Próteses prontas para entrega')).toBeInTheDocument();
+  });
 });
 
 describe('Lia mock backend route', () => {

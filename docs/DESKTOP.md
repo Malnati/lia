@@ -6,8 +6,9 @@ Use este guia no painel desktop do app publicado em <https://malnati.github.io/l
 
 1. Acesse <https://malnati.github.io/lia/> em viewport desktop.
 2. No painel **Painel administrativo Lia**, confira o chip **mock / Mock browser-side** no topo.
-3. Use a navegação lateral para alternar entre **Pedidos**, **Novo pedido**, **Retirada**, **Entrega** e **Sincronização**.
-4. O cartão lateral **Offline pendente** mostra o volume de operações locais aguardando sync.
+3. Confira o badge **Operação Lia** e a indicação **White-label pronto para outras operações**.
+4. Use a navegação lateral para alternar entre **Pedidos**, **Novo pedido**, **Consultórios**, **Produção**, **Retirada**, **Entrega** e **Sincronização**.
+5. O cartão lateral **Offline pendente** mostra o volume de operações locais aguardando sync.
 
 ## 2. Pedidos
 
@@ -29,7 +30,21 @@ Use este guia no painel desktop do app publicado em <https://malnati.github.io/l
 3. Clique em **Salvar novo pedido offline**.
 4. O pedido aparece em **Pedidos** e a operação `create_order` entra na fila local.
 
-## 4. Retirada
+## 4. Consultórios e moldes
+
+1. Abra **Consultórios**.
+2. Revise os KPIs de consultórios/clientes ativos, moldes em produção e pedidos aguardando conclusão.
+3. Use a lista para conferir quais consultórios pediram próteses e quais moldes ainda estão em fluxo.
+4. Mantenha essa tela como visão administrativa dos consultórios que pedem próteses e produzem moldes.
+
+## 5. Produção de próteses
+
+1. Abra **Produção**.
+2. Revise o pipeline da empresa de próteses.
+3. Confira os KPIs de pedidos no pipeline, próteses em produção e próteses prontas para entrega.
+4. Use a lista para priorizar produção e liberação para entrega.
+
+## 6. Retirada
 
 1. Selecione o pedido em **Pedidos**.
 2. Abra **Retirada**.
@@ -37,7 +52,7 @@ Use este guia no painel desktop do app publicado em <https://malnati.github.io/l
 4. Clique em **Marcar retirada check-out** ao concluir a coleta.
 5. Sincronize para gravar os checkpoints no mock backend.
 
-## 5. Entrega
+## 7. Entrega
 
 1. Selecione o pedido em **Pedidos**.
 2. Abra **Entrega**.
@@ -45,7 +60,7 @@ Use este guia no painel desktop do app publicado em <https://malnati.github.io/l
 4. Clique em **Marcar entrega check-out** ao concluir a entrega.
 5. Sincronize para gravar os checkpoints no mock backend.
 
-## 6. Pagamento, fotos e assinatura
+## 8. Pagamento, fotos e assinatura
 
 1. Em **Pedidos**, abra o detalhe do pedido.
 2. Clique em **Criar pagamento mock** para registrar a intenção de pagamento no mock.
@@ -53,7 +68,7 @@ Use este guia no painel desktop do app publicado em <https://malnati.github.io/l
 4. Colete assinatura no canvas e clique em **Salvar assinatura**.
 5. Todas as ações entram na fila local e devem ser sincronizadas.
 
-## 7. Sincronização e inspeção do mock
+## 9. Sincronização e inspeção do mock
 
 1. Abra **Sincronização**.
 2. Revise cada item pendente: operação, pedido e tentativas.
