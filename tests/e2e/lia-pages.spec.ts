@@ -77,3 +77,20 @@ test('covers published white-label and admin production screens', async ({ page 
   await expect(productionPanel.getByText('Controle da empresa de próteses')).toBeVisible();
   await expect(productionPanel.getByText('Próteses prontas para entrega')).toBeVisible();
 });
+
+test('covers required-field exception in the published new order form', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  await page.goto('./');
+  const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
+  const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
+  await nav.getByRole('button', { name: /Novo pedido/ }).click();
+
+  const newOrderPanel = mobile.getByRole('region', { name: 'Novo pedido' });
+  await newOrderPanel.getByRole('button', { name: 'Salvar novo pedido offline' }).click();
+
+  await expect(page.getByText('Preencha cliente, telefone e endereço antes de salvar.')).toBeVisible();
+  await expect(newOrderPanel.getByLabel('Cliente')).toHaveValue('');
+  await expect(newOrderPanel.getByLabel('Produto')).toHaveValue('Molde prótese');
+});
+
