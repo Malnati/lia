@@ -123,6 +123,8 @@ PLAYWRIGHT_BASE_URL=https://malnati.github.io/lia/ pnpm test:e2e
 
 O workflow de Pages executa E2E após o deploy usando a URL publicada pelo próprio GitHub Pages. Não use localhost para E2E.
 
+Alterações em `tests/e2e/` ou `playwright.config.ts` também disparam o workflow de Pages, garantindo que correções de cobertura sejam validadas contra o app publicado.
+
 ## Deploy no GitHub Pages
 
 O workflow `.github/workflows/pages.yml` executa em push para `main` e publica `apps/web/dist` com:
