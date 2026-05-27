@@ -546,3 +546,59 @@ test('covers sync error details for an unknown operation on published Pages', as
   await expect(syncPanel.getByText('Erro: Unsupported sync operation: delete_everything')).toBeVisible();
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
+
+test('covers repeated sync failures increment attempts on published Pages', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  await page.goto('mock/');
+  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await page.getByRole('button', { name: 'Resetar seed mock' }).click();
+
+  await page.goto('./');
+  await expect(page.getByRole('region', { name: 'Aplicativo mobile Lia' })).toBeVisible();
+
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open('lia_local_first');
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const db = request.result;
+        const tx = db.transaction('syncQueue', 'readwrite');
+        const store = tx.objectStore('syncQueue');
+        store.clear();
+        store.put({
+          id: 'sync_retry_missing_attachment_e2e',
+          operation: 'upload_attachment',
+          orderId: '1008',
+          payload: { attachmentId: 'missing-retry-attachment-e2e' },
+          createdAt: new Date().toISOString(),
+          attempts: 0
+        });
+        tx.oncomplete = () => {
+          db.close();
+          resolve();
+        };
+        tx.onerror = () => reject(tx.error);
+      };
+    });
+  });
+
+  await page.reload();
+  const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
+  const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
+  await nav.getByRole('button', { name: /Sync/ }).click();
+
+  const syncPanel = mobile.getByRole('region', { name: 'Fila de sincronização' });
+  await expect(syncPanel.getByText('upload_attachment')).toBeVisible();
+  await expect(syncPanel.getByText('Tentativas: 0')).toBeVisible();
+
+  await syncPanel.getByRole('button', { name: 'Sincronizar agora' }).click();
+  await expect(page.getByText('Sincronização concluída: 0 enviados, 1 falhas.')).toBeVisible();
+  await expect(syncPanel.getByText('Erro: Attachment missing-retry-attachment-e2e not found')).toBeVisible();
+  await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
+
+  await syncPanel.getByRole('button', { name: 'Sincronizar agora' }).click();
+  await expect(page.getByText('Sincronização concluída: 0 enviados, 1 falhas.')).toBeVisible();
+  await expect(syncPanel.getByText('Erro: Attachment missing-retry-attachment-e2e not found')).toBeVisible();
+  await expect(syncPanel.getByText('Tentativas: 2')).toBeVisible();
+});
