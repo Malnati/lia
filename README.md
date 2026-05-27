@@ -30,6 +30,20 @@
 - Pagamento online em modo abstração/mock; integração real Pagopar/Bancard fica para fase posterior.
 - API NestJS com healthcheck, pedidos, checkpoints, anexos GridFS e payment-intents mock.
 
+## Prints das telas
+
+### App mobile PWA
+
+![Lia PWA em viewport mobile com fila offline e pedidos](docs/screenshots/lia-mobile.png)
+
+### Painel desktop/admin
+
+![Lia painel desktop com detalhe do pedido, checkpoints, pagamento mock e anexos offline](docs/screenshots/lia-desktop.png)
+
+### Mock backend no GitHub Pages
+
+![Lia mock backend browser-side com export JSON e fila local pendente](docs/screenshots/lia-mock-backend.png)
+
 ## Arquitetura
 
 ```text
