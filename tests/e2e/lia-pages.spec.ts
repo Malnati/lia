@@ -268,3 +268,58 @@ test('covers sync error details for a missing attachment on published Pages', as
   await expect(syncPanel.getByText('Erro: Attachment missing-attachment-e2e not found')).toBeVisible();
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
+
+test('covers sync error details for a missing checkpoint order on published Pages', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  await page.goto('mock/');
+  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await page.getByRole('button', { name: 'Resetar seed mock' }).click();
+
+  await page.goto('./');
+  await expect(page.getByRole('region', { name: 'Aplicativo mobile Lia' })).toBeVisible();
+
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open('lia_local_first');
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const db = request.result;
+        const tx = db.transaction('syncQueue', 'readwrite');
+        const store = tx.objectStore('syncQueue');
+        store.clear();
+        store.put({
+          id: 'sync_missing_checkpoint_order_e2e',
+          operation: 'update_checkpoint',
+          orderId: 'missing-order-e2e',
+          payload: {
+            checkpointKey: 'pickup_checkin',
+            input: { completed: true, actor: 'Playwright erro' }
+          },
+          createdAt: new Date().toISOString(),
+          attempts: 0
+        });
+        tx.oncomplete = () => {
+          db.close();
+          resolve();
+        };
+        tx.onerror = () => reject(tx.error);
+      };
+    });
+  });
+
+  await page.reload();
+  const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
+  const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
+  await nav.getByRole('button', { name: /Sync/ }).click();
+
+  const syncPanel = mobile.getByRole('region', { name: 'Fila de sincronização' });
+  await expect(syncPanel.getByText('update_checkpoint')).toBeVisible();
+  await expect(syncPanel.getByText('Pedido: missing-order-e2e')).toBeVisible();
+  await expect(syncPanel.getByText('Tentativas: 0')).toBeVisible();
+
+  await syncPanel.getByRole('button', { name: 'Sincronizar agora' }).click();
+  await expect(page.getByText('Sincronização concluída: 0 enviados, 1 falhas.')).toBeVisible();
+  await expect(syncPanel.getByText('Erro: Mock order missing-order-e2e not found')).toBeVisible();
+  await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
+});
