@@ -116,3 +116,39 @@ test('covers empty sync queue idempotency on published Pages', async ({ page }) 
   await expect(syncPanel.getByText('Itens pendentes: 0')).toBeVisible();
 });
 
+test('covers signature attachment sync on published Pages', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  await page.goto('mock/');
+  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await page.getByRole('button', { name: 'Resetar seed mock' }).click();
+
+  await page.goto('./');
+  const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
+  const signatureCanvas = mobile.getByLabel('Assinatura do cliente');
+  await signatureCanvas.scrollIntoViewIfNeeded();
+
+  const box = await signatureCanvas.boundingBox();
+  expect(box).not.toBeNull();
+  await page.mouse.move(box!.x + 24, box!.y + 36);
+  await page.mouse.down();
+  await page.mouse.move(box!.x + 170, box!.y + 92);
+  await page.mouse.move(box!.x + 260, box!.y + 50);
+  await page.mouse.up();
+
+  await mobile.getByRole('button', { name: 'Salvar assinatura' }).click();
+  await expect(page.getByText('Assinatura salva offline para sincronização.')).toBeVisible();
+  await expect(mobile.getByText('1 anexos locais deste pedido.')).toBeVisible();
+
+  const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
+  await nav.getByRole('button', { name: /Sync/ }).click();
+  const syncPanel = mobile.getByRole('region', { name: 'Fila de sincronização' });
+  await expect(syncPanel.getByText('upload_attachment')).toBeVisible();
+  await syncPanel.getByRole('button', { name: 'Sincronizar agora' }).click();
+  await expect(page.getByText(/Sincronização concluída: \d+ enviados, 0 falhas\./)).toBeVisible();
+
+  await page.goto('mock/');
+  await page.getByRole('button', { name: 'Atualizar export' }).click();
+  await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/assinatura-1008\.png/);
+});
+
