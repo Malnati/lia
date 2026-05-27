@@ -36,7 +36,7 @@ describe('Lia local-first workflow', () => {
     expect(queue[0].operation).toBe('create_order');
   });
 
-  it('syncs pending operations with the browser mock backend and clears the queue', async () => {
+  it('syncs pending operations with the browser local adapter and clears the queue', async () => {
     const order = await createOfflineOrder({
       customerName: 'Mock sync',
       customerPhone: '+595 981 444555',

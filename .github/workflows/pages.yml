@@ -1,4 +1,4 @@
-name: Deploy frontend to GitHub Pages
+name: Deploy portal to Cloudflare Pages
 
 on:
   push:
@@ -15,17 +15,18 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: "pages"
+  group: cloudflare-pages-lia
   cancel-in-progress: false
 
 jobs:
   build:
-    name: Build React PWA
+    name: Build portal
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -41,55 +42,29 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v6
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build frontend
-        run: pnpm --filter @lia/web build
+      - name: Build for Cloudflare Pages
+        run: pnpm build:cloudflare
         env:
-          VITE_API_MODE: mock
+          VITE_API_URL: https://api.aneety.com
+          VITE_PUBLIC_BASE_PATH: /
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v6
         with:
+          name: lia-cloudflare-pages
           path: apps/web/dist
 
-  deploy:
-    name: Deploy GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
-
-      - name: Checkout for E2E
-        uses: actions/checkout@v6
-
-      - name: Setup pnpm for E2E
-        uses: pnpm/action-setup@v6
+      - name: Deploy to Cloudflare Pages
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' }}
+        uses: cloudflare/wrangler-action@v3
         with:
-          version: 10.33.2
+          command: pages deploy apps/web/dist --project-name=lia --branch=main
 
-      - name: Setup Node.js for E2E
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies for E2E
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Run E2E against published GitHub Pages
+      - name: Run E2E against aneety.com
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' }}
         run: pnpm test:e2e
         env:
-          PLAYWRIGHT_BASE_URL: ${{ steps.deployment.outputs.page_url }}
+          PLAYWRIGHT_BASE_URL: https://aneety.com/

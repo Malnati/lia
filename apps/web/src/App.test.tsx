@@ -5,7 +5,7 @@ import { exportMockBackendState, resetLiaLocalData } from './local/localStore';
 describe('Lia PWA shell', () => {
   beforeEach(async () => {
     await resetLiaLocalData();
-    window.history.pushState({}, '', '/lia/');
+    window.history.pushState({}, '', '/');
   });
 
   it('renders the order workflow and payment online-only copy', async () => {
@@ -16,7 +16,7 @@ describe('Lia PWA shell', () => {
     expect(screen.getAllByText('Ação disponível apenas com conexão à internet.')[0]).toBeInTheDocument();
   });
 
-  it('creates a draft order from the real form and syncs it with the mock backend', async () => {
+  it('creates a draft order from the real form and syncs it with the local adapter', async () => {
     render(<App />);
 
     const mobile = screen.getByRole('region', { name: 'Aplicativo mobile Lia' });
@@ -84,16 +84,16 @@ describe('Lia PWA shell', () => {
   });
 });
 
-describe('Lia mock backend route', () => {
+describe('Lia adapter local legado route', () => {
   beforeEach(async () => {
     await resetLiaLocalData();
-    window.history.pushState({}, '', '/lia/mock/');
+    window.history.pushState({}, '', '/mock/');
   });
 
-  it('renders the mock admin for the GitHub Pages deep link', async () => {
+  it('renders the local adapter admin for the Cloudflare Pages deep link', async () => {
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'Lia mock backend' })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Export JSON do mock backend' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Lia adapter local legado' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Export JSON do adapter local' })).toBeInTheDocument();
   });
 });

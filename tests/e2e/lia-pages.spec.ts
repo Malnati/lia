@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-test('covers the published GitHub Pages mock MVP flow', async ({ page }) => {
+test('covers the published Cloudflare Pages legacy adapter MVP flow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
-  await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/Carlos Martínez/);
+  await expect(page.getByRole('textbox', { name: 'Export JSON do adapter local' })).toHaveValue(/Carlos Martínez/);
 
   await page.goto('./');
   await expect(page).toHaveTitle(/Lia/);
@@ -55,7 +55,7 @@ test('covers the published GitHub Pages mock MVP flow', async ({ page }) => {
 
   await page.goto('mock/');
   await page.getByRole('button', { name: 'Atualizar export' }).click();
-  await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/Clínica E2E Pages/);
+  await expect(page.getByRole('textbox', { name: 'Export JSON do adapter local' })).toHaveValue(/Clínica E2E Pages/);
 });
 
 test('covers published white-label and admin production screens', async ({ page }) => {
@@ -94,11 +94,11 @@ test('covers required-field exception in the published new order form', async ({
   await expect(newOrderPanel.getByLabel('Produto')).toHaveValue('Molde prótese');
 });
 
-test('covers empty sync queue idempotency on published Pages', async ({ page }) => {
+test('covers empty sync queue idempotency on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -116,11 +116,11 @@ test('covers empty sync queue idempotency on published Pages', async ({ page }) 
   await expect(syncPanel.getByText('Itens pendentes: 0')).toBeVisible();
 });
 
-test('covers signature attachment sync on published Pages', async ({ page }) => {
+test('covers signature attachment sync on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -149,14 +149,14 @@ test('covers signature attachment sync on published Pages', async ({ page }) => 
 
   await page.goto('mock/');
   await page.getByRole('button', { name: 'Atualizar export' }).click();
-  await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/assinatura-1008\.png/);
+  await expect(page.getByRole('textbox', { name: 'Export JSON do adapter local' })).toHaveValue(/assinatura-1008\.png/);
 });
 
-test('covers photo attachment upload sync on published Pages', async ({ page }) => {
+test('covers photo attachment upload sync on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -184,14 +184,14 @@ test('covers photo attachment upload sync on published Pages', async ({ page }) 
 
   await page.goto('mock/');
   await page.getByRole('button', { name: 'Atualizar export' }).click();
-  await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/molde-e2e\.webp/);
+  await expect(page.getByRole('textbox', { name: 'Export JSON do adapter local' })).toHaveValue(/molde-e2e\.webp/);
 });
 
-test('covers mock payment intent export on published Pages', async ({ page }) => {
+test('covers mock payment intent export on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -211,17 +211,17 @@ test('covers mock payment intent export on published Pages', async ({ page }) =>
 
   await page.goto('mock/');
   await page.getByRole('button', { name: 'Atualizar export' }).click();
-  const exportBox = page.getByRole('textbox', { name: 'Export JSON do mock backend' });
+  const exportBox = page.getByRole('textbox', { name: 'Export JSON do adapter local' });
   await expect(exportBox).toHaveValue(/"paymentIntents"/);
   await expect(exportBox).toHaveValue(/mock:\/\/lia\/payments\/1008/);
   await expect(exportBox).toHaveValue(/"status": "mock_pending"/);
 });
 
-test('covers sync error details for a missing attachment on published Pages', async ({ page }) => {
+test('covers sync error details for a missing attachment on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -268,11 +268,11 @@ test('covers sync error details for a missing attachment on published Pages', as
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
 
-test('covers sync error details for a missing checkpoint order on published Pages', async ({ page }) => {
+test('covers sync error details for a missing checkpoint order on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -323,11 +323,11 @@ test('covers sync error details for a missing checkpoint order on published Page
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
 
-test('covers sync error details for a missing update order on published Pages', async ({ page }) => {
+test('covers sync error details for a missing update order on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -375,11 +375,11 @@ test('covers sync error details for a missing update order on published Pages', 
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
 
-test('covers sync error details for a missing payment order on published Pages', async ({ page }) => {
+test('covers sync error details for a missing payment order on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -427,11 +427,11 @@ test('covers sync error details for a missing payment order on published Pages',
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
 
-test('covers sync error details for an invalid create order payload on published Pages', async ({ page }) => {
+test('covers sync error details for an invalid create order payload on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -495,11 +495,11 @@ test('covers sync error details for an invalid create order payload on published
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
 
-test('covers sync error details for an unknown operation on published Pages', async ({ page }) => {
+test('covers sync error details for an unknown operation on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -547,11 +547,11 @@ test('covers sync error details for an unknown operation on published Pages', as
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
 
-test('covers repeated sync failures increment attempts on published Pages', async ({ page }) => {
+test('covers repeated sync failures increment attempts on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -603,11 +603,11 @@ test('covers repeated sync failures increment attempts on published Pages', asyn
   await expect(syncPanel.getByText('Tentativas: 2')).toBeVisible();
 });
 
-test('covers sync error details for an invalid checkpoint payload on published Pages', async ({ page }) => {
+test('covers sync error details for an invalid checkpoint payload on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -655,11 +655,11 @@ test('covers sync error details for an invalid checkpoint payload on published P
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
 
-test('covers sync error details for an invalid attachment payload on published Pages', async ({ page }) => {
+test('covers sync error details for an invalid attachment payload on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
@@ -707,11 +707,11 @@ test('covers sync error details for an invalid attachment payload on published P
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
 });
 
-test('covers sync error details for an invalid payment payload on published Pages', async ({ page }) => {
+test('covers sync error details for an invalid payment payload on published aneety.com', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto('mock/');
-  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lia adapter local legado' })).toBeVisible();
   await page.getByRole('button', { name: 'Resetar seed mock' }).click();
 
   await page.goto('./');
