@@ -110,7 +110,7 @@ O mock não usa MSW em produção para não conflitar com o service worker PWA. 
 
 A subpágina `/lia/mock/` mostra modo ativo, export JSON, reset de seed e fila local pendente. O build gera `mock/index.html` e `404.html` para manter o deep link funcionando no GitHub Pages.
 
-A fila preserva dependências básicas: criação de pedido roda antes de atualizações, checkpoints, anexos e pagamento quando itens têm o mesmo timestamp. O mock rejeita criação de pedido com `customerName`, `customerPhone` ou `deliveryAddress` em branco e só cria intenção de pagamento para pedidos existentes. Se uma fila corrompida tiver payload inválido ou referenciar pedido inexistente, a sincronização mantém o item pendente, incrementa tentativas e exibe o erro em **Sync**.
+A fila preserva dependências básicas: criação de pedido roda antes de atualizações, checkpoints, anexos e pagamento quando itens têm o mesmo timestamp. O mock rejeita criação de pedido com `customerName`, `customerPhone` ou `deliveryAddress` em branco, operação de sincronização desconhecida e intenção de pagamento para pedido inexistente. Se uma fila corrompida tiver payload inválido, operação inválida ou referenciar pedido inexistente, a sincronização mantém o item pendente, incrementa tentativas e exibe o erro em **Sync**.
 
 ## White-label e telas administrativas
 

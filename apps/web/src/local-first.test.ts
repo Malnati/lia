@@ -10,6 +10,7 @@ import {
   updateOfflineCheckpoint
 } from './local/localStore';
 import { createApiClient } from './api/apiClient';
+import { liaDb } from './local/db';
 import { selectNewestOrder } from './sync/conflicts';
 import type { Order } from './types';
 
@@ -95,6 +96,29 @@ describe('Lia local-first workflow', () => {
 
     const backendState = await exportMockBackendState();
     expect(backendState.orders).toHaveLength(3);
+  });
+
+  it('keeps unknown sync operations pending with a visible error', async () => {
+    const corruptSyncItem = {
+      id: 'sync_unknown_operation_unit',
+      operation: 'delete_everything',
+      orderId: '1008',
+      payload: {},
+      createdAt: '2026-05-27T10:00:00.000Z',
+      attempts: 0
+    } as unknown as Parameters<typeof liaDb.syncQueue.add>[0];
+    await liaDb.syncQueue.add(corruptSyncItem);
+
+    const result = await syncPendingItems(createApiClient('mock'));
+    const queue = await getPendingSyncItems();
+
+    expect(result).toEqual({ synced: 0, failed: 1 });
+    expect(queue).toHaveLength(1);
+    expect(queue[0]).toMatchObject({
+      id: 'sync_unknown_operation_unit',
+      attempts: 1,
+      lastError: 'Unsupported sync operation: delete_everything'
+    });
   });
 
   it('rejects mock payment intents for missing orders', async () => {
