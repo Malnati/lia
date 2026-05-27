@@ -1,6 +1,7 @@
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type CSSProperties, type FormEvent, useEffect, useMemo, useState } from 'react';
 import { createApiClient, exportMockBackendState, getConfiguredApiMode, resetMockBackendState } from './api/apiClient';
 import { SignaturePad } from './components/SignaturePad';
+import { tenantConfig } from './config/tenant';
 import { countPendingSync, initialOrders } from './data/orders';
 import {
   createOfflineOrder,
@@ -19,7 +20,7 @@ import type { ApiMode, Attachment, CheckpointKey, Order, SyncQueueItem } from '.
 
 const apiMode = getConfiguredApiMode();
 
-type View = 'orders' | 'new' | 'pickup' | 'delivery' | 'sync';
+type View = 'orders' | 'new' | 'clinics' | 'production' | 'pickup' | 'delivery' | 'sync';
 
 type NewOrderForm = {
   customerName: string;
@@ -40,6 +41,8 @@ const emptyNewOrderForm: NewOrderForm = {
 const navItems: Array<{ key: View; label: string; icon: string }> = [
   { key: 'orders', label: 'Pedidos', icon: '▣' },
   { key: 'new', label: 'Novo pedido', icon: '+' },
+  { key: 'clinics', label: 'Consultórios', icon: '◫' },
+  { key: 'production', label: 'Produção', icon: '◇' },
   { key: 'pickup', label: 'Retirada', icon: '▱' },
   { key: 'delivery', label: 'Entrega', icon: '⌖' },
   { key: 'sync', label: 'Sync', icon: '↻' }
@@ -251,13 +254,20 @@ function LiaApp() {
   };
 
   return (
-    <main className="app-shell">
+    <main
+      className="app-shell"
+      style={{
+        '--tenant-primary': tenantConfig.primaryColor,
+        '--tenant-dark': tenantConfig.darkColor
+      } as CSSProperties}
+    >
       <section className="phone-frame" aria-label="Aplicativo mobile Lia">
         <header className="mobile-header">
           <button className="icon-button" aria-label="Abrir menu">☰</button>
-          <strong className="brand">Lia</strong>
+          <strong className="brand">{tenantConfig.brandName}</strong>
           <a className="mock-link" href="/lia/mock/">Mock</a>
         </header>
+        <TenantBadge />
 
         <div className="title-row">
           <h1>{viewTitle(view)}</h1>
@@ -273,7 +283,10 @@ function LiaApp() {
 
       <section className="desktop-preview" aria-label="Painel administrativo Lia">
         <header className="desktop-topbar">
-          <strong className="brand">Lia</strong>
+          <div>
+            <strong className="brand">{tenantConfig.brandName}</strong>
+            <TenantBadge />
+          </div>
           <div className="account-chip"><span>{apiMode}</span> Mock browser-side</div>
         </header>
         <div className="desktop-body">
@@ -321,6 +334,8 @@ type ContentProps = SharedContentProps & { view: View };
 
 function MobileContent(props: ContentProps) {
   if (props.view === 'new') return <NewOrderPanel {...props} compact />;
+  if (props.view === 'clinics') return <ClinicsAdminPanel {...props} compact />;
+  if (props.view === 'production') return <ProductionAdminPanel {...props} compact />;
   if (props.view === 'pickup') return <WorkflowPanel title="Retirada" keys={['pickup_checkin', 'pickup_checkout']} {...props} compact />;
   if (props.view === 'delivery') return <WorkflowPanel title="Entrega" keys={['delivery_checkin', 'delivery_checkout']} {...props} compact />;
   if (props.view === 'sync') return <SyncQueuePanel {...props} compact />;
@@ -329,10 +344,21 @@ function MobileContent(props: ContentProps) {
 
 function DesktopContent(props: ContentProps) {
   if (props.view === 'new') return <NewOrderPanel {...props} />;
+  if (props.view === 'clinics') return <ClinicsAdminPanel {...props} />;
+  if (props.view === 'production') return <ProductionAdminPanel {...props} />;
   if (props.view === 'pickup') return <WorkflowPanel title="Retirada" keys={['pickup_checkin', 'pickup_checkout']} {...props} />;
   if (props.view === 'delivery') return <WorkflowPanel title="Entrega" keys={['delivery_checkin', 'delivery_checkout']} {...props} />;
   if (props.view === 'sync') return <SyncQueuePanel {...props} />;
   return <OrdersPanel {...props} />;
+}
+
+function TenantBadge() {
+  return (
+    <aside className="tenant-badge" aria-label="Configuração white-label">
+      <strong>{tenantConfig.operationName}</strong>
+      <span>{tenantConfig.whiteLabelNote}</span>
+    </aside>
+  );
 }
 
 function SyncBanner({ pendingSync, syncMessage, onSync }: { pendingSync: number; syncMessage: string; onSync: () => void }) {
@@ -449,6 +475,82 @@ function NewOrderPanel({ newOrderForm, setNewOrderForm, handleCreateOrder, compa
         </div>
         <button className="primary-button" type="submit">Salvar novo pedido offline</button>
       </form>
+    </section>
+  );
+}
+
+function ClinicsAdminPanel({ orders, compact }: SharedContentProps & { compact?: boolean }) {
+  const clinicNames = Array.from(new Set(orders.map((order) => order.customerName)));
+  const moldOrders = orders.filter((order) => order.product.toLocaleLowerCase('pt-BR').includes('molde'));
+  const pendingMolds = moldOrders.filter((order) => order.status !== 'delivered');
+
+  return (
+    <section className={compact ? 'mobile-panel admin-panel' : 'order-detail admin-panel'} aria-label="Consultórios e moldes">
+      <p className="breadcrumb">Administração › Consultórios e moldes</p>
+      <h2>{tenantConfig.clinicAdminTitle}</h2>
+      <p>{tenantConfig.clinicAdminSubtitle}</p>
+      <div className="admin-kpis">
+        <article>
+          <strong>{clinicNames.length}</strong>
+          <span>Consultórios e clientes ativos</span>
+        </article>
+        <article>
+          <strong>{moldOrders.length}</strong>
+          <span>Moldes em produção</span>
+        </article>
+        <article>
+          <strong>{pendingMolds.length}</strong>
+          <span>Pedidos aguardando conclusão</span>
+        </article>
+      </div>
+      <ul className="admin-list">
+        {orders.map((order) => (
+          <li key={order.id}>
+            <strong>{order.customerName}</strong>
+            <span>{order.product} · {statusLabel(order)} · {paymentLabel(order)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ProductionAdminPanel({ orders, compact }: SharedContentProps & { compact?: boolean }) {
+  const inProduction = orders.filter((order) =>
+    ['paid', 'picked_up', 'in_production', 'ready_for_delivery'].includes(order.status)
+  );
+  const readyForDelivery = orders.filter((order) =>
+    ['ready_for_delivery', 'delivery_scheduled', 'delivered'].includes(order.status) ||
+    order.checkpoints.some((checkpoint) => checkpoint.key === 'delivery_checkin' && checkpoint.completed)
+  );
+
+  return (
+    <section className={compact ? 'mobile-panel admin-panel' : 'order-detail admin-panel'} aria-label="Produção de próteses">
+      <p className="breadcrumb">Administração › Produção de próteses</p>
+      <h2>{tenantConfig.productionAdminTitle}</h2>
+      <p>{tenantConfig.productionAdminSubtitle}</p>
+      <div className="admin-kpis">
+        <article>
+          <strong>{orders.length}</strong>
+          <span>Pedidos no pipeline</span>
+        </article>
+        <article>
+          <strong>{inProduction.length}</strong>
+          <span>Próteses em produção</span>
+        </article>
+        <article>
+          <strong>{readyForDelivery.length}</strong>
+          <span>Próteses prontas para entrega</span>
+        </article>
+      </div>
+      <ol className="admin-list">
+        {orders.map((order) => (
+          <li key={order.id}>
+            <strong>#{order.id} · {order.product}</strong>
+            <span>{order.customerName} · pagamento {paymentLabel(order)} · {statusLabel(order)}</span>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

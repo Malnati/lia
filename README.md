@@ -25,6 +25,9 @@
 
 - Cadastro e acompanhamento de pedidos de `Molde prótese` com formulário real.
 - Views funcionais para **Pedidos**, **Novo pedido**, **Retirada**, **Entrega** e **Sync**.
+- Operação inicial **Lia** configurada em camada white-label com nome, textos e cores por tenant.
+- Admin mock para **Consultórios** que pedem próteses e produzem moldes.
+- Admin mock para **Produção** da empresa de próteses e prontidão de entrega.
 - Fluxo operacional com retirada check-in/check-out e entrega check-in/check-out.
 - Fila de sincronização offline persistida no IndexedDB.
 - Mock backend estático/browser-side para GitHub Pages e desenvolvimento frontend sem API real.
@@ -38,11 +41,11 @@ Os prints abaixo devem ser regenerados sempre que houver implementação ou corr
 
 ### App mobile PWA
 
-![Lia PWA em viewport mobile com fila offline e pedidos](docs/screenshots/lia-mobile.png)
+![Lia PWA em viewport mobile com white-label, consultórios, produção, fila offline e pedidos](docs/screenshots/lia-mobile.png)
 
 ### Painel desktop/admin
 
-![Lia painel desktop com detalhe do pedido, checkpoints, pagamento mock e anexos offline](docs/screenshots/lia-desktop.png)
+![Lia painel desktop/admin com white-label, consultórios, produção, checkpoints, pagamento mock e anexos offline](docs/screenshots/lia-desktop.png)
 
 ### Mock backend no GitHub Pages
 
@@ -106,6 +109,17 @@ O mock não usa MSW em produção para não conflitar com o service worker PWA. 
 - `mockBackend`
 
 A subpágina `/lia/mock/` mostra modo ativo, export JSON, reset de seed e fila local pendente. O build gera `mock/index.html` e `404.html` para manter o deep link funcionando no GitHub Pages.
+
+## White-label e telas administrativas
+
+A operação inicial fica configurada em `apps/web/src/config/tenant.ts`. Essa camada concentra nome da operação, marca, textos principais e cores para permitir futuras marcas/tenants sem acoplar os fluxos centrais ao nome Lia.
+
+As telas **Consultórios** e **Produção** usam dados do mock browser-side para dar visibilidade a:
+
+- consultórios/clientes que pedem próteses;
+- moldes em produção;
+- pipeline da empresa de próteses;
+- próteses prontas para entrega.
 
 ## Backend real
 

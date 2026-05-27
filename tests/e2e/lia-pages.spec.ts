@@ -57,3 +57,23 @@ test('covers the published GitHub Pages mock MVP flow', async ({ page }) => {
   await page.getByRole('button', { name: 'Atualizar export' }).click();
   await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/Clínica E2E Pages/);
 });
+
+test('covers published white-label and admin production screens', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  await page.goto('./');
+  const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
+  await expect(mobile.getByText('Operação Lia')).toBeVisible();
+  await expect(mobile.getByText('White-label pronto para outras operações')).toBeVisible();
+
+  const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
+  await nav.getByRole('button', { name: /Consultórios/ }).click();
+  const clinicsPanel = mobile.getByRole('region', { name: 'Consultórios e moldes' });
+  await expect(clinicsPanel.getByText('Consultórios que pedem próteses')).toBeVisible();
+  await expect(clinicsPanel.getByText('Moldes em produção')).toBeVisible();
+
+  await nav.getByRole('button', { name: /Produção/ }).click();
+  const productionPanel = mobile.getByRole('region', { name: 'Produção de próteses' });
+  await expect(productionPanel.getByText('Controle da empresa de próteses')).toBeVisible();
+  await expect(productionPanel.getByText('Próteses prontas para entrega')).toBeVisible();
+});

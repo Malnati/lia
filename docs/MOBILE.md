@@ -6,7 +6,8 @@ Use este guia no app publicado em <https://malnati.github.io/lia/>. O backend at
 
 1. Acesse <https://malnati.github.io/lia/> no celular ou em viewport mobile.
 2. Confirme o topo com a marca **Lia** e o botão **Mock**.
-3. Confira o cartão **Offline pendente** para ver quantos itens estão aguardando sincronização local.
+3. Confira o badge **Operação Lia** e a indicação **White-label pronto para outras operações**.
+4. Confira o cartão **Offline pendente** para ver quantos itens estão aguardando sincronização local.
 
 ## 2. Criar novo pedido
 
@@ -27,7 +28,19 @@ Use este guia no app publicado em <https://malnati.github.io/lia/>. O backend at
 3. Toque em **Sincronizar agora**.
 4. Aguarde a mensagem `Sincronização concluída: ... enviados, 0 falhas.`.
 
-## 4. Executar retirada
+## 4. Consultórios e moldes
+
+1. Toque na aba **Consultórios**.
+2. Confira os KPIs de consultórios/clientes ativos, moldes em produção e pedidos aguardando conclusão.
+3. Use a lista para revisar os consultórios que pedem próteses e os moldes em fluxo.
+
+## 5. Produção de próteses
+
+1. Toque na aba **Produção**.
+2. Confira o pipeline da empresa de próteses.
+3. Revise pedidos no pipeline, próteses em produção e próteses prontas para entrega.
+
+## 6. Executar retirada
 
 1. Selecione o pedido na aba **Pedidos**.
 2. Abra a aba **Retirada**.
@@ -35,7 +48,7 @@ Use este guia no app publicado em <https://malnati.github.io/lia/>. O backend at
 4. Toque em **Marcar retirada check-out**.
 5. Volte à aba **Sync** para sincronizar as atualizações pendentes.
 
-## 5. Executar entrega
+## 7. Executar entrega
 
 1. Selecione o pedido na aba **Pedidos**.
 2. Abra a aba **Entrega**.
@@ -43,7 +56,7 @@ Use este guia no app publicado em <https://malnati.github.io/lia/>. O backend at
 4. Toque em **Marcar entrega check-out**.
 5. Volte à aba **Sync** para sincronizar as atualizações pendentes.
 
-## 6. Pagamento mock e anexos
+## 8. Pagamento mock e anexos
 
 1. Na aba **Pedidos**, role até o detalhe do pedido selecionado.
 2. Toque em **Criar pagamento mock** para enfileirar a intenção de pagamento mock.
@@ -51,7 +64,7 @@ Use este guia no app publicado em <https://malnati.github.io/lia/>. O backend at
 4. Assine no canvas e toque em **Salvar assinatura** para enfileirar assinatura offline.
 5. Sincronize pela aba **Sync**.
 
-## 7. Administrar o mock
+## 9. Administrar o mock
 
 1. Toque em **Mock** no topo.
 2. Use **Atualizar export** para revisar o JSON do mock browser-side.
