@@ -12,7 +12,7 @@ test('covers the published GitHub Pages mock MVP flow', async ({ page }) => {
   await expect(page).toHaveTitle(/Lia/);
   const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
   await expect(mobile).toBeVisible();
-  await expect(mobile.getByRole('heading', { name: 'Pedidos' })).toBeVisible();
+  await expect(mobile.getByRole('heading', { name: 'Pedidos', exact: true })).toBeVisible();
 
   const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
   await nav.getByRole('button', { name: /Novo pedido/ }).click();
