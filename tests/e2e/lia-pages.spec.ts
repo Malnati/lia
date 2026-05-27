@@ -94,3 +94,25 @@ test('covers required-field exception in the published new order form', async ({
   await expect(newOrderPanel.getByLabel('Produto')).toHaveValue('Molde prótese');
 });
 
+test('covers empty sync queue idempotency on published Pages', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  await page.goto('mock/');
+  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await page.getByRole('button', { name: 'Resetar seed mock' }).click();
+
+  await page.goto('./');
+  const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
+  const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
+  await nav.getByRole('button', { name: /Sync/ }).click();
+
+  const syncPanel = mobile.getByRole('region', { name: 'Fila de sincronização' });
+  await syncPanel.getByRole('button', { name: 'Sincronizar agora' }).click();
+  await expect(page.getByText(/Sincronização concluída: \d+ enviados, 0 falhas\./)).toBeVisible();
+  await expect(syncPanel.getByText('Fila vazia. Mock browser-side está sincronizado.')).toBeVisible();
+
+  await syncPanel.getByRole('button', { name: 'Sincronizar agora' }).click();
+  await expect(page.getByText('Sincronização concluída: 0 enviados, 0 falhas.')).toBeVisible();
+  await expect(syncPanel.getByText('Itens pendentes: 0')).toBeVisible();
+});
+
