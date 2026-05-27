@@ -174,6 +174,30 @@ describe('Lia local-first workflow', () => {
     expect(backendState.paymentIntents).toHaveLength(0);
   });
 
+  it('keeps payment payloads without an order id pending with a visible error', async () => {
+    await liaDb.syncQueue.add({
+      id: 'sync_invalid_payment_payload_unit',
+      operation: 'create_payment_intent',
+      orderId: '1008',
+      payload: {},
+      createdAt: '2026-05-27T12:20:00.000Z',
+      attempts: 0
+    });
+
+    const result = await syncPendingItems(createApiClient('mock'));
+    const queue = await getPendingSyncItems();
+    const backendState = await exportMockBackendState();
+
+    expect(result).toEqual({ synced: 0, failed: 1 });
+    expect(queue).toHaveLength(1);
+    expect(queue[0]).toMatchObject({
+      id: 'sync_invalid_payment_payload_unit',
+      attempts: 1,
+      lastError: 'Invalid payment payload: orderId is required'
+    });
+    expect(backendState.paymentIntents).toHaveLength(0);
+  });
+
   it('stores photo and signature blobs locally and enqueues attachment upload', async () => {
     const order = await createOfflineOrder({
       customerName: 'Com anexos',
