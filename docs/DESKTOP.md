@@ -73,7 +73,7 @@ Use este guia no painel desktop do app publicado em <https://malnati.github.io/l
 1. Abra **Sincronização**.
 2. Revise cada item pendente: operação, pedido, tentativas e possível mensagem de erro.
 3. Clique em **Sincronizar agora**.
-4. Se um item permanecer pendente, corrija a origem: criação de pedido exige cliente, telefone e endereço; checkpoints, anexos e pagamento exigem pedido existente.
+4. Se um item permanecer pendente, corrija a origem: criação de pedido exige cliente, telefone e endereço; checkpoints, anexos e pagamento exigem pedido existente; operações desconhecidas indicam fila local corrompida e devem ser removidas ou recriadas pelo fluxo correto.
 5. Abra <https://malnati.github.io/lia/mock/> diretamente ou pelo link **Mock**.
 6. Clique em **Atualizar export** para confirmar os dados gravados no mock.
 7. Use **Resetar seed mock** quando precisar voltar ao estado inicial.

@@ -25,6 +25,16 @@ const syncOperationPriority: Record<SyncQueueItem['operation'], number> = {
   create_payment_intent: 2
 };
 
+function syncPriority(operation: string): number {
+  return syncOperationPriority[operation as SyncQueueItem['operation']] ?? Number.MAX_SAFE_INTEGER;
+}
+
+function assertSupportedSyncOperation(operation: unknown): asserts operation is SyncQueueItem['operation'] {
+  if (typeof operation !== 'string' || !(operation in syncOperationPriority)) {
+    throw new Error(`Unsupported sync operation: ${String(operation)}`);
+  }
+}
+
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -106,7 +116,7 @@ export async function getPendingSyncItems(): Promise<SyncQueueItem[]> {
   return queue.sort(
     (left, right) =>
       left.createdAt.localeCompare(right.createdAt) ||
-      syncOperationPriority[left.operation] - syncOperationPriority[right.operation]
+      syncPriority(left.operation) - syncPriority(right.operation)
   );
 }
 
@@ -197,6 +207,7 @@ export async function syncPendingItems(apiClient: ApiClient): Promise<SyncResult
 
   for (const item of queue) {
     try {
+      assertSupportedSyncOperation(item.operation);
       if (item.operation === 'create_order') {
         const remote = await apiClient.createOrder(item.payload as CreateOrderInput);
         await liaDb.orders.put({ ...remote, pendingSync: false });
