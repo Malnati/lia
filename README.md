@@ -3,103 +3,133 @@
 [![CI](https://github.com/Malnati/lia/actions/workflows/ci.yml/badge.svg)](https://github.com/Malnati/lia/actions/workflows/ci.yml)
 [![Deploy frontend to GitHub Pages](https://github.com/Malnati/lia/actions/workflows/pages.yml/badge.svg)](https://github.com/Malnati/lia/actions/workflows/pages.yml)
 
-**Lia** é um PWA offline-first para pedidos, retirada, entrega e pagamento de moldes para prótese dentária.
+**Lia** é um PWA offline-first para pedidos, retirada, entrega, anexos e pagamento mock de moldes para prótese dentária.
 
 - Demo pública: <https://malnati.github.io/lia/>
-- Repositório: <https://github.com/Malnati/lia>
+- Mock backend browser-side: <https://malnati.github.io/lia/mock/>
+- Repositório frontend: <https://github.com/Malnati/lia>
+- Repositório backend separado: <https://github.com/Malnati/lia-backend>
 - Frontend publicado no GitHub Pages: `apps/web`
-- Backend preparado para VPS: `apps/api`
+- Requisitos versionados: [`REQ.md`](REQ.md)
+
+> Até segunda ordem, este repositório é **frontend-only** e o GitHub Pages usa **somente mock browser-side**. O backend real foi movido para `/Users/mal/GitHub/malnati/lia-backend`.
 
 ## Stack
 
-- **Frontend:** React, Vite, TypeScript, PWA/service worker
-- **Backend:** NestJS, TypeScript, MongoDB, Mongoose
-- **Infra local:** Podman Compose com MongoDB
+- **Frontend:** React, Vite, TypeScript, PWA/service worker, Dexie/IndexedDB
+- **Mock backend:** adapter JavaScript interno persistido em IndexedDB
 - **Deploy frontend:** GitHub Actions + GitHub Pages
 - **Package manager:** pnpm
 
 ## Features do MVP
 
-- Login Google representado na interface como placeholder de SSO.
-- Cadastro e acompanhamento de pedidos de `Molde prótese`.
+- Cadastro e acompanhamento de pedidos de `Molde prótese` com formulário real.
+- Views funcionais para **Pedidos**, **Novo pedido**, **Retirada**, **Entrega** e **Sync**.
 - Fluxo operacional com retirada check-in/check-out e entrega check-in/check-out.
-- Fila de sincronização offline com ação de sincronizar.
-- Status de pagamento com aviso: pagamento online depende de internet.
-- API NestJS com healthcheck e endpoints iniciais de pedidos.
+- Fila de sincronização offline persistida no IndexedDB.
+- Mock backend estático/browser-side para GitHub Pages e desenvolvimento frontend sem API real.
+- Deep link direto para `/lia/mock/` no GitHub Pages.
+- Edição local de pedidos, anexos de foto compactada e assinatura do cliente via canvas.
+- Pagamento online em modo abstração/mock; integração real Pagopar/Bancard fica no backend separado.
+
+## Prints das telas
+
+Os prints abaixo devem ser regenerados sempre que houver implementação ou correção visual.
+
+### App mobile PWA
+
+![Lia PWA em viewport mobile com fila offline e pedidos](docs/screenshots/lia-mobile.png)
+
+### Painel desktop/admin
+
+![Lia painel desktop com detalhe do pedido, checkpoints, pagamento mock e anexos offline](docs/screenshots/lia-desktop.png)
+
+### Mock backend no GitHub Pages
+
+![Lia mock backend browser-side com export JSON e fila local pendente](docs/screenshots/lia-mock-backend.png)
+
+## Guias de usuário
+
+- [Guia mobile/PWA](docs/MOBILE.md)
+- [Guia desktop/admin](docs/DESKTOP.md)
 
 ## Arquitetura
 
 ```text
 lia/
 ├── apps/
-│   ├── web/      # React PWA publicado em https://malnati.github.io/lia/
-│   └── api/      # NestJS API para VPS ou ambiente local
-├── compose.yaml  # MongoDB local via Podman
+│   └── web/      # React PWA publicado em https://malnati.github.io/lia/
 └── .github/workflows/
     ├── ci.yml
     └── pages.yml
 ```
 
-O GitHub Pages publica apenas o frontend estático. A API não é exposta pelo Pages; ela deve rodar localmente ou em VPS e ser apontada pelo `VITE_API_URL` no build do frontend.
+O GitHub Pages publica apenas o frontend estático. Como Pages não executa backend, o modo padrão do build público é `VITE_API_MODE=mock`, que usa IndexedDB no navegador como mock backend.
 
 ## Setup local
 
 ```bash
 pnpm install
 cp .env.example .env
-cp apps/api/.env.example apps/api/.env
-```
-
-Antes de subir containers, confirme o runtime Podman:
-
-```bash
-podman info
-podman compose up -d mongo
-```
-
-Rodar tudo em modo desenvolvimento:
-
-```bash
 pnpm dev
-```
-
-Rodar separadamente:
-
-```bash
-pnpm dev:web
-pnpm dev:api
 ```
 
 URLs locais padrão:
 
 - Frontend: <http://localhost:5173/lia/>
-- API: <http://localhost:3000/api>
-- Healthcheck: <http://localhost:3000/api/health>
+- Mock admin local: <http://localhost:5173/lia/mock/>
 
 ## Variáveis de ambiente
 
 | Variável | Uso | Exemplo |
 | --- | --- | --- |
-| `PORT` | Porta da API NestJS | `3000` |
-| `MONGODB_URI` | Conexão MongoDB | `mongodb://localhost:27017/lia` |
-| `CORS_ORIGIN` | Origem permitida para o frontend local | `http://localhost:5173` |
-| `VITE_API_URL` | URL pública/local da API consumida pelo React | `http://localhost:3000/api` |
-| `GOOGLE_CLIENT_ID` | Futuro Google OAuth/SSO | vazio no scaffold |
-| `PAYMENT_GATEWAY_PROVIDER` | Futuro gateway no Paraguai | `pagopar` |
-| `PAYMENT_GATEWAY_PUBLIC_KEY` | Chave pública futura do gateway | vazio no scaffold |
+| `VITE_API_MODE` | Adapter do frontend; manter `mock` neste repo até segunda ordem | `mock` |
 
 ## Scripts
 
 ```bash
-pnpm lint      # typecheck dos apps
-pnpm test      # testes unitários
-pnpm build     # build API + frontend
-pnpm build:web # build apenas do frontend para Pages
+pnpm lint      # typecheck do frontend
+pnpm test      # testes unitários do frontend
+pnpm build     # build do frontend + fallback Pages /mock/
+pnpm test:e2e  # Playwright contra GitHub Pages publicado
+pnpm build:web # build do frontend para Pages
+pnpm preview:web
 ```
+
+## Mock browser-side
+
+O mock não usa MSW em produção para não conflitar com o service worker PWA. Ele é um adapter JavaScript interno que persiste dados em IndexedDB:
+
+- `orders`
+- `syncQueue`
+- `attachments`
+- `mockBackend`
+
+A subpágina `/lia/mock/` mostra modo ativo, export JSON, reset de seed e fila local pendente. O build gera `mock/index.html` e `404.html` para manter o deep link funcionando no GitHub Pages.
+
+## Backend real
+
+O backend NestJS foi separado para o projeto [`lia-backend`](https://github.com/Malnati/lia-backend) em `/Users/mal/GitHub/malnati/lia-backend`.
+
+Este repo não contém mais API, MongoDB, compose local nem dados de backend.
+
+## E2E contra GitHub Pages
+
+Os testes Playwright ficam em `tests/e2e/` e devem chamar sempre o app publicado:
+
+```bash
+PLAYWRIGHT_BASE_URL=https://malnati.github.io/lia/ pnpm test:e2e
+```
+
+O workflow de Pages executa E2E após o deploy usando a URL publicada pelo próprio GitHub Pages. Não use localhost para E2E.
 
 ## Deploy no GitHub Pages
 
-O workflow `.github/workflows/pages.yml` executa em push para `main` e publica `apps/web/dist`.
+O workflow `.github/workflows/pages.yml` executa em push para `main` e publica `apps/web/dist` com:
+
+```env
+VITE_API_MODE=mock
+```
 
 Configuração importante do Vite:
 
@@ -115,7 +145,8 @@ URL esperada do Pages:
 
 - Fonte: GitHub Actions workflow.
 - Conteúdo publicado: somente frontend React PWA.
-- Backend: fora do Pages; usar VPS ou ambiente local.
+- Backend: fora deste repo e fora do Pages.
+- Mock: browser-side/IndexedDB até segunda ordem.
 
 ## Design
 
