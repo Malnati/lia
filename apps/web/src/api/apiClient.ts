@@ -144,6 +144,9 @@ class MockApiClient implements ApiClient {
 
   async createPaymentIntent(orderId: string): Promise<PaymentIntent> {
     const state = await getMockState();
+    const index = state.orders.findIndex((order) => order.id === orderId || order.clientId === orderId);
+    if (index < 0) throw new Error(`Mock order ${orderId} not found`);
+
     const intent: PaymentIntent = {
       id: newId('mock_pi'),
       provider: 'mock',
@@ -155,10 +158,7 @@ class MockApiClient implements ApiClient {
       createdAt: nowIso()
     };
     state.paymentIntents.unshift(intent);
-    const index = state.orders.findIndex((order) => order.id === orderId || order.clientId === orderId);
-    if (index >= 0) {
-      state.orders[index] = { ...state.orders[index], paymentStatus: 'mock_pending', version: state.orders[index].version + 1 };
-    }
+    state.orders[index] = { ...state.orders[index], paymentStatus: 'mock_pending', version: state.orders[index].version + 1 };
     await putMockState(state);
     return intent;
   }

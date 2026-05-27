@@ -63,7 +63,7 @@ Use este guia no painel desktop do app publicado em <https://malnati.github.io/l
 ## 8. Pagamento, fotos e assinatura
 
 1. Em **Pedidos**, abra o detalhe do pedido.
-2. Clique em **Criar pagamento mock** para registrar a intenção de pagamento no mock.
+2. Clique em **Criar pagamento mock** para registrar a intenção de pagamento no mock; a intenção só sincroniza se o pedido existir no mock.
 3. Use o campo de foto para anexar imagem do molde.
 4. Colete assinatura no canvas e clique em **Salvar assinatura**.
 5. Todas as ações entram na fila local e devem ser sincronizadas.
@@ -71,7 +71,7 @@ Use este guia no painel desktop do app publicado em <https://malnati.github.io/l
 ## 9. Sincronização e inspeção do mock
 
 1. Abra **Sincronização**.
-2. Revise cada item pendente: operação, pedido e tentativas.
+2. Revise cada item pendente: operação, pedido, tentativas e possível mensagem de erro.
 3. Clique em **Sincronizar agora**.
 4. Abra <https://malnati.github.io/lia/mock/> diretamente ou pelo link **Mock**.
 5. Clique em **Atualizar export** para confirmar os dados gravados no mock.
