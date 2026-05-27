@@ -135,7 +135,7 @@ export type SyncQueueItem = {
   lastError?: string;
 };
 
-export type ApiMode = 'mock' | 'api';
+export type ApiMode = 'mock';
 
 export type SyncResult = {
   synced: number;

@@ -17,7 +17,6 @@ import {
 import { compressImage } from './media/imageCompression';
 import type { ApiMode, Attachment, CheckpointKey, Order, SyncQueueItem } from './types';
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 const apiMode = getConfiguredApiMode();
 
 type View = 'orders' | 'new' | 'pickup' | 'delivery' | 'sync';
@@ -246,7 +245,7 @@ function LiaApp() {
       <section className="desktop-preview" aria-label="Painel administrativo Lia">
         <header className="desktop-topbar">
           <strong className="brand">Lia</strong>
-          <div className="account-chip"><span>{apiMode}</span> API: {apiMode === 'mock' ? 'Mock browser-side' : apiUrl}</div>
+          <div className="account-chip"><span>{apiMode}</span> Mock browser-side</div>
         </header>
         <div className="desktop-body">
           <aside className="sidebar">
@@ -321,7 +320,7 @@ function LiaApp() {
             </article>
           ) : null}
         </div>
-        <footer className="api-note">Modo API: {apiMode}. API configurável: {apiUrl}. Mock: <a href="/lia/mock/">/lia/mock/</a></footer>
+        <footer className="api-note">Modo ativo: {apiMode}. Backend real separado; GitHub Pages usa somente mock. Mock: <a href="/lia/mock/">/lia/mock/</a></footer>
       </section>
     </main>
   );

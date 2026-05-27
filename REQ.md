@@ -206,3 +206,10 @@ Validações feitas:
 5. Escolher gateway no Paraguai: Pagopar ou Bancard vPOS.
 6. Criar deploy da API na VPS com HTTPS e backups do MongoDB.
 7. Adicionar roles: admin, técnico, laboratório e cliente.
+
+## Atualização de escopo — 2026-05-27
+
+- O repositório `Malnati/lia` passa a ser frontend-only para GitHub Pages.
+- O backend real foi transferido para `/Users/mal/GitHub/malnati/lia-backend` e para o repositório `Malnati/lia-backend`.
+- Até segunda ordem, o frontend deve usar somente `VITE_API_MODE=mock` no GitHub Pages.
+- Este repositório não deve conter `apps/api`, `compose.yaml`, MongoDB local ou dados de backend.

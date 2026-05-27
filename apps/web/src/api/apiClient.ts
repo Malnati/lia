@@ -164,71 +164,12 @@ class MockApiClient implements ApiClient {
   }
 }
 
-class HttpApiClient implements ApiClient {
-  constructor(private readonly baseUrl: string) {}
-
-  async listOrders(): Promise<Order[]> {
-    return this.request<Order[]>('/orders');
-  }
-
-  async createOrder(input: CreateOrderInput): Promise<Order> {
-    return this.request<Order>('/orders', { method: 'POST', body: JSON.stringify(input) });
-  }
-
-  async updateOrder(id: string, input: UpdateOrderInput): Promise<Order> {
-    return this.request<Order>(`/orders/${id}`, { method: 'PATCH', body: JSON.stringify(input) });
-  }
-
-  async updateCheckpoint(orderId: string, checkpointKey: CheckpointKey, input: CheckpointInput): Promise<Order> {
-    return this.request<Order>(`/orders/${orderId}/checkpoints/${checkpointKey}`, {
-      method: 'PATCH',
-      body: JSON.stringify(input)
-    });
-  }
-
-  async uploadAttachment(orderId: string, input: AttachmentInput): Promise<Attachment> {
-    const form = new FormData();
-    form.set('kind', input.kind);
-    form.set('clientAttachmentId', input.clientAttachmentId ?? '');
-    form.set('capturedAt', input.capturedAt ?? nowIso());
-    form.set('file', input.blob, input.filename);
-
-    const response = await fetch(`${this.baseUrl}/orders/${orderId}/attachments`, {
-      method: 'POST',
-      body: form
-    });
-    if (!response.ok) throw new Error(`API ${response.status} ${await response.text()}`);
-    return response.json() as Promise<Attachment>;
-  }
-
-  async createPaymentIntent(orderId: string): Promise<PaymentIntent> {
-    return this.request<PaymentIntent>(`/orders/${orderId}/payment-intents`, {
-      method: 'POST',
-      body: JSON.stringify({ amount: 0, currency: 'PYG' })
-    });
-  }
-
-  private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${path}`, {
-      ...init,
-      headers: {
-        'content-type': 'application/json',
-        ...init.headers
-      }
-    });
-    if (!response.ok) throw new Error(`API ${response.status} ${await response.text()}`);
-    return response.json() as Promise<T>;
-  }
-}
 
 export function getConfiguredApiMode(): ApiMode {
-  return (import.meta.env.VITE_API_MODE === 'api' ? 'api' : 'mock') as ApiMode;
+  return 'mock';
 }
 
-export function createApiClient(mode: ApiMode = getConfiguredApiMode()): ApiClient {
-  if (mode === 'api') {
-    return new HttpApiClient(import.meta.env.VITE_API_URL || 'http://localhost:3000/api');
-  }
+export function createApiClient(_mode: ApiMode = getConfiguredApiMode()): ApiClient {
   return new MockApiClient();
 }
 

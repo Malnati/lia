@@ -7,16 +7,17 @@
 
 - Demo pública: <https://malnati.github.io/lia/>
 - Mock backend browser-side: <https://malnati.github.io/lia/mock/>
-- Repositório: <https://github.com/Malnati/lia>
+- Repositório frontend: <https://github.com/Malnati/lia>
+- Repositório backend separado: <https://github.com/Malnati/lia-backend>
 - Frontend publicado no GitHub Pages: `apps/web`
-- Backend NestJS preparado para local/VPS: `apps/api`
 - Requisitos versionados: [`REQ.md`](REQ.md)
+
+> Até segunda ordem, este repositório é **frontend-only** e o GitHub Pages usa **somente mock browser-side**. O backend real foi movido para `/Users/mal/GitHub/malnati/lia-backend`.
 
 ## Stack
 
 - **Frontend:** React, Vite, TypeScript, PWA/service worker, Dexie/IndexedDB
-- **Backend:** NestJS, TypeScript, MongoDB, Mongoose, GridFS
-- **Infra local:** Podman Compose com MongoDB
+- **Mock backend:** adapter JavaScript interno persistido em IndexedDB
 - **Deploy frontend:** GitHub Actions + GitHub Pages
 - **Package manager:** pnpm
 
@@ -27,8 +28,7 @@
 - Fila de sincronização offline persistida no IndexedDB.
 - Mock backend estático/browser-side para GitHub Pages e desenvolvimento frontend sem API real.
 - Edição local de pedidos, anexos de foto compactada e assinatura do cliente via canvas.
-- Pagamento online em modo abstração/mock; integração real Pagopar/Bancard fica para fase posterior.
-- API NestJS com healthcheck, pedidos, checkpoints, anexos GridFS e payment-intents mock.
+- Pagamento online em modo abstração/mock; integração real Pagopar/Bancard fica no backend separado.
 
 ## Prints das telas
 
@@ -49,92 +49,42 @@
 ```text
 lia/
 ├── apps/
-│   ├── web/      # React PWA publicado em https://malnati.github.io/lia/
-│   └── api/      # NestJS API para VPS ou ambiente local
-├── compose.yaml  # MongoDB local via Podman
+│   └── web/      # React PWA publicado em https://malnati.github.io/lia/
 └── .github/workflows/
     ├── ci.yml
     └── pages.yml
 ```
 
-O GitHub Pages publica apenas o frontend estático. Como Pages não executa backend, o modo padrão do build público é `VITE_API_MODE=mock`, que usa IndexedDB no navegador como mock backend. Para usar a API real, gere o build com `VITE_API_MODE=api` e `VITE_API_URL` apontando para o NestJS.
+O GitHub Pages publica apenas o frontend estático. Como Pages não executa backend, o modo padrão do build público é `VITE_API_MODE=mock`, que usa IndexedDB no navegador como mock backend.
 
 ## Setup local
 
 ```bash
 pnpm install
 cp .env.example .env
-cp apps/api/.env.example apps/api/.env
-```
-
-Antes de subir containers, confirme o runtime Podman:
-
-```bash
-podman info
-podman compose up -d mongo
-```
-
-Rodar tudo em modo desenvolvimento:
-
-```bash
 pnpm dev
-```
-
-Rodar separadamente:
-
-```bash
-pnpm dev:web
-pnpm dev:api
 ```
 
 URLs locais padrão:
 
 - Frontend: <http://localhost:5173/lia/>
 - Mock admin local: <http://localhost:5173/lia/mock/>
-- API: <http://localhost:3000/api>
-- Healthcheck: <http://localhost:3000/api/health>
 
 ## Variáveis de ambiente
 
 | Variável | Uso | Exemplo |
 | --- | --- | --- |
-| `PORT` | Porta da API NestJS | `3000` |
-| `MONGODB_URI` | Conexão MongoDB | `mongodb://localhost:27017/lia` |
-| `CORS_ORIGIN` | Origem permitida para o frontend local | `http://localhost:5173` |
-| `VITE_API_MODE` | Adapter do frontend: `mock` ou `api` | `mock` |
-| `VITE_API_URL` | URL pública/local da API quando `VITE_API_MODE=api` | `http://localhost:3000/api` |
-| `GOOGLE_CLIENT_ID` | Futuro Google OAuth/SSO | vazio no scaffold |
-| `PAYMENT_GATEWAY_PROVIDER` | Futuro gateway no Paraguai | `mock`/`pagopar` |
-| `PAYMENT_GATEWAY_PUBLIC_KEY` | Chave pública futura do gateway | vazio no scaffold |
+| `VITE_API_MODE` | Adapter do frontend; manter `mock` neste repo até segunda ordem | `mock` |
 
 ## Scripts
 
 ```bash
-pnpm lint      # typecheck dos apps
-pnpm test      # testes unitários
-pnpm build     # build API + frontend
-pnpm build:web # build apenas do frontend para Pages
+pnpm lint      # typecheck do frontend
+pnpm test      # testes unitários do frontend
+pnpm build     # build do frontend
+pnpm build:web # build do frontend para Pages
 pnpm preview:web
 ```
-
-## API NestJS
-
-Prefixo global: `/api`.
-
-Endpoints principais:
-
-- `GET /api/health`
-- `GET /api/orders`
-- `POST /api/orders`
-- `PATCH /api/orders/:id`
-- `PATCH /api/orders/:id/status`
-- `PATCH /api/orders/:id/checkpoints/:checkpointKey`
-- `POST /api/orders/:id/attachments`
-- `GET /api/orders/:id/attachments`
-- `GET /api/orders/:id/attachments/:attachmentId/file`
-- `POST /api/orders/:id/payment-intents`
-
-Anexos aceitos: `image/webp`, `image/jpeg`, `image/png`, até 5MB. A API salva arquivos no Mongo GridFS (`orderAttachments`) com metadata do pedido.
 
 ## Mock browser-side
 
@@ -146,6 +96,12 @@ O mock não usa MSW em produção para não conflitar com o service worker PWA. 
 - `mockBackend`
 
 A subpágina `/lia/mock/` mostra modo ativo, export JSON, reset de seed e fila local pendente.
+
+## Backend real
+
+O backend NestJS foi separado para o projeto [`lia-backend`](https://github.com/Malnati/lia-backend) em `/Users/mal/GitHub/malnati/lia-backend`.
+
+Este repo não contém mais API, MongoDB, compose local nem dados de backend.
 
 ## Deploy no GitHub Pages
 
@@ -169,7 +125,8 @@ URL esperada do Pages:
 
 - Fonte: GitHub Actions workflow.
 - Conteúdo publicado: somente frontend React PWA.
-- Backend: fora do Pages; usar VPS ou ambiente local para API real.
+- Backend: fora deste repo e fora do Pages.
+- Mock: browser-side/IndexedDB até segunda ordem.
 
 ## Design
 
