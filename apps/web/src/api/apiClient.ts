@@ -30,6 +30,22 @@ function newId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
+const requiredCreateOrderFields = ['customerName', 'customerPhone', 'deliveryAddress'] as const;
+
+function missingRequiredCreateOrderFields(input: Partial<CreateOrderInput> | undefined): string[] {
+  return requiredCreateOrderFields.filter((field) => {
+    const value = input?.[field];
+    return typeof value !== 'string' || value.trim().length === 0;
+  });
+}
+
+function assertValidCreateOrderInput(input: CreateOrderInput): void {
+  const missingFields = missingRequiredCreateOrderFields(input);
+  if (missingFields.length > 0) {
+    throw new Error(`Mock order payload missing required fields: ${missingFields.join(', ')}`);
+  }
+}
+
 async function getMockState(): Promise<MockBackendState> {
   const existing = await liaDb.mockBackend.get('state');
   if (existing) return existing;
@@ -77,6 +93,7 @@ class MockApiClient implements ApiClient {
   }
 
   async createOrder(input: CreateOrderInput): Promise<Order> {
+    assertValidCreateOrderInput(input);
     const state = await getMockState();
     const incoming = normalizeOrder(input);
     const index = state.orders.findIndex((order) => order.id === incoming.id || order.clientId === incoming.clientId);

@@ -84,6 +84,19 @@ describe('Lia local-first workflow', () => {
     expect(selectNewestOrder(base, incoming).customerName).toBe('Versão nova');
   });
 
+  it('rejects mock order creation with blank required fields', async () => {
+    await expect(
+      createApiClient('mock').createOrder({
+        customerName: ' ',
+        customerPhone: '',
+        deliveryAddress: ''
+      })
+    ).rejects.toThrow('Mock order payload missing required fields: customerName, customerPhone, deliveryAddress');
+
+    const backendState = await exportMockBackendState();
+    expect(backendState.orders).toHaveLength(3);
+  });
+
   it('rejects mock payment intents for missing orders', async () => {
     await expect(createApiClient('mock').createPaymentIntent('missing-payment-order')).rejects.toThrow(
       'Mock order missing-payment-order not found'
