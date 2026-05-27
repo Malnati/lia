@@ -12,7 +12,21 @@
 - Frontend publicado no GitHub Pages: `apps/web`
 - Requisitos versionados: [`REQ.md`](REQ.md)
 
-> Até segunda ordem, este repositório é **frontend-only** e o GitHub Pages usa **somente mock browser-side**. O backend real foi movido para `/Users/mal/GitHub/malnati/lia-backend`.
+> Migração em curso: o GitHub Pages atual ainda expõe a implementação legada, mas a arquitetura alvo é Supabase/Postgres real via API NestJS em VPS HTTPS. Não use novas funcionalidades mock-first como destino final.
+
+
+## Arquitetura alvo Supabase/Postgres
+
+A decisão vigente move Lia para uma plataforma multi-repo com base real Supabase/Postgres:
+
+- `Malnati/lia`: portal integrador em <https://malnati.github.io/lia/>.
+- `Malnati/lia-backend`: API NestJS real para VPS HTTPS, conectada ao Supabase/Postgres.
+- `Malnati/lia-core`: ESM compartilhado com tipos, validações, tenants, roles e permissões.
+- `Malnati/lia-pwa`: PWA mobile/offline-first.
+- `Malnati/lia-desktop`: app operacional desktop.
+- `Malnati/lia-dashboard`: administrativo com CRUD usuários/perfis.
+
+O estado atual deste repositório ainda contém implementação legada browser-side/mock. A fonte de verdade para a migração é [`REQ.md`](REQ.md).
 
 ## Stack
 
