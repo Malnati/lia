@@ -152,3 +152,38 @@ test('covers signature attachment sync on published Pages', async ({ page }) => 
   await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/assinatura-1008\.png/);
 });
 
+test('covers photo attachment upload sync on published Pages', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  await page.goto('mock/');
+  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await page.getByRole('button', { name: 'Resetar seed mock' }).click();
+
+  await page.goto('./');
+  const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
+  const photoInput = mobile.getByLabel('Adicionar foto do molde');
+  await photoInput.scrollIntoViewIfNeeded();
+  await photoInput.setInputFiles({
+    name: 'molde-e2e.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      'base64'
+    )
+  });
+
+  await expect(page.getByText('Foto compactada e salva offline para sincronização.')).toBeVisible();
+  await expect(mobile.getByText('1 anexos locais deste pedido.')).toBeVisible();
+
+  const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
+  await nav.getByRole('button', { name: /Sync/ }).click();
+  const syncPanel = mobile.getByRole('region', { name: 'Fila de sincronização' });
+  await expect(syncPanel.getByText('upload_attachment')).toBeVisible();
+  await syncPanel.getByRole('button', { name: 'Sincronizar agora' }).click();
+  await expect(page.getByText(/Sincronização concluída: \d+ enviados, 0 falhas\./)).toBeVisible();
+
+  await page.goto('mock/');
+  await page.getByRole('button', { name: 'Atualizar export' }).click();
+  await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/molde-e2e\.webp/);
+});
+
