@@ -16,6 +16,10 @@
     "build:web": "pnpm --filter @lia/web build",
     "lint": "pnpm --filter @lia/web lint",
     "test": "pnpm --filter @lia/web test",
-    "preview:web": "pnpm --filter @lia/web preview"
+    "preview:web": "pnpm --filter @lia/web preview",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
   }
 }

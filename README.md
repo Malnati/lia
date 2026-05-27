@@ -23,14 +23,18 @@
 
 ## Features do MVP
 
-- Cadastro e acompanhamento de pedidos de `Molde prótese`.
+- Cadastro e acompanhamento de pedidos de `Molde prótese` com formulário real.
+- Views funcionais para **Pedidos**, **Novo pedido**, **Retirada**, **Entrega** e **Sync**.
 - Fluxo operacional com retirada check-in/check-out e entrega check-in/check-out.
 - Fila de sincronização offline persistida no IndexedDB.
 - Mock backend estático/browser-side para GitHub Pages e desenvolvimento frontend sem API real.
+- Deep link direto para `/lia/mock/` no GitHub Pages.
 - Edição local de pedidos, anexos de foto compactada e assinatura do cliente via canvas.
 - Pagamento online em modo abstração/mock; integração real Pagopar/Bancard fica no backend separado.
 
 ## Prints das telas
+
+Os prints abaixo devem ser regenerados sempre que houver implementação ou correção visual.
 
 ### App mobile PWA
 
@@ -43,6 +47,11 @@
 ### Mock backend no GitHub Pages
 
 ![Lia mock backend browser-side com export JSON e fila local pendente](docs/screenshots/lia-mock-backend.png)
+
+## Guias de usuário
+
+- [Guia mobile/PWA](docs/MOBILE.md)
+- [Guia desktop/admin](docs/DESKTOP.md)
 
 ## Arquitetura
 
@@ -81,7 +90,8 @@ URLs locais padrão:
 ```bash
 pnpm lint      # typecheck do frontend
 pnpm test      # testes unitários do frontend
-pnpm build     # build do frontend
+pnpm build     # build do frontend + fallback Pages /mock/
+pnpm test:e2e  # Playwright contra GitHub Pages publicado
 pnpm build:web # build do frontend para Pages
 pnpm preview:web
 ```
@@ -95,13 +105,23 @@ O mock não usa MSW em produção para não conflitar com o service worker PWA. 
 - `attachments`
 - `mockBackend`
 
-A subpágina `/lia/mock/` mostra modo ativo, export JSON, reset de seed e fila local pendente.
+A subpágina `/lia/mock/` mostra modo ativo, export JSON, reset de seed e fila local pendente. O build gera `mock/index.html` e `404.html` para manter o deep link funcionando no GitHub Pages.
 
 ## Backend real
 
 O backend NestJS foi separado para o projeto [`lia-backend`](https://github.com/Malnati/lia-backend) em `/Users/mal/GitHub/malnati/lia-backend`.
 
 Este repo não contém mais API, MongoDB, compose local nem dados de backend.
+
+## E2E contra GitHub Pages
+
+Os testes Playwright ficam em `tests/e2e/` e devem chamar sempre o app publicado:
+
+```bash
+PLAYWRIGHT_BASE_URL=https://malnati.github.io/lia/ pnpm test:e2e
+```
+
+O workflow de Pages executa E2E após o deploy usando a URL publicada pelo próprio GitHub Pages. Não use localhost para E2E.
 
 ## Deploy no GitHub Pages
 

@@ -110,6 +110,7 @@ export async function createOfflineOrder(input: CreateOrderInput): Promise<Order
 }
 
 export async function updateOfflineOrder(id: string, input: UpdateOrderInput): Promise<Order> {
+  await ensureLiaLocalData();
   const order = await liaDb.orders.get(id);
   if (!order) throw new Error(`Order ${id} not found`);
 
@@ -130,6 +131,7 @@ export async function updateOfflineCheckpoint(
   checkpointKey: CheckpointKey,
   input: CheckpointInput
 ): Promise<Order> {
+  await ensureLiaLocalData();
   const order = await liaDb.orders.get(orderId);
   if (!order) throw new Error(`Order ${orderId} not found`);
 
@@ -151,6 +153,7 @@ export async function updateOfflineCheckpoint(
 }
 
 export async function saveLocalAttachment(orderId: string, input: AttachmentInput): Promise<Attachment> {
+  await ensureLiaLocalData();
   const id = input.clientAttachmentId ?? newId('att');
   const attachment: Attachment = {
     id,
@@ -170,6 +173,7 @@ export async function saveLocalAttachment(orderId: string, input: AttachmentInpu
 }
 
 export async function enqueuePaymentIntent(orderId: string): Promise<void> {
+  await ensureLiaLocalData();
   await enqueue('create_payment_intent', orderId, { orderId });
 }
 
