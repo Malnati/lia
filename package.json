@@ -1,0 +1,22 @@
+{
+  "name": "lia",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lia — PWA offline-first para pedidos, retirada, entrega e pagamento de moldes para prótese dentária.",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=22.14.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @lia/web --filter @lia/api dev",
+    "dev:web": "pnpm --filter @lia/web dev",
+    "dev:api": "pnpm --filter @lia/api dev",
+    "build": "pnpm --filter @lia/api build && pnpm --filter @lia/web build",
+    "build:web": "pnpm --filter @lia/web build",
+    "lint": "pnpm --filter @lia/api lint && pnpm --filter @lia/web lint",
+    "test": "pnpm --filter @lia/api test && pnpm --filter @lia/web test",
+    "preview:web": "pnpm --filter @lia/web preview"
+  }
+}
