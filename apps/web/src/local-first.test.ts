@@ -143,6 +143,28 @@ describe('Lia local-first workflow', () => {
     });
   });
 
+  it('keeps attachment payloads without an id pending with a visible error', async () => {
+    await liaDb.syncQueue.add({
+      id: 'sync_invalid_attachment_payload_unit',
+      operation: 'upload_attachment',
+      orderId: '1008',
+      payload: {},
+      createdAt: '2026-05-27T11:00:00.000Z',
+      attempts: 0
+    });
+
+    const result = await syncPendingItems(createApiClient('mock'));
+    const queue = await getPendingSyncItems();
+
+    expect(result).toEqual({ synced: 0, failed: 1 });
+    expect(queue).toHaveLength(1);
+    expect(queue[0]).toMatchObject({
+      id: 'sync_invalid_attachment_payload_unit',
+      attempts: 1,
+      lastError: 'Invalid attachment payload: attachmentId is required'
+    });
+  });
+
   it('rejects mock payment intents for missing orders', async () => {
     await expect(createApiClient('mock').createPaymentIntent('missing-payment-order')).rejects.toThrow(
       'Mock order missing-payment-order not found'
