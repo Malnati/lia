@@ -59,10 +59,10 @@ Use este guia no app publicado em <https://malnati.github.io/lia/>. O backend at
 ## 8. Pagamento mock e anexos
 
 1. Na aba **Pedidos**, role até o detalhe do pedido selecionado.
-2. Toque em **Criar pagamento mock** para enfileirar a intenção de pagamento mock.
+2. Toque em **Criar pagamento mock** para enfileirar a intenção de pagamento mock; a intenção só sincroniza se o pedido existir no mock.
 3. Use **Adicionar foto do molde** para salvar imagem compactada offline.
 4. Assine no canvas e toque em **Salvar assinatura** para enfileirar assinatura offline.
-5. Sincronize pela aba **Sync**.
+5. Sincronize pela aba **Sync** e confira tentativas/erros se algum item ficar pendente.
 
 ## 9. Administrar o mock
 

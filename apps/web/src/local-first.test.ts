@@ -84,6 +84,15 @@ describe('Lia local-first workflow', () => {
     expect(selectNewestOrder(base, incoming).customerName).toBe('Versão nova');
   });
 
+  it('rejects mock payment intents for missing orders', async () => {
+    await expect(createApiClient('mock').createPaymentIntent('missing-payment-order')).rejects.toThrow(
+      'Mock order missing-payment-order not found'
+    );
+
+    const backendState = await exportMockBackendState();
+    expect(backendState.paymentIntents).toHaveLength(0);
+  });
+
   it('stores photo and signature blobs locally and enqueues attachment upload', async () => {
     const order = await createOfflineOrder({
       customerName: 'Com anexos',

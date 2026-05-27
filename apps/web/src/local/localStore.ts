@@ -17,6 +17,14 @@ import type {
   UpdateOrderInput
 } from '../types';
 
+const syncOperationPriority: Record<SyncQueueItem['operation'], number> = {
+  create_order: 0,
+  update_order: 1,
+  update_checkpoint: 1,
+  upload_attachment: 2,
+  create_payment_intent: 2
+};
+
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -94,7 +102,12 @@ export async function getLocalOrders(): Promise<Order[]> {
 }
 
 export async function getPendingSyncItems(): Promise<SyncQueueItem[]> {
-  return liaDb.syncQueue.orderBy('createdAt').toArray();
+  const queue = await liaDb.syncQueue.orderBy('createdAt').toArray();
+  return queue.sort(
+    (left, right) =>
+      left.createdAt.localeCompare(right.createdAt) ||
+      syncOperationPriority[left.operation] - syncOperationPriority[right.operation]
+  );
 }
 
 export async function getLocalAttachments(orderId?: string): Promise<Attachment[]> {
