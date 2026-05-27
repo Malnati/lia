@@ -58,6 +58,12 @@ function assertValidAttachmentPayload(payload: unknown): asserts payload is { at
   }
 }
 
+function assertValidPaymentPayload(payload: unknown): asserts payload is { orderId: string } {
+  if (!isRecord(payload) || typeof payload.orderId !== 'string' || payload.orderId.trim().length === 0) {
+    throw new Error('Invalid payment payload: orderId is required');
+  }
+}
+
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -261,8 +267,10 @@ export async function syncPendingItems(apiClient: ApiClient): Promise<SyncResult
         await liaDb.attachments.put({ ...attachment, ...syncedAttachment, blob: attachment.blob, syncStatus: 'synced' });
       }
       if (item.operation === 'create_payment_intent') {
-        await apiClient.createPaymentIntent(item.orderId);
-        const order = await liaDb.orders.get(item.orderId);
+        const payload = item.payload;
+        assertValidPaymentPayload(payload);
+        await apiClient.createPaymentIntent(payload.orderId);
+        const order = await liaDb.orders.get(payload.orderId);
         if (order) await liaDb.orders.put({ ...order, paymentStatus: 'mock_pending', pendingSync: false });
       }
       await liaDb.syncQueue.delete(item.id);
