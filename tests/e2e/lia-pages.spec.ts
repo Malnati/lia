@@ -187,3 +187,33 @@ test('covers photo attachment upload sync on published Pages', async ({ page }) 
   await expect(page.getByRole('textbox', { name: 'Export JSON do mock backend' })).toHaveValue(/molde-e2e\.webp/);
 });
 
+
+test('covers mock payment intent export on published Pages', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  await page.goto('mock/');
+  await expect(page.getByRole('heading', { name: 'Lia mock backend' })).toBeVisible();
+  await page.getByRole('button', { name: 'Resetar seed mock' }).click();
+
+  await page.goto('./');
+  const mobile = page.getByRole('region', { name: 'Aplicativo mobile Lia' });
+  await mobile.getByRole('button', { name: 'Criar pagamento mock' }).click();
+  await expect(page.getByText('Intenção de pagamento mock entrou na fila. Pagamento real requer conexão.')).toBeVisible();
+
+  const nav = mobile.getByRole('navigation', { name: 'Navegação principal' });
+  await nav.getByRole('button', { name: /Sync/ }).click();
+  const syncPanel = mobile.getByRole('region', { name: 'Fila de sincronização' });
+  await expect(syncPanel.getByText('create_payment_intent')).toBeVisible();
+  await syncPanel.getByRole('button', { name: 'Sincronizar agora' }).click();
+  await expect(page.getByText(/Sincronização concluída: \d+ enviados, 0 falhas\./)).toBeVisible();
+
+  await nav.getByRole('button', { name: /Pedidos/ }).click();
+  await expect(mobile.getByText('Mock pendente').first()).toBeVisible();
+
+  await page.goto('mock/');
+  await page.getByRole('button', { name: 'Atualizar export' }).click();
+  const exportBox = page.getByRole('textbox', { name: 'Export JSON do mock backend' });
+  await expect(exportBox).toHaveValue(/"paymentIntents"/);
+  await expect(exportBox).toHaveValue(/mock:\/\/lia\/payments\/1008/);
+  await expect(exportBox).toHaveValue(/"status": "mock_pending"/);
+});
