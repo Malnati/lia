@@ -27,6 +27,7 @@ Use este guia no app publicado em <https://malnati.github.io/lia/>. O backend at
 2. Na aba **Sync**, confira **Itens pendentes** e as operações em fila.
 3. Toque em **Sincronizar agora**.
 4. Aguarde a mensagem `Sincronização concluída: ... enviados, 0 falhas.`.
+5. Se houver falha, confira a mensagem no item pendente; criação de pedido exige cliente, telefone e endereço, e operações de checkpoint, anexo e pagamento exigem pedido existente no mock.
 
 ## 4. Consultórios e moldes
 
