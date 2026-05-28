@@ -7,6 +7,8 @@
 - Dashboard administrativo: <https://dashboard.aneety.com/>
 - API real: <https://api.aneety.com/>
 
+GitHub Pages, se existir para este conteúdo, é somente guia de usuário. O aplicativo desktop/admin real roda no Cloudflare Pages em `desktop.aneety.com` e `dashboard.aneety.com`.
+
 ## Fluxo operacional alvo
 
 1. Acessar `desktop.aneety.com`.

@@ -10,7 +10,7 @@ Link de referência inicial: <https://chatgpt.com/share/6a16552b-9da0-83e9-be3f-
 
 `REQ.md` é a fonte de verdade da plataforma Lia. Em caso de divergência entre código, README, automações, testes ou deploys, este arquivo prevalece.
 
-A decisão vigente é única: **Lia deve usar Supabase/Postgres real, Supabase Auth, API real em Cloudflare Workers Free + Hono, frontends estáticos no Cloudflare Pages Free e domínios sob `aneety.com`**. Definições anteriores de protótipo browser-local, MongoDB/Mongoose, NestJS, VPS, Render ou GitHub Pages como arquitetura final estão encerradas. Critérios de aceite devem validar Supabase/Postgres real, Worker `lia-backend` em `https://api.aneety.com`, Cloudflare Pages em `aneety.com` e publicação por repositório.
+A decisão vigente é única: **Lia deve usar Supabase/Postgres real, Supabase Auth, API real em Cloudflare Workers Free + Hono, frontends estáticos no Cloudflare Pages Free e domínios sob `aneety.com`**. GitHub é permitido apenas para versionamento, revisão, PRs e CI. GitHub Pages não pode servir aplicativo, frontend operacional, smoke ou E2E da Lia; se existir, deve publicar somente guias de usuário/documentação. Definições anteriores de protótipo browser-local, MongoDB/Mongoose, NestJS, VPS, Render ou GitHub Pages como arquitetura final estão encerradas. Critérios de aceite devem validar Supabase/Postgres real, Worker `lia-backend` em `https://api.aneety.com`, Cloudflare Pages em `aneety.com` e publicação por repositório.
 
 Atualização operacional de 2026-05-27: o projeto Supabase `mqxwdyhtsvzzehmdfhtj` está conectado ao Codex via MCP usando `SUPABASE_KEY` como PAT local (`bearer_token_env_var`, sem OAuth obrigatório). O banco real recebeu as migrations `0001_initial_schema`, `0002_harden_database_functions` e `0003_add_foreign_key_indexes`. O monitoramento deve tratar esse estado como baseline vigente, não como experimento.
 
@@ -48,6 +48,14 @@ Todos os repositórios devem existir, ser clonados e ser publicados a partir dos
 - `/Users/mal/GitHub/malnati/lia-pwa` — operação mobile/PWA.
 
 Cada projeto deve ser implementado, testado, commitado, enviado e publicado no seu respectivo repositório. O repositório `lia` não deve voltar a concentrar backend, core, dashboard, desktop ou PWA como implementação principal; ele orquestra a plataforma e aponta para os demais apps.
+
+Runtime público obrigatório:
+
+- Aplicação/Frontends/Core: somente Cloudflare Pages Free em domínios `*.aneety.com`.
+- API: somente Cloudflare Workers Free em `https://api.aneety.com`.
+- Código-fonte, PRs e CI: GitHub.
+- Guias de usuário/documentação: GitHub Pages pode existir apenas se não servir app, bundle React/Vite, fluxo operacional, smoke ou E2E.
+- Qualquer URL `github.io`, branch `gh-pages` ou workflow GitHub Pages que publique app é lacuna bloqueante de arquitetura.
 
 ## Stack alvo
 
@@ -334,6 +342,13 @@ Deploy esperado por repo estático:
 - `lia-desktop` → Cloudflare Pages project `lia-desktop`, domínio `desktop.aneety.com`.
 - `lia-dashboard` → Cloudflare Pages project `lia-dashboard`, domínio `dashboard.aneety.com`.
 
+GitHub não é runtime de frontend. Regras:
+
+- Não publicar `lia`, `lia-core`, `lia-pwa`, `lia-desktop` ou `lia-dashboard` como app no GitHub Pages.
+- Não aceitar `github.io`, `gh-pages` ou GitHub Pages app como URL pública, smoke, preview de aceite ou destino de E2E.
+- Se algum repositório mantiver GitHub Pages, o conteúdo deve ser guia de usuário/documentação, com links de uso apontando para `*.aneety.com`.
+- Workflows GitHub Actions podem buildar/testar/deployar para Cloudflare; não podem usar ações de deploy GitHub Pages para apps.
+
 Deploy esperado do backend:
 
 - `lia-backend` → Cloudflare Worker `lia-backend`, custom domain `api.aneety.com`.
@@ -375,6 +390,7 @@ Backend/Supabase:
 E2E publicado:
 
 - E2E alvo deve usar apenas URLs publicadas em `aneety.com` e API/Supabase real;
+- E2E deve falhar se qualquer app, link de navegação, variável de ambiente ou resposta publicada apontar para `github.io`, `gh-pages` ou GitHub Pages como runtime;
 - testes que dependam de rotas, modos ou adaptadores legados do protótipo browser-local não contam como cobertura vigente e devem ser migrados/removidos gradualmente;
 - portal abre todos os links em `aneety.com`;
 - login Supabase;
@@ -399,8 +415,9 @@ O monitoramento deve:
 7. Priorizar lacunas de arquitetura, banco, RLS, migrations, secrets Cloudflare, Worker API e design system shadcn antes de novos E2E.
 8. Não declarar 100% sem evidência objetiva por arquivo/linha, comando, MCP output, URL, workflow ou screenshot.
 9. Validar publicação por repositório: `lia` → `https://aneety.com`, `lia-backend` → `https://api.aneety.com`, `lia-core` → `https://core.aneety.com`, `lia-pwa` → `https://pwa.aneety.com`, `lia-desktop` → `https://desktop.aneety.com` e `lia-dashboard` → `https://dashboard.aneety.com`.
-10. Se faltarem DNS, routes, secrets Cloudflare ou acesso Supabase, registrar bloqueio objetivo e implementar apenas partes sem segredo: REQ, scaffolds, migrations SQL, tipos, testes unitários, shadcn config e docs.
-11. Só ampliar E2E quando REQ, docs, screenshots, smoke, Supabase advisors, Cloudflare deploy, shadcn/design system e E2E vigente estiverem verdes.
+10. Executar grep/validação por `github.io`, `GitHub Pages` e `gh-pages`; qualquer uso como runtime de app bloqueia conclusão. Usos documentais devem declarar explicitamente que GitHub Pages é apenas guia de usuário/documentação.
+11. Se faltarem DNS, routes, secrets Cloudflare ou acesso Supabase, registrar bloqueio objetivo e implementar apenas partes sem segredo: REQ, scaffolds, migrations SQL, tipos, testes unitários, shadcn config e docs.
+12. Só ampliar E2E quando REQ, docs, screenshots, smoke, Supabase advisors, Cloudflare deploy, shadcn/design system e E2E vigente estiverem verdes.
 
 ## Histórico removido do aceite vigente
 

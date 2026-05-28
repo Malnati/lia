@@ -99,7 +99,8 @@ const requirements = [
   'API real Cloudflare Workers Free + Hono em api.aneety.com.',
   'Frontends React/Vite/TypeScript/Tailwind com shadcn/ui por repositório.',
   'Publicação independente por repo em aneety.com, sem Containers, VPS ou serviços pagos.',
-  'E2E somente contra URLs públicas aneety.com.'
+  'E2E somente contra URLs públicas aneety.com.',
+  'GitHub é versionamento/CI; GitHub Pages só pode ser guia, nunca app Lia.'
 ];
 
 const nextCoverage = [
@@ -206,7 +207,7 @@ export default function App() {
             <ShieldCheck />
             <AlertTitle>Arquitetura vigente única</AlertTitle>
             <AlertDescription>
-              Sem NestJS, VPS, Render, MongoDB/Mongoose, GridFS ou backend browser-local como alvo. Critérios de aceite usam Worker/Hono, Supabase/Postgres real e URLs públicas em aneety.com.
+              Sem NestJS, VPS, Render, MongoDB/Mongoose, GridFS ou backend browser-local como alvo. Critérios de aceite usam Worker/Hono, Supabase/Postgres real e URLs públicas em aneety.com. GitHub é versionamento/CI; GitHub Pages só pode ser guia, nunca app Lia.
             </AlertDescription>
           </Alert>
         </header>
