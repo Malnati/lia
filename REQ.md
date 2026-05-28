@@ -10,7 +10,7 @@ Link de referência inicial: <https://chatgpt.com/share/6a16552b-9da0-83e9-be3f-
 
 `REQ.md` é a fonte de verdade da plataforma Lia. Em caso de divergência entre código, README, automações, testes ou deploys, este arquivo prevalece.
 
-A decisão vigente substitui o escopo antigo mock-first/MongoDB/NestJS/VPS/GitHub Pages: **Lia deve evoluir para Supabase/Postgres real, Supabase Auth, API serverless leve em Cloudflare Workers Free + Hono, frontends estáticos no Cloudflare Pages Free e domínios sob `aneety.com`**. O termo “mock backend” não deve ser usado para a base principal daqui em diante. Qualquer instrução operacional que mande validar `/lia/mock/`, `VITE_API_MODE=mock`, pagamento mock, backend browser-side ou E2E contra adapter local é obsoleta e deve ser substituída por validação contra Supabase/Postgres real + API Worker.
+A decisão vigente é única: **Lia deve usar Supabase/Postgres real, Supabase Auth, API real em Cloudflare Workers Free + Hono, frontends estáticos no Cloudflare Pages Free e domínios sob `aneety.com`**. Definições anteriores de protótipo browser-local, MongoDB/Mongoose, NestJS, VPS, Render ou GitHub Pages como arquitetura final estão encerradas. Critérios de aceite devem validar Supabase/Postgres real, Worker `lia-backend` em `https://api.aneety.com`, Cloudflare Pages em `aneety.com` e publicação por repositório.
 
 Atualização operacional de 2026-05-27: o projeto Supabase `mqxwdyhtsvzzehmdfhtj` está conectado ao Codex via MCP usando `SUPABASE_KEY` como PAT local (`bearer_token_env_var`, sem OAuth obrigatório). O banco real recebeu as migrations `0001_initial_schema`, `0002_harden_database_functions` e `0003_add_foreign_key_indexes`. O monitoramento deve tratar esse estado como baseline vigente, não como experimento.
 
@@ -32,7 +32,7 @@ A operação inicial é Lia, mas a plataforma deve permitir configuração por t
 | Repositório | URL pública | Responsabilidade |
 | --- | --- | --- |
 | `Malnati/lia` | <https://aneety.com/> | Portal orquestrador/integrador, contrato `REQ.md`, navegação entre apps, status público e documentação de arquitetura. |
-| `Malnati/lia-backend` | <https://api.aneety.com/> | API Cloudflare Worker + Hono conectada ao Supabase/Postgres. Não é mock. |
+| `Malnati/lia-backend` | <https://api.aneety.com/> | API real em Cloudflare Worker + Hono conectada ao Supabase/Postgres. |
 | `Malnati/lia-core` | <https://core.aneety.com/> | ESM estático com tipos, validações, tenants, roles, permissões e cliente compartilhado. |
 | `Malnati/lia-pwa` | <https://pwa.aneety.com/> | PWA mobile/offline-first para operação em campo. |
 | `Malnati/lia-desktop` | <https://desktop.aneety.com/> | App desktop operacional para atendimento, produção e logística. |
@@ -312,7 +312,6 @@ Por repo alterado:
 
 Backend/Supabase:
 
-- `pnpm wrangler check`;
 - `pnpm wrangler deploy --dry-run`;
 - MCP `supabase` configurado com `bearer_token_env_var=SUPABASE_KEY` e projeto `mqxwdyhtsvzzehmdfhtj`;
 - `list_migrations` deve mostrar `0001_initial_schema`, `0002_harden_database_functions` e `0003_add_foreign_key_indexes`;
@@ -323,7 +322,7 @@ Backend/Supabase:
 - RLS habilitado;
 - policies testadas;
 - `GET /api/health` OK;
-- `GET /api/db/health` OK ou `not_configured` se faltarem secrets/route;
+- `GET /api/db/health` OK quando `SUPABASE_SERVICE_ROLE_KEY` estiver configurado no Cloudflare Worker; `not_configured` é lacuna/bloqueio objetivo, não aceite final;
 - JWT ausente/inválido retorna 401;
 - usuário sem permissão retorna 403;
 - isolamento cross-tenant comprovado.
@@ -331,7 +330,7 @@ Backend/Supabase:
 E2E publicado:
 
 - E2E alvo deve usar apenas URLs publicadas em `aneety.com` e API/Supabase real;
-- testes contra `/mock`, adapter local, pagamento mock ou backend browser-side não contam como cobertura vigente e devem ser migrados/removidos gradualmente;
+- testes que dependam de rotas, modos ou adaptadores legados do protótipo browser-local não contam como cobertura vigente e devem ser migrados/removidos gradualmente;
 - portal abre todos os links em `aneety.com`;
 - login Supabase;
 - CRUD usuários/perfis;
@@ -350,13 +349,13 @@ O monitoramento deve:
 2. Validar repos locais e remotos, branch/SHA/PR e trabalho humano pendente antes de alterar qualquer coisa, garantindo que cada projeto esteja no seu repositório próprio em `/Users/mal/GitHub/malnati` e não concentrado no orquestrador `lia`.
 3. Comparar requisitos com código, docs, workflows, Cloudflare Pages, Worker API e Supabase real.
 4. Verificar MCP Supabase sem expor segredos: `codex mcp get supabase`, `codex mcp list`, `list_migrations`, `list_tables`, `get_advisors(security)` e `get_advisors(performance)` quando a ferramenta estiver disponível; nunca executar/source `.env` inteiro, apenas parsear chaves necessárias.
-5. Validar que regras antigas de mock foram substituídas: não seguir instruções que mandem chamar `/lia/mock/`, `VITE_API_MODE=mock`, adapter browser-side ou GitHub Pages antigo como alvo de aceitação.
+5. Validar que regras antigas pré-Workers foram substituídas: o alvo de aceitação é sempre Supabase/Postgres real, Worker `lia-backend` em `https://api.aneety.com` e frontends publicados em `aneety.com`.
 6. Priorizar lacunas de arquitetura, banco, RLS, migrations, secrets Cloudflare e Worker API antes de novos E2E.
 7. Não declarar 100% sem evidência objetiva por arquivo/linha, comando, MCP output, URL, workflow ou screenshot.
 8. Validar publicação por repositório: `lia` → `https://aneety.com`, `lia-backend` → `https://api.aneety.com`, `lia-core` → `https://core.aneety.com`, `lia-pwa` → `https://pwa.aneety.com`, `lia-desktop` → `https://desktop.aneety.com` e `lia-dashboard` → `https://dashboard.aneety.com`.
 9. Se faltarem DNS, routes, secrets Cloudflare ou acesso Supabase, registrar bloqueio objetivo e implementar apenas partes sem segredo: REQ, scaffolds, migrations SQL, tipos, testes unitários e docs.
 10. Só ampliar E2E quando REQ, docs, screenshots, smoke, Supabase advisors, Cloudflare deploy e E2E vigente estiverem verdes.
 
-## Histórico legado
+## Histórico removido do aceite vigente
 
-O scaffold inicial usava frontend mock-first browser-side, IndexedDB, MongoDB/Mongoose, GitHub Pages e API NestJS separada. Esse histórico explica commits antigos, screenshots e testes legados, mas não é mais arquitetura alvo nem critério de aceite. Qualquer menção a `mock`, `VITE_API_MODE=mock`, `/lia/mock/`, pagamento mock, adapter browser-side, GitHub Pages como hosting alvo, NestJS, VPS, Render, MongoDB, Mongoose ou GridFS deve ser tratada como dívida de migração quando aparecer em código, testes, README, automações ou workflows. A única exceção permitida é documentação histórica claramente marcada como legado; mesmo assim, monitoramento não deve executar essas rotas como validação de sucesso.
+O scaffold inicial anterior à decisão atual usava protótipo browser-local, IndexedDB, MongoDB/Mongoose, GitHub Pages como alvo principal e API NestJS separada. Esse histórico explica commits, screenshots e testes antigos, mas não é arquitetura alvo nem critério de aceite. Qualquer instrução operacional baseada nesse desenho antigo deve ser tratada como dívida de migração quando aparecer em código, testes, README, automações ou workflows. O monitoramento não deve executar rotas ou modos desse desenho antigo como validação de sucesso.
