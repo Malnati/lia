@@ -103,6 +103,36 @@ A lista acima define categorias possíveis. Não obriga toda responsabilidade a 
 - Cada responsabilidade implementada em repo próprio deve estar catalogada e documentada em `Aneety/.github`.
 - Cada responsabilidade que usa visual compartilhado deve referenciar os assets SVG canônicos em `Aneety/assets`.
 
+## Responsabilidades opcionais do MVP
+
+Gmail e Google SSO entram no MVP como integrações opcionais, separadas e substituíveis. Nenhuma das duas pode virar requisito obrigatório de login, operação ou aceite.
+
+`comunicacao-email` representa a função semântica de envio, recebimento ou registro auxiliar de e-mail. Gmail é somente adapter opcional dessa responsabilidade, via `int-gmail`; pedido, evidência, auditoria e estado operacional permanecem no domínio Aneety.
+
+```text
+Aneety/ai
+  aneety-platform/
+    apps/
+      comunicacao-email/
+        int-gmail
+        worker-email
+        db-email
+```
+
+`identidade-federada` representa a função semântica de vínculo ou verificação de identidade externa. Google SSO é somente adapter opcional dessa responsabilidade, via `int-google-sso`; sessão final, tenant, perfil e permissões permanecem no modelo próprio Aneety.
+
+```text
+Aneety/ai
+  aneety-platform/
+    apps/
+      identidade-federada/
+        int-google-sso
+        worker-identidade
+        db-identidade
+```
+
+Os repositórios dessas responsabilidades só devem existir quando houver contrato local, owner, dados tratados, segredos, custo zero sempre, testes de degradação e critérios de aceite. Quando existirem, seguem a regra geral: repo próprio na org `Aneety`, clone local em `/Users/mal/GitHub/Aneety/<repo>`, submódulo em `Aneety/ai` e documentação canônica em `Aneety/.github`.
+
 ## Regras de migração
 
 - Lia entra como primeiro tenant/marca dentro da Aneety Platform.

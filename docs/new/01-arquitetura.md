@@ -58,6 +58,26 @@ Cada diretório folha representa um submódulo Git quando existir implementaçã
 7. Eventos de status, localização e evidência alimentam mapas e rastreabilidade em tempo real por contrato local.
 8. Apps nunca recebem segredo privilegiado nem acessam banco diretamente.
 
+## Integrações opcionais do MVP
+
+Gmail e Google SSO são responsabilidades opcionais separadas no MVP. Elas devem ser ativadas por contrato local e adapter substituível, sem bloquear login, pedido, evidência, auditoria, rastreabilidade ou aceite quando estiverem desligadas ou indisponíveis.
+
+### Gmail em `comunicacao-email`
+
+- `comunicacao-email` cobre a função semântica de e-mail; Gmail é adapter opcional em `int-gmail`.
+- BFFs da plataforma chamam `worker-email` ou contrato equivalente; o worker aciona `int-gmail` somente quando a integração estiver habilitada para o tenant.
+- Metadados, vínculo com pedido, trilha de auditoria, status de tentativa e regra de permissão ficam em `db-email` ou no schema da responsabilidade, não no Gmail.
+- Falha, limite ou indisponibilidade do Gmail gera degradação controlada: registrar pendência ou erro operacional sem corromper pedido, evidência, auditoria ou estado de domínio.
+- Gmail não pode ser fonte única de pedido, evidência, auditoria, status operacional ou histórico obrigatório.
+
+### Google SSO em `identidade-federada`
+
+- `identidade-federada` cobre a função semântica de vínculo/verificação externa de identidade; Google SSO é adapter opcional em `int-google-sso`.
+- O token externo serve somente para confirmar vínculo de identidade externa permitido pelo tenant.
+- `worker-gateway` e BFF de identidade emitem sessão própria Aneety depois de validar identidade interna, tenant, perfil, status e permissões.
+- Sessão final, revogação, expiração, auditoria e autorização continuam no modelo próprio Aneety.
+- Google SSO não pode substituir cadastro interno, permissões internas, sessão própria, RLS ou regra de tenant.
+
 ## Evolução planejada
 
 - `worker-gateway` é escolha de MVP para custo zero sempre e simplicidade operacional.

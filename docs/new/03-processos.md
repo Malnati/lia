@@ -11,11 +11,12 @@
 7. Banco antes da UI: schema do BFF, migrations, RLS, seeds e fixtures antes do microfrontend que depende dos dados.
 8. BFF antes do microfrontend: endpoints, erros, permissões e testes de contrato antes de fluxos visuais.
 9. Gateway antes da integração pública: rota, CORS, versão de contrato e encaminhamento pelo `worker-gateway` antes do E2E publicado.
-10. Microfrontends em incrementos pequenos: cada `mfe-<nome>` evolui por fatias testáveis e integradas ao Single SPA.
-11. Mapas e rastreabilidade em tempo real por contrato: eventos de localização, status e evidência devem ter schema, permissão e teste antes da UI.
-12. Testes por módulo: unitários em contratos/pacotes, integração nos BFFs, E2E público por fluxo crítico.
-13. Deploy por ambiente: build, smoke, publicação e E2E com evidência objetiva.
-14. Revisão de copy: telas finais usam linguagem de produto e tarefa; detalhes técnicos ficam fora da UI comum.
+10. Integrações opcionais do MVP por responsabilidade: Gmail só entra por `comunicacao-email/int-gmail`; Google SSO só entra por `identidade-federada/int-google-sso`.
+11. Microfrontends em incrementos pequenos: cada `mfe-<nome>` evolui por fatias testáveis e integradas ao Single SPA.
+12. Mapas e rastreabilidade em tempo real por contrato: eventos de localização, status e evidência devem ter schema, permissão e teste antes da UI.
+13. Testes por módulo: unitários em contratos/pacotes, integração nos BFFs, E2E público por fluxo crítico.
+14. Deploy por ambiente: build, smoke, publicação e E2E com evidência objetiva.
+15. Revisão de copy: telas finais usam linguagem de produto e tarefa; detalhes técnicos ficam fora da UI comum.
 
 ## Operação
 
@@ -28,6 +29,8 @@
 - Todos os projetos/repositórios Aneety ficam clonados em `/Users/mal/GitHub/Aneety/*`.
 - Documentação oficial vive em `Aneety/.github` e no clone local `/Users/mal/GitHub/Aneety/.github`; GitHub Pages, se existir, publica ou aponta somente para documentação originada dessa fonte.
 - Assets reutilizáveis vivem em `Aneety/assets` e no clone local `/Users/mal/GitHub/Aneety/assets`, com SVG canônico e histórico versionado.
+- Gmail e Google SSO devem ter operação em modo desligado validada antes de qualquer ativação por tenant.
+- Segredos de Gmail e Google SSO devem ser verificados sem imprimir valores e nunca podem aparecer em frontend, Git, bundle, log, screenshot ou guia de usuário final.
 
 ## Migração do MVP para Aneety Platform
 
@@ -78,3 +81,16 @@ Antes de aceitar qualquer dependência externa, confirmar:
 - ausência de segredo privilegiado em frontend, Git, bundle, log ou screenshot.
 
 Se qualquer fornecedor exigir upgrade pago, runtime não permitido, lock-in de autenticação, lock-in de domínio, lock-in de mapas ou acesso direto de frontend a banco/segredo, o incremento fica bloqueado até redesenho.
+
+## Gate de integração opcional do MVP
+
+Antes de ativar Gmail ou Google SSO, confirmar:
+
+- responsabilidade separada registrada: `comunicacao-email` para Gmail, `identidade-federada` para Google SSO;
+- adapter explícito e substituível: `int-gmail` ou `int-google-sso`;
+- contrato local versionado, owner, dados tratados, segredos, custo zero sempre e plano de saída;
+- teste de degradação com o fornecedor indisponível, recusando acesso ou excedendo limite;
+- E2E ou smoke comprovando que a plataforma funciona sem Gmail e sem Google SSO;
+- para Gmail: pedido, evidência, auditoria e estado operacional persistem fora do Gmail;
+- para Google SSO: sessão final, tenant, perfil, permissões, expiração e revogação permanecem no modelo próprio Aneety;
+- nenhum segredo privilegiado aparece em frontend, Git, bundle, log, screenshot, fixture pública ou documentação de usuário final.

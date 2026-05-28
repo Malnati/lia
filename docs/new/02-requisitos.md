@@ -71,6 +71,26 @@ Aneety Platform deve oferecer operação white-label para produtos e serviços c
 - Associar usuário, tenant e perfil.
 - Exibir métricas por tenant, operação, qualidade, produção, entrega e rastreabilidade.
 
+### Integração opcional Gmail
+
+- A responsabilidade `comunicacao-email` deve tratar e-mail como função semântica separada de pedido, evidência, auditoria e autenticação.
+- Gmail pode existir no MVP somente como adapter opcional `int-gmail`.
+- O modo desligado deve ser aceito: a plataforma precisa criar, atualizar e acompanhar pedidos sem Gmail.
+- Envio, recebimento ou registro auxiliar de e-mail deve passar por BFF/worker da responsabilidade, nunca por segredo no frontend.
+- Metadados necessários para auditoria, vínculo com pedido, tentativas, erros e permissão devem ficar no banco da responsabilidade.
+- Gmail não pode ser fonte única de pedido, evidência, auditoria, status operacional ou histórico obrigatório.
+- Falha, limite ou indisponibilidade do Gmail deve preservar integridade de pedido, sessão, permissão, evidência, mapa, rastreabilidade e auditoria.
+
+### Integração opcional Google SSO
+
+- A responsabilidade `identidade-federada` deve tratar vínculo SSO como função semântica separada da autenticação própria da plataforma.
+- Google SSO pode existir no MVP somente como adapter opcional `int-google-sso`.
+- O modo desligado deve ser aceito: a plataforma precisa autenticar usuários pelo modelo próprio Aneety sem Google SSO.
+- Token externo serve apenas para verificar vínculo de identidade externa autorizado pelo tenant.
+- Sessão final, expiração, revogação, tenant, perfil, permissões e auditoria devem permanecer no modelo próprio Aneety.
+- Google SSO não pode emitir sessão final da plataforma, substituir permissões internas, substituir RLS ou virar requisito de login.
+- Falha, recusa ou indisponibilidade do Google SSO deve preservar login próprio, administração de usuários, pedidos, evidências e auditoria.
+
 ## Técnico
 
 - Org GitHub oficial: `https://github.com/Aneety`.
@@ -93,6 +113,9 @@ Aneety Platform deve oferecer operação white-label para produtos e serviços c
 - Autenticação própria em banco: identidades, credenciais, sessões, tokens, expiração, revogação e rotação.
 - Autorização por tenant, perfil e permissões, aplicada no gateway/BFF e reforçada por RLS.
 - Isolamento cross-tenant obrigatório.
+- `comunicacao-email` e `identidade-federada` devem ser responsabilidades separadas, com contratos, schemas e adapters independentes quando ativadas.
+- Segredos de Gmail e Google SSO não podem aparecer em frontend, Git, bundle, log, screenshot, fixture pública ou documentação de usuário final.
+- E2E de aceite deve cobrir modo desligado para Gmail e Google SSO.
 - Experiência offline-first deve manter fila local para pedidos, checkpoints, anexos, mapas, rastreabilidade e pagamentos pendentes.
 - E2E público somente em `aneety.com`.
 - Guias de usuários, documentação de desenvolvedor, especificações, ADRs, arquitetura e catálogo de repositórios vivem em `Aneety/.github`; GitHub Pages, se existir, deve publicar ou apontar somente para essa documentação.
@@ -107,4 +130,5 @@ Aneety Platform deve oferecer operação white-label para produtos e serviços c
 - Qualquer serviço usado deve declarar dados tratados, segredos envolvidos, custo, alternativa de saída, contrato local e testes de degradação.
 - Serviços pagos ou upgrades de plano não são caminho obrigatório: custo zero sempre.
 - Autenticação de usuário final pertence ao modelo de dados e ao gateway/BFF Aneety; provedor externo de identidade pode existir apenas como adapter opcional futuro, nunca como requisito de login.
+- Gmail e Google SSO são adapters opcionais do MVP e devem ter plano de saída, teste de degradação e alternativa operacional sem fornecedor.
 - Se um serviço externo ficar indisponível, a plataforma deve preservar integridade do pedido, sessão, permissões, anexos, mapas, rastreabilidade e auditoria conforme o contrato local.
