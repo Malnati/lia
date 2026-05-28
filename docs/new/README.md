@@ -30,4 +30,5 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 - Repositório novo: `Malnati/aneety-platform`.
 - Estrutura: monorepo modular com apps e pacotes.
 - Autenticação: identidade, credenciais, sessões e permissões próprias no Postgres, via API, sem provedor externo obrigatório.
+- Serviços externos por semântica: Cloudflare, GitHub, Supabase ou qualquer fornecedor equivalente são meios substituíveis; requisitos devem declarar função, dados, segredos, custo, contrato local, testes e plano de saída.
 - Este repositório recebe apenas documentação de transição; a nova implementação nasce no novo monorepo.
