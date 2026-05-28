@@ -12,16 +12,17 @@
 3. Entrar com Supabase Auth.
 4. Criar pedido.
 5. Registrar retirada, produção, entrega e anexos mesmo offline.
-6. Manter fila local IndexedDB para ações pendentes.
+6. Manter fila local offline-first no app `lia-pwa`.
 7. Ao voltar conexão, sincronizar com `api.aneety.com`.
-8. Confirmar persistência no Supabase/Postgres.
+8. Confirmar persistência no Supabase/Postgres real.
 
 ## Regras mobile
 
 - Pagamento online deve exigir conexão.
 - Anexos devem respeitar limite de 5 MB e tipos `image/webp`, `image/jpeg`, `image/png`.
 - Service role nunca pode aparecer no PWA.
+- O portal `lia` apenas aponta para o PWA; a implementação mobile pertence ao repo `lia-pwa`.
 
 ## Estado atual
 
-O app mobile real será evoluído no repo `lia-pwa`. O PWA legado neste repo permanece temporário para consulta e testes históricos.
+O app mobile evolui no repo `/Users/mal/GitHub/malnati/lia-pwa` e publica em <https://pwa.aneety.com/>. Este repo `lia` publica somente o portal orquestrador.

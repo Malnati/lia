@@ -30,4 +30,4 @@
 
 ## Estado atual
 
-O desktop/dashboard ainda estão em scaffolds separados. O PWA legado deste repo serve apenas como histórico até os repos `lia-desktop` e `lia-dashboard` assumirem os fluxos reais.
+Desktop e dashboard evoluem nos repos `/Users/mal/GitHub/malnati/lia-desktop` e `/Users/mal/GitHub/malnati/lia-dashboard`, publicados em seus subdomínios próprios. Este repo `lia` publica somente o portal orquestrador e status da plataforma.

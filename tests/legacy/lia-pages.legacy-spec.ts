@@ -4,6 +4,7 @@
 
 import { expect, test } from '@playwright/test';
 
+test.describe.skip('Legacy browser-local debt reference — not current acceptance', () => {
 test('covers the published Cloudflare Pages legacy adapter MVP flow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
 
@@ -761,4 +762,5 @@ test('covers sync error details for an invalid payment payload on published anee
   await expect(page.getByText('Sincronização concluída: 0 enviados, 1 falhas.')).toBeVisible();
   await expect(syncPanel.getByText('Erro: Invalid payment payload: orderId is required')).toBeVisible();
   await expect(syncPanel.getByText('Tentativas: 1')).toBeVisible();
+});
 });
