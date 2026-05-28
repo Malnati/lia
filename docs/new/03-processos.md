@@ -3,17 +3,19 @@
 ## Desenvolvimento
 
 1. Contrato primeiro: requisito, interface e critério de aceite antes da implementação.
-2. Banco antes da UI: schema, migrations, RLS, seeds e fixtures antes das telas que dependem dos dados.
-3. API antes dos frontends: endpoints, erros, permissões e testes de contrato antes de fluxos visuais.
-4. Apps em incrementos pequenos: portal, API, PWA, desktop e dashboard evoluem por fatias testáveis.
-5. Testes por módulo: unitários em pacotes, integração na API, E2E público por fluxo crítico.
-6. Deploy por ambiente: build, smoke, publicação e E2E com evidência objetiva.
-7. Revisão de copy: telas finais usam linguagem de produto e tarefa; detalhes técnicos ficam fora da UI comum.
+2. Responsabilidade primeiro: definir `aneety-platform/apps/<responsabilidade>/...` antes de criar módulo.
+3. Banco antes da UI: schema do BFF, migrations, RLS, seeds e fixtures antes do microfrontend que depende dos dados.
+4. BFF antes do microfrontend: endpoints, erros, permissões e testes de contrato antes de fluxos visuais.
+5. Gateway antes da integração pública: rota, CORS, versão de contrato e encaminhamento pelo `worker-gateway` antes do E2E publicado.
+6. Microfrontends em incrementos pequenos: cada `mfe-<nome>` evolui por fatias testáveis e integradas ao Single SPA.
+7. Testes por módulo: unitários em contratos/pacotes, integração nos BFFs, E2E público por fluxo crítico.
+8. Deploy por ambiente: build, smoke, publicação e E2E com evidência objetiva.
+9. Revisão de copy: telas finais usam linguagem de produto e tarefa; detalhes técnicos ficam fora da UI comum.
 
 ## Operação
 
 - Seed E2E controlado, idempotente e sem segredos no Git.
-- Smoke público para portal, API, banco, login, pedido, checkpoint, anexo e dashboard.
+- Smoke público para microfrontend, gateway, BFF, banco, login, pedido, checkpoint, anexo e administração.
 - Verificação de secrets antes de deploy real, sem imprimir valores.
 - Backup/export Postgres documentado antes de dados reais relevantes.
 - Monitoramento recorrente orientado ao contrato, não a histórico de implementação.
@@ -24,18 +26,21 @@
 1. Extrair requisitos úteis do MVP atual e docs existentes.
 2. Reescrever requisitos no vocabulário Aneety, mantendo Lia como tenant inicial.
 3. Ignorar decisões temporárias que pertenciam ao protótipo.
-4. Implementar primeiro `packages/core`, `packages/db` e `apps/api`.
-5. Só depois expandir `apps/pwa`, `apps/desktop` e `apps/dashboard`.
-6. Migrar evidências úteis: screenshots, E2E, nomes de status, permissões, fluxos e componentes shadcn.
-7. Não copiar código sem revisar contrato, segurança, isolamento por tenant e copy de usuário final.
+4. Definir responsabilidades genéricas antes de criar diretórios concretos.
+5. Implementar primeiro contratos compartilhados, `db-<nome>` e `worker-<nome>` da responsabilidade.
+6. Integrar o `mfe-<nome>` Single SPA somente depois do BFF e do schema estarem verificáveis.
+7. Migrar evidências úteis: screenshots, E2E, nomes de status, permissões, fluxos e componentes shadcn.
+8. Não copiar código sem revisar contrato, segurança, isolamento por tenant e copy de usuário final.
 
 ## Gate de conclusão por incremento
 
 - Requisito rastreado.
+- Responsabilidade registrada em `aneety-platform/apps/<responsabilidade>/...`.
+- Prefixo técnico conforme contrato de nomes.
 - Migration aplicada em ambiente de teste.
 - RLS/policies verificadas.
-- API com teste de 401/403 e caso feliz.
-- UI com estados de carregando, vazio, erro e sucesso.
+- BFF com teste de 401/403 e caso feliz.
+- Microfrontend com estados de carregando, vazio, erro e sucesso quando houver UI.
 - E2E ou smoke executado quando houver URL publicada.
 - Sem segredos em diffs, logs ou bundle.
 

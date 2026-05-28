@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Encerrar o MVP Lia como linha ativa de implementação e preservar seu valor como evidência histórica, fonte de requisitos e aprendizado técnico. O sucessor é **Aneety Platform**, uma plataforma white-label para operação de próteses dentárias, com Lia como primeiro tenant.
+Encerrar o MVP Lia como linha ativa de implementação e preservar seu valor como evidência histórica, fonte de requisitos e aprendizado técnico. O sucessor é **Aneety Platform**, plataforma white-label para operação de próteses dentárias, com Lia como primeiro tenant.
 
 ## Motivos para encerrar a linha atual
 
@@ -17,28 +17,30 @@ Encerrar o MVP Lia como linha ativa de implementação e preservar seu valor com
 - Domínio de negócio de prótese dentária no Paraguai.
 - Fluxo de pedidos, produção de moldes, produção de próteses, retirada, entrega e evidências.
 - Marketplace operacional para consultórios, bureaus/produtores e entregadores.
-- PWA offline-first para campo e entregadores.
-- Desktop operacional para atendimento, produção e logística.
-- Dashboard administrativo para usuários, perfis, tenants, permissões e white-label.
-- API HTTP em Worker/Hono.
-- Postgres relacional com RLS e migrations versionadas.
+- Experiência offline-first para campo e entregadores.
+- Superfície operacional para atendimento, produção e logística.
+- Administração de usuários, perfis, tenants, permissões e white-label.
+- Frontends operacionais como microfrontends Single SPA.
+- BFFs do MVP em `worker-<nome>` com Cloudflare/serverless/Hono.
+- Gateway inicial como `worker-gateway`, evoluindo futuramente para `gw-*` Kong/API gateway.
+- Banco MVP em Supabase/Postgres com schema por BFF, evoluindo futuramente para Postgres com banco de dados por BFF.
 - shadcn/ui, Tailwind e tokens semânticos nos frontends.
 - Publicação sob `aneety.com` e custo zero enquanto possível.
 
 ## O que não carregar para o sucessor
 
 - Protótipo local no navegador como critério de aceite.
-- Backend convencional de servidor como arquitetura final.
+- Backend convencional de servidor como arquitetura final do MVP.
 - Banco documental do primeiro desenho como fonte transacional.
 - Publicação operacional em páginas de documentação ou preview de fornecedor.
 - Login de frontend acoplado a chave pública de banco ou provedor externo de identidade.
 - Segredos, chaves privilegiadas ou credenciais em frontend, Git, screenshots ou logs.
-- Apps finais espalhados em múltiplos repositórios antes de estabilizar contratos.
+- Apps finais acoplados a módulos fixos antes de estabilizar responsabilidades, contratos, BFFs e schemas.
 
 ## Processo de arquivamento
 
 1. Criar branch ou tag final do MVP com data e commit de referência.
-2. Manter todos os repositórios `lia-*` acessíveis como fontes históricas.
+2. Manter os repositórios Lia anteriores acessíveis como fontes históricas.
 3. Atualizar o README principal do projeto atual em etapa posterior, apontando para o novo repositório quando ele existir.
 4. Preservar screenshots, E2E, migrations e contratos como evidência, não como base obrigatória de implementação.
 5. Bloquear novas features no MVP atual; aceitar apenas correções documentais ou segurança de transição.
@@ -48,7 +50,9 @@ Encerrar o MVP Lia como linha ativa de implementação e preservar seu valor com
 
 - Requisito rastreado para fonte original.
 - Decisão registrada em `docs/new`.
+- Responsabilidade mapeada para `aneety-platform/apps/<responsabilidade>/...`.
+- Prefixo técnico escolhido conforme o contrato de nomes.
 - Regra de custo e runtime explicitada.
 - Dados, segredos e permissões classificados.
-- Migração ou schema proposto antes da UI.
+- Schema ou migração proposto antes da UI.
 - Teste ou critério de aceite associado.

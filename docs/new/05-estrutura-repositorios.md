@@ -2,77 +2,68 @@
 
 ## Decisão
 
-O novo projeto deve nascer como `Malnati/aneety-platform`, em monorepo modular. Os repositórios atuais `lia`, `lia-backend`, `lia-core`, `lia-pwa`, `lia-desktop` e `lia-dashboard` viram fontes históricas e referências de aprendizado, não base de implementação contínua.
+O novo projeto deve nascer como `Malnati/aneety-platform`, em monorepo modular. Os repositórios Lia anteriores viram fontes históricas e referências de aprendizado, não base de implementação contínua.
 
-## Estrutura proposta
+## Regra obrigatória de estrutura
+
+Cada responsabilidade deve refletir a estrutura `aneety-platform/apps/<responsabilidade>/<mfe|mc|gw|worker|fe|job|auto|db|pkg|core|int|wl>-<nome>`.
 
 ```text
 aneety-platform/
   apps/
-    portal/
-    api/
-    pwa/
-    desktop/
-    dashboard/
-  packages/
-    core/
-    db/
-    api-client/
-    ui-tokens/
+    <responsabilidade>/
+      mfe-<nome>
+      mc-<nome>
+      gw-<nome>
+      worker-<nome>
+      fe-<nome>
+      job-<nome>
+      auto-<nome>
+      db-<nome>
+      pkg-<nome>
+      core-<nome>
+      int-<nome>
+      wl-<nome>
   docs/
   tests/
   scripts/
 ```
 
+A lista acima define categorias possíveis. Não obriga toda responsabilidade a possuir todos os módulos.
+
+## Glossário de prefixos
+
+- `worker-<nome>`: Cloudflare/serverless/Hono.
+- `mfe-<nome>`: microfrontend Single SPA.
+- `mc-<nome>`: microserviço NestJS.
+- `fe-<nome>`: frontend React.
+- `gw-<nome>`: gateway Kong/API gateway.
+- `job-<nome>`: Bash/Python/SQL/RAG/agents/job batch.
+- `auto-<nome>`: Codex/Cursor/Cron/automação.
+- `db-<nome>`: módulo/diretório de banco, migrations, RLS, seeds.
+- `pkg-<nome>`: pacote compartilhado.
+- `core-<nome>`: contrato/domínio central compartilhado.
+- `int-<nome>`: integração/adapters externos.
+- `wl-<nome>`: workload operacional não coberto por worker/mc/job.
+
+## Regras de runtime e evolução
+
+- Todos os frontends operacionais devem ser `mfe-<nome>` Single SPA.
+- BFFs do MVP devem ser `worker-<nome>` em Cloudflare/serverless/Hono.
+- Gateway do MVP deve ser `worker-gateway` em Cloudflare/serverless/Hono.
+- Gateway futuro deve usar `gw-<nome>` com Kong/API gateway.
+- Banco do MVP deve usar Supabase/Postgres com schema por BFF, versionado em `db-<nome>`.
+- Banco futuro deve usar Postgres com banco de dados por BFF.
+- `mc-<nome>` NestJS é categoria permitida para microserviço futuro, mas não substitui o BFF Worker do MVP.
+- `fe-<nome>` React é permitido para frontend não operacional ou superfície sem integração Single SPA; frontends operacionais usam `mfe-<nome>`.
+
 ## Responsabilidades
 
-### `apps/portal`
-
-Portal público, status, navegação, documentação visível e ponto de entrada para tenants.
-
-### `apps/api`
-
-API HTTP stateless, autenticação própria, autorização, regras de domínio, adapters de storage/pagamento e integração com Postgres.
-
-### `apps/pwa`
-
-Operação mobile/offline-first para campo, entregadores, pedidos, checkpoints, anexos, pagamentos e sincronização.
-
-### `apps/desktop`
-
-Operação desktop para atendimento, produção de moldes, produção de próteses, logística, anexos e acompanhamento.
-
-### `apps/dashboard`
-
-Administração de usuários, perfis, permissões, tenants, marca, métricas e configuração white-label.
-
-### `packages/core`
-
-Tipos de domínio, status, permissões, roles, contratos de erro, validações e helpers compartilhados.
-
-### `packages/db`
-
-Migrations, schema, seeds, policies, fixtures, checks de segurança e scripts controlados de banco.
-
-### `packages/api-client`
-
-Cliente HTTP tipado para apps, com sessão, erros padronizados e contratos compartilhados.
-
-### `packages/ui-tokens`
-
-Tokens white-label, tema base, nomes semânticos e contratos visuais sem componentes pesados.
-
-### `docs`
-
-Contrato do novo produto, arquitetura, runbooks, ADRs, critérios de aceite e guias internos.
-
-### `tests`
-
-E2E cross-app, fixtures públicas, smoke publicado e validações de regressão.
-
-### `scripts`
-
-Automação local/CI: validações, seed, export, checks de secrets e publicação.
+- O nome em `<responsabilidade>` representa um domínio, capacidade ou fronteira operacional, não tecnologia.
+- A criação de uma responsabilidade exige contrato, owner, dados tratados, segredos, custo, critérios de aceite e plano de teste.
+- Uma responsabilidade pode conter microfrontend, BFF, schema, pacote, contrato, integração, automação e job quando necessário.
+- Dependência entre responsabilidades deve passar por gateway, BFF ou contrato compartilhado versionado.
+- Nenhuma responsabilidade deve depender de tabela, segredo ou runtime interno de outra sem contrato explícito.
 
 ## Regras de migração
 

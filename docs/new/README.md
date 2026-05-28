@@ -19,16 +19,22 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 - `README.md` — estado atual do portal integrador e publicação por domínio.
 - `docs/MARKETPLACE_OPERACIONAL.md` — fluxo de marketplace operacional.
 - `docs/COVERAGE_MATRIX.md` — lacunas e critérios de cobertura.
-- `docs/MOBILE.md` — fluxo mobile/PWA.
-- `docs/DESKTOP.md` — fluxo desktop/admin.
-- Repositórios irmãos `lia-backend`, `lia-core`, `lia-pwa`, `lia-desktop` e `lia-dashboard` — evidências de API, core, apps, E2E, shadcn/ui, Worker/Hono e Postgres/RLS.
+- Guias mobile, desktop e administração — evidências de fluxos, telas e critérios de aceite.
+- Repositórios Lia anteriores — evidências de Worker/Hono, Postgres/RLS, shadcn/ui, E2E, core, apps e publicação.
 
 ## Decisões travadas
 
 - Nome estratégico: **Aneety Platform**.
 - Lia: primeiro tenant/marca, não nome rígido da plataforma.
 - Repositório novo: `Malnati/aneety-platform`.
-- Estrutura: monorepo modular com apps e pacotes.
-- Autenticação: identidade, credenciais, sessões e permissões próprias no Postgres, via API, sem provedor externo obrigatório.
+- Estrutura: monorepo modular por responsabilidade.
+- Regra de diretório: `aneety-platform/apps/<responsabilidade>/<mfe|mc|gw|worker|fe|job|auto|db|pkg|core|int|wl>-<nome>`.
+- Frontends operacionais: microfrontends Single SPA em `mfe-<nome>`.
+- BFFs MVP: `worker-<nome>` em Cloudflare/serverless/Hono.
+- Gateway MVP: `worker-gateway`.
+- Gateway futuro: `gw-<nome>` Kong/API gateway.
+- Banco MVP: Supabase/Postgres com schema por BFF.
+- Banco futuro: Postgres com banco de dados por BFF.
+- Autenticação: identidade, credenciais, sessões e permissões próprias no Postgres, via gateway/BFF, sem provedor externo obrigatório.
 - Serviços externos por semântica: Cloudflare, GitHub, Supabase ou qualquer fornecedor equivalente são meios substituíveis; requisitos devem declarar função, dados, segredos, custo, contrato local, testes e plano de saída.
 - Este repositório recebe apenas documentação de transição; a nova implementação nasce no novo monorepo.

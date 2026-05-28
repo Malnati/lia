@@ -3,6 +3,9 @@
 ## Princípios
 
 - Postgres é a fonte transacional.
+- No MVP, a operação usa Supabase/Postgres com schema por BFF.
+- No futuro, a operação deve poder migrar para Postgres com banco de dados por BFF.
+- Cada schema pertence ao `db-<nome>` da mesma responsabilidade do BFF `worker-<nome>`.
 - Toda entidade operacional tem `tenant_id`.
 - Chaves primárias usam UUID.
 - Datas usam `timestamptz`.
@@ -10,8 +13,19 @@
 - RLS é obrigatório em tabelas expostas ou sensíveis.
 - Credenciais são armazenadas apenas como hash forte e salgado, nunca em texto puro.
 - Sessões têm expiração, revogação, rotação e vínculo explícito com identidade, tenant e perfil efetivo.
+- Frontends e microfrontends Single SPA nunca acessam banco diretamente.
 
-## Tabelas iniciais
+## Posse e isolamento
+
+- Cada BFF acessa somente o schema da sua responsabilidade, salvo contrato explícito em `core-<nome>` ou `pkg-<nome>`.
+- Dependência entre schemas deve passar por contrato versionado, não por leitura informal de tabela alheia.
+- Funções auxiliares ficam em schema privado e com `search_path` fixo quando aplicável.
+- RLS deve reforçar tenant, perfil e permissões mesmo quando o acesso partir de BFF privilegiado.
+- Migração futura para banco físico por BFF deve preservar nomes semânticos, contratos HTTP e políticas de autorização.
+
+## Tabelas conceituais iniciais
+
+As tabelas abaixo são modelo conceitual mínimo. A posse definitiva será definida quando cada responsabilidade receber seu `db-<nome>` e schema do BFF.
 
 ### `tenants`
 
@@ -109,4 +123,4 @@ Auditoria de ações sensíveis. Campos mínimos: `id`, `tenant_id`, `actor_iden
 - Escrita depende de permissão efetiva no perfil.
 - Admin de tenant não atravessa tenant.
 - Admin de plataforma opera com trilha de auditoria.
-- Funções auxiliares ficam em schema privado e com `search_path` fixo quando aplicável.
+- Policies devem funcionar no schema do BFF e continuar portáveis para banco físico futuro.

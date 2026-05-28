@@ -63,20 +63,27 @@ Aneety Platform deve oferecer operação white-label de próteses dentárias, in
 
 ## Técnico
 
+- Todos os frontends operacionais devem ser microfrontends Single SPA.
+- Cada responsabilidade deve viver em `aneety-platform/apps/<responsabilidade>/...`.
+- Cada microfrontend deve usar `mfe-<nome>` e chamar somente gateway/BFF, nunca banco direto.
+- Gateway do MVP deve ser `worker-gateway` em Cloudflare/serverless/Hono.
+- Cada BFF do MVP deve ser `worker-<nome>` em Cloudflare/serverless/Hono.
+- Cada BFF deve possuir contrato HTTP, erros JSON padronizados, 401 para sessão ausente/inválida e 403 para permissão insuficiente.
+- Banco do MVP deve ser Supabase/Postgres com schema por BFF.
+- Banco futuro deve ser Postgres com banco de dados por BFF.
 - Autenticação própria em banco: identidades, credenciais, sessões, tokens, expiração, revogação e rotação.
-- Autorização por tenant, perfil e permissões, aplicada na API e reforçada por RLS.
+- Autorização por tenant, perfil e permissões, aplicada no gateway/BFF e reforçada por RLS.
 - Isolamento cross-tenant obrigatório.
-- PWA offline-first com fila local para pedidos, checkpoints, anexos e pagamentos pendentes.
-- API única para frontends, com erros JSON padronizados, 401 para sessão ausente/inválida e 403 para permissão insuficiente.
+- Experiência offline-first deve manter fila local para pedidos, checkpoints, anexos e pagamentos pendentes.
 - E2E público somente em `aneety.com`.
 - Frontends não exigem variável pública de banco para login.
-- Migrations e seeds ficam versionados no monorepo.
-- Cada app usa shadcn/ui e tokens semânticos.
+- Migrations e seeds ficam versionados no monorepo, dentro de `db-<nome>` da responsabilidade.
+- Cada microfrontend usa shadcn/ui e tokens semânticos.
 
 ### Serviços externos por função semântica
 
-- Hospedagem, API, banco, storage, CI, DNS/CDN, pagamentos, mensagens, e-mail, mapas, IA, observabilidade, filas e analytics devem ser requisitos por função, não por fornecedor.
+- Hospedagem, gateway, BFF, banco, storage, CI, DNS/CDN, pagamentos, mensagens, e-mail, mapas, IA, observabilidade, filas e analytics devem ser requisitos por função, não por fornecedor.
 - Qualquer serviço usado deve declarar dados tratados, segredos envolvidos, custo, alternativa de saída, contrato local e testes de degradação.
 - Serviços pagos ou upgrades de plano não são caminho obrigatório enquanto o requisito exigir custo zero.
-- Autenticação de usuário final pertence ao modelo de dados e à API Aneety; provedor externo de identidade pode existir apenas como adapter opcional futuro, nunca como requisito de login.
+- Autenticação de usuário final pertence ao modelo de dados e ao gateway/BFF Aneety; provedor externo de identidade pode existir apenas como adapter opcional futuro, nunca como requisito de login.
 - Se um serviço externo ficar indisponível, a plataforma deve preservar integridade do pedido, sessão, permissões, anexos e auditoria conforme o contrato local.
