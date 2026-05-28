@@ -131,4 +131,17 @@ Domínio esperado: `https://aneety.com/`.
 PLAYWRIGHT_BASE_URL=https://aneety.com/ pnpm test:e2e
 ```
 
+Por padrão, o smoke público valida portal, Worker/Hono, `db/health` e superfícies publicadas. Para a cobertura real cross-app, habilitar `LIA_E2E_ENABLED=1` com secrets de CI/local:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `LIA_E2E_ADMIN_EMAIL`
+- `LIA_E2E_ADMIN_PASSWORD`
+- `LIA_E2E_API_URL=https://api.aneety.com`
+- `LIA_E2E_DESKTOP_URL=https://desktop.aneety.com`
+- `LIA_E2E_PWA_URL=https://pwa.aneety.com`
+- `LIA_E2E_DASHBOARD_URL=https://dashboard.aneety.com`
+
+A cobertura cross-app cria pedido via API real, valida portal, opera checkpoint/anexo no desktop publicado, verifica login/superfície do PWA e CRUD base do dashboard, e confirma o estado final na API/Postgres.
+
 E2E nunca deve usar localhost como alvo final.
