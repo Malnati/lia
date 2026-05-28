@@ -4,14 +4,14 @@
 
 Aneety Platform será uma plataforma white-label para operar pedidos de produtos ou serviços customizados. O domínio genérico envolve consumidor, produtor, entrega, evidências, mapas, rastreabilidade em tempo real e garantia de qualidade do pedido e do item personalizado. Lia será o primeiro tenant/marca, e os fluxos odontológicos do MVP ficam como carga inicial de demonstração, seeds e massas de teste.
 
-A implementação nasce na org `https://github.com/Aneety`, com `Aneety/ai` como repositório orquestrador. Cada responsabilidade ou derivação deve ter repositório próprio e ser linkada como submódulo no orquestrador. A documentação canônica de todos os projetos/repositórios deve viver em `Aneety/.github` (`https://github.com/Aneety/.github.git`), incluindo arquitetura, catálogo de repositórios, guias, ADRs e especificações. Assets reutilizáveis devem viver em `Aneety/assets` (`https://github.com/Aneety/assets.git`) com versão SVG canônica.
+A implementação nasce na org `https://github.com/Aneety`, com `Aneety/ai` como repositório orquestrador. Cada responsabilidade ou derivação deve ter repositório próprio e ser linkada como submódulo no orquestrador. Todo repositório remoto `https://github.com/Aneety/<repo>` deve ser clonado localmente em `/Users/mal/GitHub/Aneety/<repo>`. A documentação canônica de todos os projetos/repositórios deve viver em `Aneety/.github` (`https://github.com/Aneety/.github.git`, clone local `/Users/mal/GitHub/Aneety/.github`), incluindo arquitetura, catálogo de repositórios, guias, ADRs e especificações. Assets reutilizáveis devem viver em `Aneety/assets` (`https://github.com/Aneety/assets.git`, clone local `/Users/mal/GitHub/Aneety/assets`) com versão SVG canônica.
 
 ## Regra de módulos e submódulos
 
 Toda responsabilidade deve existir sob `aneety-platform/apps/<responsabilidade>/...` dentro do repo orquestrador `Aneety/ai`. Dentro de cada responsabilidade, o nome do diretório deve seguir o padrão `aneety-platform/apps/<responsabilidade>/<mfe|mc|gw|worker|fe|job|auto|db|pkg|core|int|wl>-<nome>`.
 
 ```text
-Aneety/ai
+Aneety/ai -> /Users/mal/GitHub/Aneety/ai
   aneety-platform/
     apps/
       <responsabilidade>/
@@ -44,8 +44,8 @@ Cada diretório folha representa um submódulo Git quando existir implementaçã
 - Storage atua como adapter para bytes; metadados, autorização e lifecycle pertencem ao schema do BFF responsável.
 - Pagamentos atuam como adapter; pedido e conciliação permanecem no domínio Aneety.
 - Mapas, localização, mensagens, IA, observabilidade e integrações futuras entram por interfaces substituíveis.
-- Documentação oficial fica em `Aneety/.github`: guias de usuário, documentação de desenvolvedor, especificações, ADRs, arquitetura e catálogo de repositórios.
-- Assets reutilizáveis ficam em `Aneety/assets`, versionados em SVG e referenciados pelos repos de implementação quando necessário.
+- Documentação oficial fica em `Aneety/.github` (`/Users/mal/GitHub/Aneety/.github`): guias de usuário, documentação de desenvolvedor, especificações, ADRs, arquitetura e catálogo de repositórios.
+- Assets reutilizáveis ficam em `Aneety/assets` (`/Users/mal/GitHub/Aneety/assets`), versionados em SVG e referenciados pelos repos de implementação quando necessário.
 
 ## Fluxo de dados
 
@@ -98,6 +98,7 @@ Limites obrigatórios:
 - UI de usuário final não expõe nomes de infraestrutura, banco, runtime, framework, secrets ou fornecedores.
 - Termos técnicos ficam em docs internas, logs técnicos, runbooks e telas de operador técnico quando existirem.
 - Cada módulo deve ter contrato, testes e owner claro antes de expandir escopo.
-- Cada implementação com responsabilidade própria deve viver em repo próprio na org `Aneety` e entrar no orquestrador `Aneety/ai` como submódulo.
+- Cada implementação com responsabilidade própria deve viver em repo próprio na org `Aneety`, ser clonada em `/Users/mal/GitHub/Aneety/<repo>` e entrar no orquestrador `Aneety/ai` como submódulo.
 - Todos os projetos/repositórios devem ser documentados em `Aneety/.github`; repos de implementação mantêm apenas README mínimo, badges e links para a documentação canônica.
+- Todos os projetos/repositórios devem respeitar o par remoto/local: `https://github.com/Aneety/<repo>` -> `/Users/mal/GitHub/Aneety/<repo>`.
 - Todos os assets reutilizáveis devem ser versionados em SVG no repo `Aneety/assets`; repos de implementação não devem criar variações locais sem registrar a fonte SVG canônica.

@@ -2,7 +2,7 @@
 
 Status: **MVP Lia encerrado como linha de implementação; Aneety Platform inicia como sucessor.**
 
-Este diretório registra a estratégia para descontinuar o MVP atual sem apagar código, histórico, evidências, decisões ou aprendizados. A implementação nova deve nascer na org `https://github.com/Aneety`, com `Aneety/ai` como repositório orquestrador. Cada responsabilidade ou derivação com implementação própria deve ter repo próprio e ser linkada como submódulo no caminho correspondente em `aneety-platform/apps/<responsabilidade>/...`.
+Este diretório registra a estratégia para descontinuar o MVP atual sem apagar código, histórico, evidências, decisões ou aprendizados. A implementação nova deve nascer na org `https://github.com/Aneety`, com `Aneety/ai` como repositório orquestrador. Todos os projetos/repositórios Aneety devem ser clonados em `/Users/mal/GitHub/Aneety/*`, pareando `https://github.com/Aneety/<repo>` com `/Users/mal/GitHub/Aneety/<repo>`. Cada responsabilidade ou derivação com implementação própria deve ter repo próprio e ser linkada como submódulo no caminho correspondente em `aneety-platform/apps/<responsabilidade>/...`.
 
 ## Índice
 
@@ -29,9 +29,11 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 - Produto: white-label genérico para produto/serviço customizado com consumidor, produtor, entrega, evidências, qualidade, mapas e rastreabilidade em tempo real.
 - Lia: primeiro tenant/marca, não nome rígido da plataforma.
 - Org GitHub: `https://github.com/Aneety`.
-- Repositório orquestrador de implementação: `Aneety/ai`.
-- Repositório canônico de documentação de todos os projetos/repositórios: `Aneety/.github` (`https://github.com/Aneety/.github.git`).
-- Repositório canônico de assets reutilizáveis: `Aneety/assets` (`https://github.com/Aneety/assets.git`), sempre com versão SVG para logos, ícones, ilustrações, diagramas, marcas, pictogramas e demais assets reutilizáveis.
+- Clone root local obrigatório: `/Users/mal/GitHub/Aneety/*`.
+- Regra remoto/local: `https://github.com/Aneety/<repo>` -> `/Users/mal/GitHub/Aneety/<repo>`.
+- Repositório orquestrador de implementação: `Aneety/ai` (`https://github.com/Aneety/ai.git`, clone local `/Users/mal/GitHub/Aneety/ai`).
+- Repositório canônico de documentação de todos os projetos/repositórios: `Aneety/.github` (`https://github.com/Aneety/.github.git`, clone local `/Users/mal/GitHub/Aneety/.github`).
+- Repositório canônico de assets reutilizáveis: `Aneety/assets` (`https://github.com/Aneety/assets.git`, clone local `/Users/mal/GitHub/Aneety/assets`), sempre com versão SVG para logos, ícones, ilustrações, diagramas, marcas, pictogramas e demais assets reutilizáveis.
 - Estrutura: repos próprios por responsabilidade/derivação, linkados como submódulos.
 - Regra de diretório: `aneety-platform/apps/<responsabilidade>/<mfe|mc|gw|worker|fe|job|auto|db|pkg|core|int|wl>-<nome>`.
 - Documentação: guias de usuário, documentação de desenvolvedor, especificações, ADRs, arquitetura e catálogo de repositórios devem viver em `Aneety/.github`; repos de implementação mantêm apenas README mínimo com link para essa fonte canônica.

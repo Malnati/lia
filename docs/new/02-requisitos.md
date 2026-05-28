@@ -74,10 +74,12 @@ Aneety Platform deve oferecer operação white-label para produtos e serviços c
 ## Técnico
 
 - Org GitHub oficial: `https://github.com/Aneety`.
-- Repo orquestrador de implementação: `Aneety/ai`.
-- Repo canônico de documentação: `Aneety/.github` (`https://github.com/Aneety/.github.git`).
-- Repo canônico de assets reutilizáveis: `Aneety/assets` (`https://github.com/Aneety/assets.git`).
-- Cada responsabilidade/derivação deve ter repositório próprio e ser linkada como submódulo no orquestrador.
+- Clone root local obrigatório: `/Users/mal/GitHub/Aneety/*`.
+- Todo remoto `https://github.com/Aneety/<repo>` deve corresponder ao clone local `/Users/mal/GitHub/Aneety/<repo>`.
+- Repo orquestrador de implementação: `Aneety/ai` (`https://github.com/Aneety/ai.git`, clone local `/Users/mal/GitHub/Aneety/ai`).
+- Repo canônico de documentação: `Aneety/.github` (`https://github.com/Aneety/.github.git`, clone local `/Users/mal/GitHub/Aneety/.github`).
+- Repo canônico de assets reutilizáveis: `Aneety/assets` (`https://github.com/Aneety/assets.git`, clone local `/Users/mal/GitHub/Aneety/assets`).
+- Cada responsabilidade/derivação deve ter repositório próprio, clone local em `/Users/mal/GitHub/Aneety/<repo>` e link como submódulo no orquestrador.
 - Cada projeto/repositório deve estar documentado em `Aneety/.github`, incluindo objetivo, owner, status, runtime, dados, contratos, critérios de aceite e links operacionais.
 - Todo asset reutilizável do projeto deve estar versionado em SVG no repo `Aneety/assets`, incluindo logos, ícones, ilustrações, diagramas, marcas, pictogramas e elementos visuais compartilhados.
 - Todos os frontends operacionais devem ser microfrontends Single SPA.
