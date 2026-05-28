@@ -1,3 +1,7 @@
+// Legacy browser-local adapter coverage retained only as migration debt reference.
+// It is outside playwright.config.ts testDir and is not an acceptance suite for Lia.
+// Current acceptance must target aneety.com + Cloudflare Worker/Hono + Supabase/Postgres real.
+
 import { expect, test } from '@playwright/test';
 
 test('covers the published Cloudflare Pages legacy adapter MVP flow', async ({ page }) => {
