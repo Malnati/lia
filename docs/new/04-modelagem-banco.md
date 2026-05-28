@@ -1,0 +1,112 @@
+# Modelagem de banco de dados — Aneety Platform
+
+## Princípios
+
+- Postgres é a fonte transacional.
+- Toda entidade operacional tem `tenant_id`.
+- Chaves primárias usam UUID.
+- Datas usam `timestamptz`.
+- Índices mínimos cobrem `tenant_id`, status, responsáveis e `updated_at`.
+- RLS é obrigatório em tabelas expostas ou sensíveis.
+- Credenciais são armazenadas apenas como hash forte e salgado, nunca em texto puro.
+- Sessões têm expiração, revogação, rotação e vínculo explícito com identidade, tenant e perfil efetivo.
+
+## Tabelas iniciais
+
+### `tenants`
+
+Representa organizações/marcas operando na plataforma. Campos mínimos: `id`, `slug`, `name`, `status`, `created_at`, `updated_at`.
+
+### `tenant_branding`
+
+Configuração white-label por tenant. Campos mínimos: `id`, `tenant_id`, `brand_name`, `logo_url`, `primary_color`, `secondary_color`, `texts`, `created_at`, `updated_at`.
+
+### `app_identities`
+
+Identidade de acesso própria da plataforma. Campos mínimos: `id`, `tenant_id`, `email`, `phone`, `display_name`, `status`, `created_at`, `updated_at`.
+
+### `auth_credentials`
+
+Credenciais vinculadas à identidade. Campos mínimos: `id`, `tenant_id`, `identity_id`, `credential_type`, `password_hash`, `password_updated_at`, `revoked_at`, `created_at`.
+
+### `auth_sessions`
+
+Sessões e tokens próprios. Campos mínimos: `id`, `tenant_id`, `identity_id`, `access_token_hash`, `refresh_token_hash`, `expires_at`, `refresh_expires_at`, `revoked_at`, `created_at`, `last_seen_at`.
+
+### `app_users`
+
+Usuário operacional dentro de um tenant. Campos mínimos: `id`, `tenant_id`, `identity_id`, `access_profile_id`, `full_name`, `email`, `phone`, `role`, `is_active`, `created_at`, `updated_at`.
+
+### `access_profiles`
+
+Perfis de acesso por tenant. Campos mínimos: `id`, `tenant_id`, `name`, `role`, `is_system`, `created_at`, `updated_at`.
+
+### `permissions`
+
+Catálogo de permissões. Campos mínimos: `id`, `key`, `description`, `scope`, `created_at`.
+
+### `access_profile_permissions`
+
+Associação entre perfil e permissões. Campos mínimos: `id`, `tenant_id`, `access_profile_id`, `permission_id`, `created_at`.
+
+### `orders`
+
+Pedido operacional. Campos mínimos: `id`, `tenant_id`, `client_reference`, `customer_name`, `customer_phone`, `delivery_address`, `product`, `status`, `payment_status`, `assigned_to`, `notes`, `version`, `created_at`, `updated_at`.
+
+### `order_checkpoints`
+
+Etapas e evidências do pedido. Campos mínimos: `id`, `tenant_id`, `order_id`, `key`, `label`, `completed`, `actor_user_id`, `occurred_at`, `notes`, `created_at`, `updated_at`.
+
+### `attachments`
+
+Metadados de fotos, assinaturas e arquivos. Campos mínimos: `id`, `tenant_id`, `order_id`, `checkpoint_id`, `kind`, `filename`, `content_type`, `size_bytes`, `storage_adapter`, `storage_path`, `captured_at`, `created_at`.
+
+### `payment_intents`
+
+Intenções e conciliação de pagamento. Campos mínimos: `id`, `tenant_id`, `order_id`, `provider_adapter`, `amount`, `currency`, `status`, `checkout_url`, `provider_reference`, `created_at`, `updated_at`.
+
+### `sync_events`
+
+Fila e auditoria de sincronização offline. Campos mínimos: `id`, `tenant_id`, `app_user_id`, `device_id`, `entity`, `entity_id`, `operation`, `status`, `payload`, `error_message`, `created_at`, `updated_at`.
+
+### `marketplace_actors`
+
+Consultórios, bureaus/produtores e entregadores listáveis. Campos mínimos: `id`, `tenant_id`, `actor_type`, `public_name`, `avatar_url`, `approx_location`, `price_label`, `score`, `contact_label`, `availability`, `status`, `created_at`, `updated_at`.
+
+### `marketplace_favorites`
+
+Favoritos por tenant/usuário. Campos mínimos: `id`, `tenant_id`, `app_user_id`, `actor_id`, `created_at`.
+
+### `production_demands`
+
+Demandas para bureaus/produtores. Campos mínimos: `id`, `tenant_id`, `order_id`, `requested_by_actor_id`, `producer_actor_id`, `status`, `rejection_reason`, `created_at`, `updated_at`.
+
+### `delivery_demands`
+
+Demandas para entregadores. Campos mínimos: `id`, `tenant_id`, `order_id`, `requested_by_actor_id`, `delivery_actor_id`, `origin_label`, `destination_label`, `status`, `rejection_reason`, `created_at`, `updated_at`.
+
+### `delivery_evidences`
+
+Fotos e evidências de retirada/entrega. Campos mínimos: `id`, `tenant_id`, `delivery_demand_id`, `order_id`, `checkpoint_key`, `attachment_id`, `origin_label`, `destination_label`, `actor_user_id`, `occurred_at`, `created_at`.
+
+### `audit_events`
+
+Auditoria de ações sensíveis. Campos mínimos: `id`, `tenant_id`, `actor_identity_id`, `actor_user_id`, `action`, `entity`, `entity_id`, `metadata`, `created_at`.
+
+## Índices mínimos
+
+- `tenant_id` em todas as tabelas operacionais.
+- `(tenant_id, status, updated_at desc)` em pedidos, demandas, pagamentos e sync.
+- FKs com índice líder.
+- `auth_sessions` por hash de token e expiração.
+- `app_identities` por `(tenant_id, email)` e `(tenant_id, phone)` quando aplicável.
+- `marketplace_actors` por `(tenant_id, actor_type, status)`.
+
+## RLS e policies
+
+- Nenhuma leitura cross-tenant.
+- Usuário comum lê apenas dados do tenant vinculado.
+- Escrita depende de permissão efetiva no perfil.
+- Admin de tenant não atravessa tenant.
+- Admin de plataforma opera com trilha de auditoria.
+- Funções auxiliares ficam em schema privado e com `search_path` fixo quando aplicável.
