@@ -48,6 +48,15 @@ O repositório `lia` não deve concentrar backend, core, dashboard, desktop ou P
 
 Este repositório publica somente o portal orquestrador em `https://aneety.com/`. O portal exibe navegação para os apps publicados, status do Worker/Hono e `db/health` do Supabase/Postgres real. Implementações de PWA, desktop, dashboard, core e backend vivem nos seus repositórios próprios.
 
+## Design system shadcn/ui
+
+O portal React fica em `apps/web` e tem baseline shadcn/ui próprio:
+
+- `apps/web/components.json` versionado com aliases `@/components`, `@/components/ui`, `@/lib`, `@/hooks`;
+- componentes shadcn copiados em `apps/web/src/components/ui`;
+- componentes usados no portal: `Alert`, `Badge`, `Button`, `Card`, `Separator` e `Tabs`;
+- validação: `cd apps/web && pnpm dlx shadcn@latest info`.
+
 ## Print da tela
 
 O print abaixo é regenerado quando houver mudança visual no portal.
