@@ -124,10 +124,15 @@ Limites obrigatórios:
 ## Regras arquiteturais
 
 - Custo zero sempre; qualquer dependência paga vira bloqueio até redesenho ou decisão formal que não seja critério obrigatório do MVP.
-- Segredos ficam somente em gateway, BFF, CI seguro ou ambiente local ignorado pelo Git.
+- Segredos ficam somente em gateway, BFF, CI seguro ou ambiente local ignorado pelo Git; segredo privilegiado não aparece em frontend, Git, bundle, log, screenshot, fixture pública ou documentação de usuário final.
+- Verificação de secrets confirma presença e escopo sem imprimir valores.
 - Frontends não acessam banco diretamente para autenticação ou autorização.
+- RLS, policies, migrations e índices obrigatórios são pré-condição arquitetural para concluir responsabilidade com dados.
+- Monitoramento recorrente segue contrato Aneety vigente, não histórico de implementação.
+- Serviço externo deve degradar sem corromper pedido, sessão, permissão, evidência, mapa, rastreabilidade ou auditoria.
 - UI de usuário final não expõe nomes de infraestrutura, banco, runtime, framework, secrets ou fornecedores.
 - Termos técnicos ficam em docs internas, logs técnicos, runbooks e telas de operador técnico quando existirem.
+- Mapas, localização e rastreabilidade em tempo real exigem contrato, permissão e teste quando fizerem parte do fluxo.
 - Cada módulo deve ter contrato, testes e owner claro antes de expandir escopo.
 - Cada implementação com responsabilidade própria deve viver em repo próprio na org `Aneety`, ser clonada em `/Users/mal/GitHub/Aneety/<repo>` e entrar no orquestrador `Aneety/ai` como submódulo.
 - Todos os projetos/repositórios devem ser documentados em `Aneety/.github`; repos de implementação mantêm apenas README mínimo, badges e links para a documentação canônica.

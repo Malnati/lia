@@ -18,7 +18,7 @@ Este arquivo descreve **como executar** a transição e os incrementos. Regras a
 2. Verificar secrets antes de deploy real sem imprimir valores.
 3. Confirmar backup/export antes de usar dados reais relevantes.
 4. Rodar smoke público dos componentes afetados.
-5. Conferir monitoramento recorrente contra o contrato vigente.
+5. Conferir monitoramento recorrente contra o contrato Aneety vigente.
 6. Registrar bloqueios com causa objetiva e próxima ação.
 7. Validar modo desligado de integrações opcionais antes de ativação por tenant.
 

@@ -10,7 +10,8 @@
 - PWA mobile: <https://pwa.aneety.com/>
 - Desktop operacional: <https://desktop.aneety.com/>
 - Dashboard administrativo: <https://dashboard.aneety.com/>
-- Requisitos versionados: [`REQ.md`](REQ.md)
+- Documentação de transição do novo produto: [`docs/new`](docs/new/)
+- Contrato legado Lia: [`REQ.md`](REQ.md) — histórico, não contrato do novo produto Aneety.
 - Documentação canônica de arquitetura e repositórios: [`Aneety/.github`](https://github.com/Aneety/.github.git)
 
 > Decisão vigente: Cloudflare Pages Free para frontends estáticos, Cloudflare Workers Free + Hono para API, Supabase/Postgres Free para base real. Não usar NestJS, VPS, Render, MongoDB ou mock browser-side como arquitetura alvo.
@@ -19,7 +20,7 @@
 
 ## Arquitetura alvo
 
-- `Malnati/lia`: portal orquestrador/integrador em `aneety.com` e fonte do contrato de transição `REQ.md`.
+- `Malnati/lia`: portal orquestrador/integrador em `aneety.com`; `REQ.md` permanece histórico do produto Lia anterior.
 - `Malnati/lia-backend`: API Worker + Hono em `api.aneety.com`.
 - `Malnati/lia-core`: contratos ESM, roles, permissões e cliente comum em `core.aneety.com`.
 - `Malnati/lia-pwa`: PWA mobile/offline-first em `pwa.aneety.com`.

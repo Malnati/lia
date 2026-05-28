@@ -316,26 +316,17 @@ flowchart TD
 
 ### Requisitos não funcionais e aceite
 
-- Custo zero sempre é requisito de aceite; qualquer dependência paga, upgrade obrigatório ou lock-in de plano bloqueia o incremento até redesenho.
-- Segredos privilegiados não podem aparecer em frontend, Git, bundle, log, screenshot, fixture pública ou documentação de usuário final.
-- Verificação de secrets deve confirmar presença e escopo sem imprimir valores.
 - Seed E2E deve ser controlado, idempotente e sem segredos versionados.
 - Backup/export Postgres deve estar documentado antes de dados reais relevantes.
-- RLS, policies, migrations e índices obrigatórios devem ser verificáveis antes de declarar conclusão de responsabilidade com dados.
 - Smoke público deve cobrir, quando aplicável, microfrontend, gateway, BFF, banco, login, pedido, checkpoint, anexo, mapa, rastreabilidade e administração.
-- Monitoramento recorrente deve seguir o contrato vigente e não histórico de implementação.
 - Bloqueios operacionais devem ser registrados com causa objetiva, como DNS, secret ausente, policy falha, migration pendente, E2E sem credencial, mapa indisponível ou evento de rastreabilidade atrasado.
 - Gmail e Google SSO devem ter modo desligado validado antes de qualquer ativação por tenant.
-- Falha de serviço externo deve preservar integridade de pedido, sessão, permissão, evidência, mapa, rastreabilidade e auditoria.
 - Microfrontends com UI devem cobrir estados de carregando, vazio, erro e sucesso.
-- UI de usuário final deve usar linguagem de produto e tarefa, sem expor infraestrutura, banco, runtime, framework, secrets ou fornecedores.
-- Mapas, localização e rastreabilidade em tempo real devem ter contrato, permissão e teste quando fizerem parte do fluxo.
 
 ### Serviços externos por função semântica
 
 - Hospedagem, gateway, BFF, banco, storage, CI, DNS/CDN, pagamentos, mensagens, e-mail, mapas, IA, observabilidade, filas e analytics devem ser requisitos por função, não por fornecedor.
 - Qualquer serviço usado deve declarar dados tratados, segredos envolvidos, custo, alternativa de saída, contrato local e testes de degradação.
-- Serviços pagos ou upgrades de plano não são caminho obrigatório: custo zero sempre.
+- Serviços pagos ou upgrades de plano não são caminho obrigatório; quando aparecerem, o aceite deve apontar para redesenho ou alternativa sem custo obrigatório.
 - Autenticação de usuário final pertence ao modelo de dados e ao gateway/BFF Aneety; provedor externo de identidade pode existir apenas como adapter opcional futuro, nunca como requisito de login.
 - Gmail e Google SSO são adapters opcionais do MVP e devem ter plano de saída, teste de degradação e alternativa operacional sem fornecedor.
-- Se um serviço externo ficar indisponível, a plataforma deve preservar integridade do pedido, sessão, permissões, anexos, mapas, rastreabilidade e auditoria conforme o contrato local.

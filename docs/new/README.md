@@ -17,13 +17,13 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 
 ## Fronteira dos documentos
 
-- `01-arquitetura.md`: decisões estruturais permanentes, runtime, módulos, submódulos, serviços externos e limites de fornecedor.
-- `02-requisitos.md`: requisitos de produto, requisitos técnicos, requisitos não funcionais e critérios de aceite.
+- `01-arquitetura.md`: decisões estruturais permanentes, runtime, módulos, submódulos, NFR estruturais, serviços externos e limites de fornecedor.
+- `02-requisitos.md`: requisitos de produto, requisitos técnicos e critérios verificáveis de aceite.
 - `03-processos.md`: modo de execução, ordem de trabalho e gates operacionais; não deve ser fonte exclusiva de regra normativa.
 
 ## Fontes aproveitadas
 
-- `REQ.md` — contrato vigente da plataforma Lia.
+- Repositórios e docs Lia anteriores — fonte histórica e evidência, não contrato do novo produto.
 - `README.md` — estado atual do portal integrador e publicação por domínio.
 - `docs/MARKETPLACE_OPERACIONAL.md` — fluxo de marketplace operacional.
 - `docs/COVERAGE_MATRIX.md` — lacunas e critérios de cobertura.
