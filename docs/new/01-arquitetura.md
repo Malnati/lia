@@ -4,7 +4,7 @@
 
 Aneety Platform será uma plataforma white-label para operar pedidos de produtos ou serviços customizados. O domínio genérico envolve consumidor, produtor, entrega, evidências, mapas, rastreabilidade em tempo real e garantia de qualidade do pedido e do item personalizado. Lia será o primeiro tenant/marca, e os fluxos odontológicos do MVP ficam como carga inicial de demonstração, seeds e massas de teste.
 
-A implementação nasce na org `https://github.com/Aneety`, com `Aneety/ai` como repositório orquestrador. Cada responsabilidade ou derivação deve ter repositório próprio e ser linkada como submódulo no orquestrador.
+A implementação nasce na org `https://github.com/Aneety`, com `Aneety/ai` como repositório orquestrador. Cada responsabilidade ou derivação deve ter repositório próprio e ser linkada como submódulo no orquestrador. A documentação canônica de todos os projetos/repositórios deve viver em `Aneety/.github` (`https://github.com/Aneety/.github.git`), incluindo arquitetura, catálogo de repositórios, guias, ADRs e especificações. Assets reutilizáveis devem viver em `Aneety/assets` (`https://github.com/Aneety/assets.git`) com versão SVG canônica.
 
 ## Regra de módulos e submódulos
 
@@ -27,10 +27,8 @@ Aneety/ai
         core-<nome>      Contrato/domínio central compartilhado.
         int-<nome>       Integração ou adapter externo.
         wl-<nome>        Workload operacional não coberto por worker, microserviço ou job.
-    docs/
     tests/
     scripts/
-  site/
 ```
 
 Cada diretório folha representa um submódulo Git quando existir implementação própria. A lista define categorias possíveis; não obriga toda responsabilidade a possuir todos os módulos. Cada responsabilidade será criada somente quando houver contrato, owner, dados, aceite, custo zero sempre e limite de escopo.
@@ -46,7 +44,8 @@ Cada diretório folha representa um submódulo Git quando existir implementaçã
 - Storage atua como adapter para bytes; metadados, autorização e lifecycle pertencem ao schema do BFF responsável.
 - Pagamentos atuam como adapter; pedido e conciliação permanecem no domínio Aneety.
 - Mapas, localização, mensagens, IA, observabilidade e integrações futuras entram por interfaces substituíveis.
-- GitHub Pages publica somente documentação em `site/`: guias de usuário, documentação de desenvolvedor e especificações.
+- Documentação oficial fica em `Aneety/.github`: guias de usuário, documentação de desenvolvedor, especificações, ADRs, arquitetura e catálogo de repositórios.
+- Assets reutilizáveis ficam em `Aneety/assets`, versionados em SVG e referenciados pelos repos de implementação quando necessário.
 
 ## Fluxo de dados
 
@@ -77,7 +76,8 @@ Cloudflare, GitHub, Supabase, provedores de storage, pagamento, e-mail, mapas, I
 - autenticação e autorização modeladas no banco da plataforma;
 - armazenamento de bytes com metadados e permissão no schema do BFF responsável;
 - versionamento, PR, CI e submódulos Git;
-- documentação no GitHub Pages a partir de `site/`;
+- documentação centralizada em `Aneety/.github`;
+- acervo de assets reutilizáveis em SVG centralizado em `Aneety/assets`;
 - DNS/CDN;
 - integrações auxiliares como pagamentos, mensagens, e-mail, mapas, IA, filas, analytics e observabilidade.
 
@@ -88,7 +88,7 @@ Limites obrigatórios:
 - cada integração deve ter contrato local, dados tratados, segredos, custo, owner, testes e plano de saída;
 - smoke/E2E validam a função semântica, não apenas o nome do fornecedor;
 - frontends nunca dependem de banco, IdP externo ou chave pública de fornecedor para autenticação;
-- GitHub Pages não hospeda operação transacional; hospeda documentação em `site/`.
+- GitHub Pages não hospeda operação transacional; se existir, deve publicar ou apontar somente para documentação mantida em `Aneety/.github`.
 
 ## Regras arquiteturais
 
@@ -99,3 +99,5 @@ Limites obrigatórios:
 - Termos técnicos ficam em docs internas, logs técnicos, runbooks e telas de operador técnico quando existirem.
 - Cada módulo deve ter contrato, testes e owner claro antes de expandir escopo.
 - Cada implementação com responsabilidade própria deve viver em repo próprio na org `Aneety` e entrar no orquestrador `Aneety/ai` como submódulo.
+- Todos os projetos/repositórios devem ser documentados em `Aneety/.github`; repos de implementação mantêm apenas README mínimo, badges e links para a documentação canônica.
+- Todos os assets reutilizáveis devem ser versionados em SVG no repo `Aneety/assets`; repos de implementação não devem criar variações locais sem registrar a fonte SVG canônica.

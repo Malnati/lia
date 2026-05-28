@@ -22,7 +22,8 @@ Encerrar o MVP Lia como linha ativa de implementação e preservar seu valor com
 - Superfície operacional para atendimento, produção, qualidade e logística.
 - Administração de usuários, perfis, tenants, permissões e white-label.
 - Estrutura `aneety-platform/apps/<responsabilidade>/<prefixo>-<nome>` descrita em `01-arquitetura.md` e `05-estrutura-repositorios.md`.
-- Publicação da documentação no GitHub Pages a partir de `site/`, incluindo guias de usuário, documentação de desenvolvedor e especificações.
+- Documentação canônica de todos os projetos/repositórios em `Aneety/.github`, incluindo arquitetura, catálogo de repositórios, guias de usuário, documentação de desenvolvedor, ADRs e especificações.
+- Assets reutilizáveis do projeto em `Aneety/assets`, com versão SVG canônica para logos, ícones, ilustrações, diagramas, marcas, pictogramas e elementos visuais compartilhados.
 - Publicação sob `aneety.com` e regra de **custo zero sempre**.
 
 ## O que não carregar para o sucessor
@@ -45,6 +46,8 @@ Encerrar o MVP Lia como linha ativa de implementação e preservar seu valor com
 4. Preservar screenshots, E2E, migrations, fluxos odontológicos e contratos como evidência, demo e massa de teste, não como base obrigatória de implementação.
 5. Bloquear novas features no MVP atual; aceitar apenas correções documentais ou segurança de transição.
 6. Criar checklist de evidências para cada decisão transferida ao orquestrador `Aneety/ai`.
+7. Transferir documentação oficial, catálogo de repositórios e decisões arquiteturais para `Aneety/.github`.
+8. Transferir ou redesenhar assets reutilizáveis em SVG no repo `Aneety/assets`.
 
 ## Checklist mínimo de evidências
 
@@ -53,6 +56,8 @@ Encerrar o MVP Lia como linha ativa de implementação e preservar seu valor com
 - Responsabilidade mapeada para `aneety-platform/apps/<responsabilidade>/...`.
 - Repositório próprio previsto na org `https://github.com/Aneety` quando a responsabilidade virar implementação.
 - Submódulo previsto no repo orquestrador `Aneety/ai`.
+- Registro documental previsto em `Aneety/.github`.
+- Asset reutilizável previsto em `Aneety/assets` com SVG canônico quando houver visual compartilhado.
 - Prefixo técnico escolhido conforme o contrato de nomes.
 - Regra de custo zero sempre e runtime explicitada.
 - Dados, segredos e permissões classificados.

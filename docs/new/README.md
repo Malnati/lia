@@ -29,10 +29,13 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 - Produto: white-label genérico para produto/serviço customizado com consumidor, produtor, entrega, evidências, qualidade, mapas e rastreabilidade em tempo real.
 - Lia: primeiro tenant/marca, não nome rígido da plataforma.
 - Org GitHub: `https://github.com/Aneety`.
-- Repositório orquestrador: `Aneety/ai`.
+- Repositório orquestrador de implementação: `Aneety/ai`.
+- Repositório canônico de documentação de todos os projetos/repositórios: `Aneety/.github` (`https://github.com/Aneety/.github.git`).
+- Repositório canônico de assets reutilizáveis: `Aneety/assets` (`https://github.com/Aneety/assets.git`), sempre com versão SVG para logos, ícones, ilustrações, diagramas, marcas, pictogramas e demais assets reutilizáveis.
 - Estrutura: repos próprios por responsabilidade/derivação, linkados como submódulos.
 - Regra de diretório: `aneety-platform/apps/<responsabilidade>/<mfe|mc|gw|worker|fe|job|auto|db|pkg|core|int|wl>-<nome>`.
-- Documentação pública: GitHub Pages a partir de `site/`, com guias de usuário, documentações do desenvolvedor e especificações.
+- Documentação: guias de usuário, documentação de desenvolvedor, especificações, ADRs, arquitetura e catálogo de repositórios devem viver em `Aneety/.github`; repos de implementação mantêm apenas README mínimo com link para essa fonte canônica.
+- Assets: todo asset reutilizável do projeto deve ser versionado em SVG no repo `Aneety/assets`; repos de implementação devem consumir ou referenciar esse acervo, não manter cópias divergentes.
 - Frontends operacionais: microfrontends Single SPA em `mfe-<nome>`.
 - BFFs MVP: `worker-<nome>` em Cloudflare/serverless/Hono.
 - Gateway MVP: `worker-gateway`.
@@ -42,4 +45,4 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 - Autenticação: identidade, credenciais, sessões e permissões próprias no Postgres, via gateway/BFF, sem provedor externo obrigatório.
 - Serviços externos por semântica: Cloudflare, GitHub, Supabase, mapas ou qualquer fornecedor equivalente são meios substituíveis; requisitos devem declarar função, dados, segredos, custo, contrato local, testes e plano de saída.
 - Custo: custo zero sempre; dependência paga bloqueia ou exige redesenho.
-- Este repositório recebe apenas documentação de transição; a nova implementação nasce no orquestrador `Aneety/ai`.
+- Este repositório recebe apenas documentação de transição; a nova implementação nasce no orquestrador `Aneety/ai` e a documentação oficial deve ser transferida para `Aneety/.github`.

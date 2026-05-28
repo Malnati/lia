@@ -11,14 +11,15 @@
 - Desktop operacional: <https://desktop.aneety.com/>
 - Dashboard administrativo: <https://dashboard.aneety.com/>
 - Requisitos versionados: [`REQ.md`](REQ.md)
+- Documentação canônica de arquitetura e repositórios: [`Aneety/.github`](https://github.com/Aneety/.github.git)
 
 > Decisão vigente: Cloudflare Pages Free para frontends estáticos, Cloudflare Workers Free + Hono para API, Supabase/Postgres Free para base real. Não usar NestJS, VPS, Render, MongoDB ou mock browser-side como arquitetura alvo.
 
-> GitHub é somente versionamento, PR e CI. GitHub Pages não é runtime de aplicativo Lia; se existir em algum repositório, deve servir apenas guias de usuário/documentação que apontam os apps reais para `*.aneety.com`.
+> GitHub é somente versionamento, PR e CI. GitHub Pages não é runtime de aplicativo Lia; se existir em algum repositório, deve servir apenas guias/documentação originados ou apontados por `Aneety/.github` e direcionar uso real para `*.aneety.com`.
 
 ## Arquitetura alvo
 
-- `Malnati/lia`: portal orquestrador/integrador em `aneety.com` e fonte do contrato `REQ.md`.
+- `Malnati/lia`: portal orquestrador/integrador em `aneety.com` e fonte do contrato de transição `REQ.md`.
 - `Malnati/lia-backend`: API Worker + Hono em `api.aneety.com`.
 - `Malnati/lia-core`: contratos ESM, roles, permissões e cliente comum em `core.aneety.com`.
 - `Malnati/lia-pwa`: PWA mobile/offline-first em `pwa.aneety.com`.
@@ -38,12 +39,15 @@ Cada projeto deve ser desenvolvido, testado, commitado, enviado e publicado no s
 
 O repositório `lia` não deve concentrar backend, core, dashboard, desktop ou PWA como implementação principal.
 
+Todos os projetos/repositórios devem ser documentados em [`Aneety/.github`](https://github.com/Aneety/.github.git). Repositórios de implementação devem manter README mínimo com objetivo, status e link para a documentação canônica.
+
 ## Publicação, código e guias
 
 - **Aplicação:** Cloudflare Pages Free em `aneety.com`, `core.aneety.com`, `pwa.aneety.com`, `desktop.aneety.com` e `dashboard.aneety.com`.
 - **API:** Cloudflare Workers Free em `api.aneety.com`.
 - **Código/PR/CI:** GitHub.
-- **Guias de usuário:** GitHub Pages é permitido somente como documentação, nunca como app, smoke ou E2E.
+- **Documentação:** `Aneety/.github` é fonte canônica para arquitetura, catálogo de repositórios, guias, ADRs e especificações.
+- **Guias publicados:** GitHub Pages é permitido somente como documentação originada ou apontada por `Aneety/.github`, nunca como app, smoke ou E2E.
 
 
 ## Limites semânticos para serviços externos

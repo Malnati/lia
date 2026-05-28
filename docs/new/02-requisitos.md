@@ -74,8 +74,12 @@ Aneety Platform deve oferecer operação white-label para produtos e serviços c
 ## Técnico
 
 - Org GitHub oficial: `https://github.com/Aneety`.
-- Repo orquestrador: `Aneety/ai`.
+- Repo orquestrador de implementação: `Aneety/ai`.
+- Repo canônico de documentação: `Aneety/.github` (`https://github.com/Aneety/.github.git`).
+- Repo canônico de assets reutilizáveis: `Aneety/assets` (`https://github.com/Aneety/assets.git`).
 - Cada responsabilidade/derivação deve ter repositório próprio e ser linkada como submódulo no orquestrador.
+- Cada projeto/repositório deve estar documentado em `Aneety/.github`, incluindo objetivo, owner, status, runtime, dados, contratos, critérios de aceite e links operacionais.
+- Todo asset reutilizável do projeto deve estar versionado em SVG no repo `Aneety/assets`, incluindo logos, ícones, ilustrações, diagramas, marcas, pictogramas e elementos visuais compartilhados.
 - Todos os frontends operacionais devem ser microfrontends Single SPA.
 - Cada responsabilidade deve viver em `aneety-platform/apps/<responsabilidade>/...`.
 - Cada microfrontend deve usar `mfe-<nome>` e chamar somente gateway/BFF, nunca banco direto.
@@ -89,7 +93,8 @@ Aneety Platform deve oferecer operação white-label para produtos e serviços c
 - Isolamento cross-tenant obrigatório.
 - Experiência offline-first deve manter fila local para pedidos, checkpoints, anexos, mapas, rastreabilidade e pagamentos pendentes.
 - E2E público somente em `aneety.com`.
-- GitHub Pages publica guias de usuários, documentações do desenvolvedor e especificações a partir de `site/`.
+- Guias de usuários, documentação de desenvolvedor, especificações, ADRs, arquitetura e catálogo de repositórios vivem em `Aneety/.github`; GitHub Pages, se existir, deve publicar ou apontar somente para essa documentação.
+- Assets reutilizáveis devem ser consumidos de `Aneety/assets` ou referenciar sua fonte SVG canônica nesse repositório.
 - Frontends não exigem variável pública de banco para login.
 - Migrations e seeds ficam versionados no submódulo `db-<nome>` da responsabilidade.
 - Cada microfrontend usa shadcn/ui e tokens semânticos.

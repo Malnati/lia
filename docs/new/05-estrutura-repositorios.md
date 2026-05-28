@@ -2,9 +2,13 @@
 
 ## Decisão
 
-O novo projeto deve nascer na org `https://github.com/Aneety`, com `Aneety/ai` como repositório orquestrador. Os repositórios Lia anteriores viram fontes históricas e referências de aprendizado, não base de implementação contínua.
+O novo projeto deve nascer na org `https://github.com/Aneety`, com `Aneety/ai` como repositório orquestrador de implementação. Os repositórios Lia anteriores viram fontes históricas e referências de aprendizado, não base de implementação contínua.
 
 Cada responsabilidade ou derivação com implementação própria deve ter repositório próprio na org `Aneety` e ser adicionada como submódulo do repo `Aneety/ai` no caminho correspondente dentro de `aneety-platform/apps/<responsabilidade>/...`.
+
+Toda documentação de arquitetura, catálogo de repositórios, guias, ADRs, especificações e contratos de projeto deve ser mantida no repositório `Aneety/.github` (`https://github.com/Aneety/.github.git`). Repositórios de implementação devem manter apenas README mínimo com objetivo, status e link para a documentação canônica.
+
+Todo asset reutilizável deve ser mantido no repositório `Aneety/assets` (`https://github.com/Aneety/assets.git`) com versão SVG canônica. Isso inclui logos, ícones, ilustrações, diagramas, marcas, pictogramas, elementos de UI reutilizáveis e qualquer visual compartilhado entre apps, documentação, apresentações ou materiais operacionais.
 
 ## Regra obrigatória de estrutura
 
@@ -27,20 +31,27 @@ Aneety/ai
         core-<nome>
         int-<nome>
         wl-<nome>
-    docs/
     tests/
     scripts/
-  site/
 ```
 
 A lista acima define categorias possíveis. Não obriga toda responsabilidade a possuir todos os módulos. Cada diretório folha vira submódulo Git quando a implementação própria existir.
 
-## GitHub Pages e documentação
+## Documentação central
 
-- `site/` é a origem do GitHub Pages.
-- `site/` publica guias de usuários, documentação de desenvolvedor e especificações.
-- `aneety-platform/docs/` mantém documentação interna da plataforma e pode alimentar o site.
+- `Aneety/.github` é a fonte canônica de documentação de todos os projetos/repositórios.
+- `Aneety/.github` deve manter arquitetura, catálogo de repositórios, guias de usuário, documentação de desenvolvedor, ADRs, especificações, contratos e matriz de responsabilidades.
+- Repositórios de implementação devem apontar para `Aneety/.github` e não duplicar documentação arquitetural.
 - GitHub Pages não é runtime operacional, não hospeda operação transacional e não substitui gateway, BFF ou banco.
+- Se GitHub Pages existir para documentação, deve publicar ou apontar conteúdo originado de `Aneety/.github`.
+
+## Assets centrais
+
+- `Aneety/assets` é a fonte canônica de assets reutilizáveis do projeto.
+- Todo asset reutilizável deve ter versão SVG versionada nesse repositório.
+- Repositórios de implementação devem consumir, copiar em build ou apontar para o SVG canônico, sem manter forks visuais divergentes.
+- Assets específicos e descartáveis podem ficar no repo de implementação somente quando não forem reutilizáveis; ao virarem padrão, marca, ícone compartilhado, diagrama recorrente ou elemento visual comum, devem migrar para `Aneety/assets`.
+- Alterações visuais compartilhadas devem ser feitas primeiro no SVG canônico e depois propagadas aos apps/documentos.
 
 ## Glossário de prefixos
 
@@ -78,12 +89,15 @@ A lista acima define categorias possíveis. Não obriga toda responsabilidade a 
 - Dependência entre responsabilidades deve passar por gateway, BFF ou contrato compartilhado versionado.
 - Nenhuma responsabilidade deve depender de tabela, segredo ou runtime interno de outra sem contrato explícito.
 - Cada responsabilidade implementada em repo próprio deve ser linkada como submódulo do orquestrador `Aneety/ai`.
+- Cada responsabilidade implementada em repo próprio deve estar catalogada e documentada em `Aneety/.github`.
+- Cada responsabilidade que usa visual compartilhado deve referenciar os assets SVG canônicos em `Aneety/assets`.
 
 ## Regras de migração
 
 - Lia entra como primeiro tenant/marca dentro da Aneety Platform.
 - Fluxos odontológicos de pedidos, moldes, próteses, retirada, entrega e evidências entram como demo, seeds e massas de teste.
 - Código atual só deve ser copiado se passar por revisão de contrato, segurança, isolamento por tenant e UI copy.
+- Assets atuais só devem ser reutilizados se forem convertidos ou preservados com versão SVG canônica em `Aneety/assets`.
 - Não importar a estrutura multi-repo antiga como contrato final; recriar responsabilidades sob `Aneety/ai` com repos próprios e submódulos.
-- Documentos atuais continuam úteis como fonte, mas o contrato novo deve ser escrito no orquestrador `Aneety/ai`.
+- Documentos atuais continuam úteis como fonte, mas o contrato novo de documentação deve ser escrito em `Aneety/.github`; `Aneety/ai` fica como orquestrador de implementação.
 - Cada módulo novo deve ter teste e owner antes de virar dependência de outro módulo.
