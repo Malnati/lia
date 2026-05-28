@@ -14,12 +14,14 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 6. [Estrutura de repositórios](05-estrutura-repositorios.md)
 7. [Ciclos de desenvolvimento por cobertura](06-ciclos-cobertura.md)
 8. [Descrição do produto](07-descricao-produto.md)
+9. [Governança GitHub](07-governanca-github.md)
 
 ## Fronteira dos documentos
 
 - `01-arquitetura.md`: decisões estruturais permanentes, runtime, módulos, submódulos, NFR estruturais, serviços externos e limites de fornecedor.
 - `02-requisitos.md`: requisitos de produto, requisitos técnicos e critérios verificáveis de aceite.
 - `03-processos.md`: modo de execução, ordem de trabalho e gates operacionais; não deve ser fonte exclusiva de regra normativa.
+- `07-governanca-github.md`: rastreabilidade operacional em GitHub Issues e GitHub Projects; não substitui contrato, arquitetura, requisitos, processos ou evidências.
 
 ## Fontes aproveitadas
 
