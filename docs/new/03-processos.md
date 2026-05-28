@@ -6,20 +6,125 @@ Este arquivo descreve **como executar** a transição e os incrementos. Regras a
 
 Os SVGs abaixo são artefatos renderizados dos fluxos Mermaid mantidos em `assets/diagrams/`.
 
-| Fluxo | SVG | Fonte Mermaid | JPEG |
-| --- | --- | --- | --- |
-| Pedidos customizados | ![Fluxo de pedidos customizados](assets/diagrams/fluxo-pedidos-customizados.svg) | [MMD](assets/diagrams/fluxo-pedidos-customizados.mmd) | [JPEG](assets/diagrams/fluxo-pedidos-customizados.jpg) |
-| Produção ou execução | ![Fluxo de produção ou execução](assets/diagrams/fluxo-producao-execucao.svg) | [MMD](assets/diagrams/fluxo-producao-execucao.mmd) | [JPEG](assets/diagrams/fluxo-producao-execucao.jpg) |
-| Garantia de qualidade | ![Fluxo de garantia de qualidade](assets/diagrams/fluxo-garantia-qualidade.svg) | [MMD](assets/diagrams/fluxo-garantia-qualidade.mmd) | [JPEG](assets/diagrams/fluxo-garantia-qualidade.jpg) |
-| Retirada, entrega e mapas | ![Fluxo de retirada, entrega e mapas](assets/diagrams/fluxo-retirada-entrega-mapas.svg) | [MMD](assets/diagrams/fluxo-retirada-entrega-mapas.mmd) | [JPEG](assets/diagrams/fluxo-retirada-entrega-mapas.jpg) |
-| Anexos e evidências | ![Fluxo de anexos e evidências](assets/diagrams/fluxo-anexos-evidencias.svg) | [MMD](assets/diagrams/fluxo-anexos-evidencias.mmd) | [JPEG](assets/diagrams/fluxo-anexos-evidencias.jpg) |
-| Pagamentos | ![Fluxo de pagamentos](assets/diagrams/fluxo-pagamentos.svg) | [MMD](assets/diagrams/fluxo-pagamentos.mmd) | [JPEG](assets/diagrams/fluxo-pagamentos.jpg) |
-| Marketplace operacional | ![Fluxo de marketplace operacional](assets/diagrams/fluxo-marketplace-operacional.svg) | [MMD](assets/diagrams/fluxo-marketplace-operacional.mmd) | [JPEG](assets/diagrams/fluxo-marketplace-operacional.jpg) |
-| White-label por tenant | ![Fluxo white-label por tenant](assets/diagrams/fluxo-white-label-tenant.svg) | [MMD](assets/diagrams/fluxo-white-label-tenant.mmd) | [JPEG](assets/diagrams/fluxo-white-label-tenant.jpg) |
-| Carga inicial de demonstração e testes | ![Fluxo de carga inicial de demonstração e testes](assets/diagrams/fluxo-carga-demo-testes.svg) | [MMD](assets/diagrams/fluxo-carga-demo-testes.mmd) | [JPEG](assets/diagrams/fluxo-carga-demo-testes.jpg) |
-| Administração | ![Fluxo de administração](assets/diagrams/fluxo-administracao.svg) | [MMD](assets/diagrams/fluxo-administracao.mmd) | [JPEG](assets/diagrams/fluxo-administracao.jpg) |
-| Integração opcional Gmail | ![Fluxo de integração opcional Gmail](assets/diagrams/fluxo-integracao-gmail.svg) | [MMD](assets/diagrams/fluxo-integracao-gmail.mmd) | [JPEG](assets/diagrams/fluxo-integracao-gmail.jpg) |
-| Integração opcional Google SSO | ![Fluxo de integração opcional Google SSO](assets/diagrams/fluxo-integracao-google-sso.svg) | [MMD](assets/diagrams/fluxo-integracao-google-sso.mmd) | [JPEG](assets/diagrams/fluxo-integracao-google-sso.jpg) |
+### Pedidos customizados
+
+Registra a criação e o acompanhamento do pedido customizado, mantendo responsáveis, status, pendências e rastreabilidade até a conclusão.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-pedidos-customizados.mmd) / [JPEG](assets/diagrams/fluxo-pedidos-customizados.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-pedidos-customizados.svg" alt="Fluxo de pedidos customizados" />
+</p>
+
+### Produção ou execução
+
+Mostra como a demanda sai do pedido aprovado, passa por aceite ou rejeição do responsável e registra execução, notas, checklist e evidências.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-producao-execucao.mmd) / [JPEG](assets/diagrams/fluxo-producao-execucao.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-producao-execucao.svg" alt="Fluxo de produção ou execução" />
+</p>
+
+### Garantia de qualidade
+
+Controla checkpoints sensíveis, exigindo evidência e aprovação antes de liberar a próxima etapa do pedido.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-garantia-qualidade.mmd) / [JPEG](assets/diagrams/fluxo-garantia-qualidade.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-garantia-qualidade.svg" alt="Fluxo de garantia de qualidade" />
+</p>
+
+### Retirada, entrega e mapas
+
+Organiza coleta e entrega com aceite do entregador, check-in, localização, mapa, check-out e atualização da rastreabilidade.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-retirada-entrega-mapas.mmd) / [JPEG](assets/diagrams/fluxo-retirada-entrega-mapas.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-retirada-entrega-mapas.svg" alt="Fluxo de retirada, entrega e mapas" />
+</p>
+
+### Anexos e evidências
+
+Descreve captura, validação, armazenamento de bytes, metadados e disponibilização das evidências conforme permissão.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-anexos-evidencias.mmd) / [JPEG](assets/diagrams/fluxo-anexos-evidencias.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-anexos-evidencias.svg" alt="Fluxo de anexos e evidências" />
+</p>
+
+### Pagamentos
+
+Conduz intenção, consulta e conciliação de pagamento, preservando o pedido mesmo quando o provedor estiver indisponível.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-pagamentos.mmd) / [JPEG](assets/diagrams/fluxo-pagamentos.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-pagamentos.svg" alt="Fluxo de pagamentos" />
+</p>
+
+### Marketplace operacional
+
+Permite listar, filtrar, favoritar e acionar atores operacionais, registrando aceite ou rejeição da demanda.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-marketplace-operacional.mmd) / [JPEG](assets/diagrams/fluxo-marketplace-operacional.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-marketplace-operacional.svg" alt="Fluxo de marketplace operacional" />
+</p>
+
+### White-label por tenant
+
+Define marca, logo, cores, textos e fluxos ativos para publicar a experiência de cada tenant sem acoplar o produto a uma única marca.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-white-label-tenant.mmd) / [JPEG](assets/diagrams/fluxo-white-label-tenant.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-white-label-tenant.svg" alt="Fluxo de white-label por tenant" />
+</p>
+
+### Carga inicial de demonstração e testes
+
+Reclassifica evidências úteis do MVP Lia como demo, seed ou massa de teste, sem limitar o produto Aneety à vertical odontológica.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-carga-demo-testes.mmd) / [JPEG](assets/diagrams/fluxo-carga-demo-testes.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-carga-demo-testes.svg" alt="Fluxo de carga inicial de demonstração e testes" />
+</p>
+
+### Administração
+
+Gerencia usuários, identidades, tenants, perfis, permissões, status de acesso e métricas operacionais.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-administracao.mmd) / [JPEG](assets/diagrams/fluxo-administracao.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-administracao.svg" alt="Fluxo de administração" />
+</p>
+
+### Integração opcional Gmail
+
+Mostra o modo opcional de e-mail: operar sem Gmail quando desligado ou acionar o adapter com degradação controlada quando habilitado.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-integracao-gmail.mmd) / [JPEG](assets/diagrams/fluxo-integracao-gmail.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-integracao-gmail.svg" alt="Fluxo de integração opcional Gmail" />
+</p>
+
+### Integração opcional Google SSO
+
+Mostra o vínculo externo opcional de identidade, preservando autenticação, sessão, tenant, perfil e permissões no modelo Aneety.
+
+Links: [Fonte Mermaid](assets/diagrams/fluxo-integracao-google-sso.mmd) / [JPEG](assets/diagrams/fluxo-integracao-google-sso.jpg)
+
+<p align="center">
+  <img src="assets/diagrams/fluxo-integracao-google-sso.svg" alt="Fluxo de integração opcional Google SSO" />
+</p>
 
 ## Desenvolvimento
 
