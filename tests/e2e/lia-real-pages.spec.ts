@@ -13,6 +13,21 @@ test('validates the published portal and real Worker health on aneety.com', asyn
   await expect(page).toHaveTitle(/Lia/i);
   await expect(page.locator('body')).toContainText(/Lia/i);
   await expect(page.locator('body')).toContainText(/api\.aneety\.com|Supabase|Cloudflare|Worker/i);
+  await expect(page.getByText('aneety.com', { exact: true })).toBeVisible();
+  await expect(page.getByText('Cloudflare Free', { exact: true })).toBeVisible();
+  await expect(page.getByText('Supabase Free', { exact: true })).toBeVisible();
+  await expect(page.getByText('shadcn/ui', { exact: true })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Apps publicados' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Checklist REQ.md' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Próxima cobertura' })).toBeVisible();
+  await expect(page.getByText('Worker/Hono', { exact: true })).toBeVisible();
+  await expect(page.getByText('Supabase/Postgres', { exact: true })).toBeVisible();
+
+  await page.getByRole('tab', { name: 'Checklist REQ.md' }).click();
+  await expect(page.getByText('Supabase/Postgres real com RLS como fonte de dados operacional.')).toBeVisible();
+  await page.getByRole('tab', { name: 'Próxima cobertura' }).click();
+  await expect(page.getByText('Estados visíveis shadcn para loading, erro, vazio e sucesso.')).toBeVisible();
+  await page.getByRole('tab', { name: 'Apps publicados' }).click();
 
   const health = await request.get('https://api.aneety.com/api/health');
   await expect(health).toBeOK();
