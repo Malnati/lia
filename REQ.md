@@ -71,6 +71,7 @@ Cada projeto deve ser implementado, testado, commitado, enviado e publicado no s
 - Não usar Cloudflare Pages Functions para servir assets estáticos.
 - O Worker deve permanecer dentro do plano Free; se a solução exigir plano pago, bloquear e reportar.
 - Supabase deve permanecer no plano Free; se exigir upgrade, bloquear e reportar.
+- Supabase Auth `auth_leaked_password_protection` depende de plano Pro+; tentativa de habilitar via Management API em 2026-05-28 retornou HTTP 402 (`Configuring leaked password protection via HaveIBeenPwned.org is available on Pro Plans and up.`). Enquanto custo zero for obrigatório, esse advisor deve ser registrado como limitação externa/econômica, sem upgrade pago e sem bloquear deploy Worker/Pages/E2E quando for o único lint de segurança restante. Qualquer lint de segurança em schema, RLS, funções, policies, secrets ou exposição de chave continua bloqueante.
 
 ## Design system e shadcn/ui
 
@@ -360,7 +361,7 @@ Backend/Supabase:
 - MCP `supabase` configurado com `bearer_token_env_var=SUPABASE_KEY` e projeto `mqxwdyhtsvzzehmdfhtj`;
 - `list_migrations` deve mostrar `0001_initial_schema`, `0002_harden_database_functions` e `0003_add_foreign_key_indexes`;
 - `list_tables` deve mostrar as tabelas mínimas em `public` com RLS habilitado;
-- `get_advisors(security)` deve retornar 0 lints antes de declarar conclusão;
+- `get_advisors(security)` deve retornar 0 lints antes de declarar conclusão; exceção única: `auth_leaked_password_protection` WARN pago/Pro+ pode permanecer registrado como limitação de plano Free se a tentativa de habilitar retornar 402, sem bloquear publicação/E2E;
 - `get_advisors(performance)` deve ser registrado; `unused_index` em banco recém-criado/vazio não bloqueia sozinho, mas FKs sem índice bloqueiam;
 - migrations aplicadas quando secrets/projeto existirem, sempre versionadas também em `lia-backend/supabase/migrations`;
 - RLS habilitado;
@@ -393,7 +394,7 @@ O monitoramento deve:
 2. Validar repos locais e remotos, branch/SHA/PR e trabalho humano pendente antes de alterar qualquer coisa, garantindo que cada projeto esteja no seu repositório próprio em `/Users/mal/GitHub/malnati` e não concentrado no orquestrador `lia`.
 3. Comparar requisitos com código, docs, workflows, Cloudflare Pages, Worker API e Supabase real.
 4. Validar shadcn em cada frontend: `components.json`, aliases, componentes em `src/components/ui` ou equivalente, uso de tokens semânticos, ausência de UI customizada quando houver componente shadcn adequado e `pnpm dlx shadcn@latest info` quando aplicável.
-5. Verificar MCP Supabase sem expor segredos: `codex mcp get supabase`, `codex mcp list`, `list_migrations`, `list_tables`, `get_advisors(security)` e `get_advisors(performance)` quando a ferramenta estiver disponível; nunca executar/source `.env` inteiro, apenas parsear chaves necessárias.
+5. Verificar MCP Supabase sem expor segredos: `codex mcp get supabase`, `codex mcp list`, `list_migrations`, `list_tables`, `get_advisors(security)` e `get_advisors(performance)` quando a ferramenta estiver disponível; nunca executar/source `.env` inteiro, apenas parsear chaves necessárias. Se `auth_leaked_password_protection` for o único security advisor, confirmar/registrar o bloqueio HTTP 402 Pro+ antes de seguir sem upgrade.
 6. Validar que regras antigas pré-Workers foram substituídas: o alvo de aceitação é sempre Supabase/Postgres real, Worker `lia-backend` em `https://api.aneety.com` e frontends publicados em `aneety.com`.
 7. Priorizar lacunas de arquitetura, banco, RLS, migrations, secrets Cloudflare, Worker API e design system shadcn antes de novos E2E.
 8. Não declarar 100% sem evidência objetiva por arquivo/linha, comando, MCP output, URL, workflow ou screenshot.
