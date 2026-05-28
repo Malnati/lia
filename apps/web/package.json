@@ -8,15 +8,13 @@
     "build": "tsc -p tsconfig.app.json && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "lint": "tsc -p tsconfig.app.json --noEmit",
-    "test": "vitest run",
-    "postbuild": "node scripts/create-pages-fallback.mjs"
+    "test": "vitest run"
   },
   "dependencies": {
     "@tailwindcss/vite": "latest",
     "@vitejs/plugin-react": "latest",
     "class-variance-authority": "latest",
     "clsx": "latest",
-    "dexie": "^4.4.2",
     "lucide-react": "latest",
     "radix-ui": "^1.4.3",
     "react": "latest",
@@ -25,8 +23,7 @@
     "tailwindcss": "latest",
     "tw-animate-css": "latest",
     "typescript": "latest",
-    "vite": "latest",
-    "vite-plugin-pwa": "latest"
+    "vite": "latest"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "latest",
@@ -34,7 +31,6 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "fake-indexeddb": "^6.2.5",
     "jsdom": "latest",
     "vitest": "latest"
   }

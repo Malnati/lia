@@ -1,743 +1,359 @@
-import { type CSSProperties, type FormEvent, useEffect, useMemo, useState } from 'react';
-import { createApiClient, exportMockBackendState, getConfiguredApiMode, resetMockBackendState } from './api/apiClient';
-import { SignaturePad } from './components/SignaturePad';
-import { tenantConfig } from './config/tenant';
-import { countPendingSync, initialOrders } from './data/orders';
+import { useEffect, useMemo, useState } from 'react';
 import {
-  createOfflineOrder,
-  enqueuePaymentIntent,
-  ensureLiaLocalData,
-  getLocalAttachments,
-  getLocalOrders,
-  getPendingSyncItems,
-  saveLocalAttachment,
-  syncPendingItems,
-  updateOfflineCheckpoint,
-  updateOfflineOrder
-} from './local/localStore';
-import { compressImage } from './media/imageCompression';
-import type { ApiMode, Attachment, CheckpointKey, Order, SyncQueueItem } from './types';
+  Activity,
+  ArrowUpRight,
+  CheckCircle2,
+  Cloud,
+  Database,
+  GitBranch,
+  Layers3,
+  RefreshCw,
+  ShieldCheck,
+  Smartphone,
+  MonitorCog,
+  LayoutDashboard
+} from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-const apiMode = getConfiguredApiMode();
+const apiBaseUrl = (import.meta.env.VITE_API_URL ?? 'https://api.aneety.com').replace(/\/$/, '');
 
-type View = 'orders' | 'new' | 'clinics' | 'production' | 'pickup' | 'delivery' | 'sync';
+type ServiceStatus = 'checking' | 'ok' | 'error';
 
-type NewOrderForm = {
-  customerName: string;
-  customerPhone: string;
-  deliveryAddress: string;
-  product: string;
-  notes: string;
+type ServiceCheck = {
+  key: 'api' | 'database';
+  label: string;
+  href: string;
+  icon: typeof Activity;
+  status: ServiceStatus;
+  detail: string;
 };
 
-const emptyNewOrderForm: NewOrderForm = {
-  customerName: '',
-  customerPhone: '',
-  deliveryAddress: '',
-  product: 'Molde prótese',
-  notes: ''
+type HealthResponse = {
+  status?: string;
+  runtime?: string;
+  framework?: string;
+  configured?: boolean;
+  checkedAt?: string;
 };
 
-const navItems: Array<{ key: View; label: string; icon: string }> = [
-  { key: 'orders', label: 'Pedidos', icon: '▣' },
-  { key: 'new', label: 'Novo pedido', icon: '+' },
-  { key: 'clinics', label: 'Consultórios', icon: '◫' },
-  { key: 'production', label: 'Produção', icon: '◇' },
-  { key: 'pickup', label: 'Retirada', icon: '▱' },
-  { key: 'delivery', label: 'Entrega', icon: '⌖' },
-  { key: 'sync', label: 'Sync', icon: '↻' }
+const surfaces = [
+  {
+    name: 'Portal Lia',
+    repo: 'Malnati/lia',
+    href: 'https://aneety.com/',
+    responsibility: 'Orquestrador, contrato REQ.md, status público e navegação.',
+    icon: Layers3
+  },
+  {
+    name: 'API Worker/Hono',
+    repo: 'Malnati/lia-backend',
+    href: 'https://api.aneety.com/api/health',
+    responsibility: 'API real Cloudflare Workers Free conectada ao Supabase/Postgres.',
+    icon: Cloud
+  },
+  {
+    name: 'Lia Core',
+    repo: 'Malnati/lia-core',
+    href: 'https://core.aneety.com/',
+    responsibility: 'Contratos, roles, permissões e tokens compartilháveis.',
+    icon: GitBranch
+  },
+  {
+    name: 'Lia PWA',
+    repo: 'Malnati/lia-pwa',
+    href: 'https://pwa.aneety.com/',
+    responsibility: 'Operação mobile/offline-first em repositório próprio.',
+    icon: Smartphone
+  },
+  {
+    name: 'Lia Desktop',
+    repo: 'Malnati/lia-desktop',
+    href: 'https://desktop.aneety.com/',
+    responsibility: 'Operação desktop de atendimento, produção e logística.',
+    icon: MonitorCog
+  },
+  {
+    name: 'Lia Dashboard',
+    repo: 'Malnati/lia-dashboard',
+    href: 'https://dashboard.aneety.com/',
+    responsibility: 'Administração, usuários, perfis, tenants e permissões.',
+    icon: LayoutDashboard
+  }
 ];
 
-const syncOperationLabels: Record<SyncQueueItem['operation'], string> = {
-  create_order: 'Criar pedido',
-  update_order: 'Atualizar pedido',
-  update_checkpoint: 'Atualizar checkpoint',
-  upload_attachment: 'Enviar anexo',
-  create_payment_intent: 'Criar pagamento mock'
-};
+const requirements = [
+  'Supabase/Postgres real com RLS como fonte de dados operacional.',
+  'Supabase Auth nos frontends; service role apenas em Cloudflare Worker secret.',
+  'API real Cloudflare Workers Free + Hono em api.aneety.com.',
+  'Frontends React/Vite/TypeScript/Tailwind com shadcn/ui por repositório.',
+  'Publicação independente por repo em aneety.com, sem Containers, VPS ou serviços pagos.',
+  'E2E somente contra URLs públicas aneety.com.'
+];
 
-function paymentLabel(order: Order): string {
-  if (order.paymentStatus === 'paid') return 'Pago';
-  if (order.paymentStatus === 'failed') return 'Falhou';
-  if (order.paymentStatus === 'mock_pending') return 'Mock pendente';
-  return 'Pendente';
-}
+const nextCoverage = [
+  'Login Supabase Auth publicado.',
+  'CRUD usuários/perfis no dashboard via Worker + RLS.',
+  'Pedido, checkpoints, anexos, pagamento e sync real via Postgres.',
+  'Estados visíveis shadcn para loading, erro, vazio e sucesso.'
+];
 
-function statusLabel(order: Order): string {
-  if (order.pendingSync) return 'Offline pendente';
-  if (order.status === 'delivered') return 'Entregue';
-  if (order.status === 'paid') return 'Pago';
-  if (order.status === 'picked_up') return 'Retirado';
-  return 'Em andamento';
-}
+export default function App() {
+  const [checks, setChecks] = useState<ServiceCheck[]>(() => createInitialChecks());
+  const [updatedAt, setUpdatedAt] = useState<string>('Verificando agora');
 
-function fmt(value?: string): string {
-  if (!value) return 'Aguardando';
-  return new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(new Date(value));
-}
-
-function checkpointButtonLabel(key: CheckpointKey): string {
-  const labels: Record<CheckpointKey, string> = {
-    pickup_checkin: 'Marcar retirada check-in',
-    pickup_checkout: 'Marcar retirada check-out',
-    delivery_checkin: 'Marcar entrega check-in',
-    delivery_checkout: 'Marcar entrega check-out'
-  };
-  return labels[key];
-}
-
-function viewTitle(view: View): string {
-  const match = navItems.find((item) => item.key === view);
-  return match?.label ?? 'Pedidos';
-}
-
-function App() {
-  if (window.location.pathname.replace(/\/$/, '').endsWith('/mock')) {
-    return <MockAdmin mode={apiMode} />;
-  }
-
-  return <LiaApp />;
-}
-
-function LiaApp() {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
-  const [selectedId, setSelectedId] = useState(initialOrders[0].id);
-  const [view, setView] = useState<View>('orders');
-  const [queue, setQueue] = useState<SyncQueueItem[]>([]);
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [syncMessage, setSyncMessage] = useState('Dados locais prontos para operar offline.');
-  const [draftNotes, setDraftNotes] = useState(initialOrders[0].notes);
-  const [newOrderForm, setNewOrderForm] = useState<NewOrderForm>(emptyNewOrderForm);
-
-  const apiClient = useMemo(() => createApiClient(apiMode), []);
-  const selectedOrder = useMemo(
-    () => orders.find((order) => order.id === selectedId) ?? orders[0],
-    [orders, selectedId]
-  );
-  const pendingSync = queue.length || countPendingSync(orders);
-  const selectedAttachments = attachments.filter((attachment) => attachment.orderId === selectedOrder?.id);
-
-  async function refresh() {
-    await ensureLiaLocalData();
-    const [localOrders, syncItems, localAttachments] = await Promise.all([
-      getLocalOrders(),
-      getPendingSyncItems(),
-      getLocalAttachments()
+  async function refreshStatus() {
+    setChecks(createInitialChecks());
+    const [health, dbHealth] = await Promise.allSettled([
+      fetchJson(`${apiBaseUrl}/api/health`),
+      fetchJson(`${apiBaseUrl}/api/db/health`)
     ]);
-    setOrders(localOrders);
-    setQueue(syncItems);
-    setAttachments(localAttachments);
 
-    const currentOrder = localOrders.find((order) => order.id === selectedId) ?? localOrders[0];
-    if (currentOrder) {
-      setSelectedId(currentOrder.id);
-      setDraftNotes(currentOrder.notes);
-    }
+    setChecks([
+      health.status === 'fulfilled' && health.value.status === 'ok'
+        ? {
+            key: 'api',
+            label: 'Worker/Hono',
+            href: `${apiBaseUrl}/api/health`,
+            icon: Cloud,
+            status: 'ok',
+            detail: `${health.value.runtime ?? 'cloudflare-workers'} + ${health.value.framework ?? 'hono'}`
+          }
+        : {
+            key: 'api',
+            label: 'Worker/Hono',
+            href: `${apiBaseUrl}/api/health`,
+            icon: Cloud,
+            status: 'error',
+            detail: 'API pública não retornou status=ok.'
+          },
+      dbHealth.status === 'fulfilled' && dbHealth.value.status === 'ok' && dbHealth.value.configured === true
+        ? {
+            key: 'database',
+            label: 'Supabase/Postgres',
+            href: `${apiBaseUrl}/api/db/health`,
+            icon: Database,
+            status: 'ok',
+            detail: 'SUPABASE_SERVICE_ROLE_KEY configurado no Worker; db/health OK.'
+          }
+        : {
+            key: 'database',
+            label: 'Supabase/Postgres',
+            href: `${apiBaseUrl}/api/db/health`,
+            icon: Database,
+            status: 'error',
+            detail: 'db/health não confirmou status=ok/configured=true.'
+          }
+    ]);
+    setUpdatedAt(new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'medium' }).format(new Date()));
   }
 
   useEffect(() => {
-    void refresh();
+    void refreshStatus();
   }, []);
 
-  function selectOrder(order: Order, nextView: View = 'orders') {
-    setSelectedId(order.id);
-    setDraftNotes(order.notes);
-    setView(nextView);
-  }
-
-  async function handleCreateOrder(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const customerName = newOrderForm.customerName.trim();
-    const customerPhone = newOrderForm.customerPhone.trim();
-    const deliveryAddress = newOrderForm.deliveryAddress.trim();
-
-    if (!customerName || !customerPhone || !deliveryAddress) {
-      setSyncMessage('Preencha cliente, telefone e endereço antes de salvar.');
-      return;
-    }
-
-    const nextOrder = await createOfflineOrder({
-      customerName,
-      customerPhone,
-      deliveryAddress,
-      product: newOrderForm.product.trim() || 'Molde prótese',
-      notes: newOrderForm.notes.trim() || 'Pedido salvo localmente aguardando sincronização.',
-      paymentStatus: 'pending'
-    });
-    setSelectedId(nextOrder.id);
-    setDraftNotes(nextOrder.notes);
-    setNewOrderForm(emptyNewOrderForm);
-    setView('orders');
-    setSyncMessage(`Pedido ${nextOrder.customerName} salvo offline. Sincronize quando houver conexão.`);
-    await refresh();
-  }
-
-  async function handleSaveNotes() {
-    if (!selectedOrder) return;
-    await updateOfflineOrder(selectedOrder.id, { notes: draftNotes || selectedOrder.notes });
-    setSyncMessage('Edição salva offline e enviada para a fila.');
-    await refresh();
-  }
-
-  async function handleCheckpoint(key: CheckpointKey) {
-    if (!selectedOrder) return;
-    await updateOfflineCheckpoint(selectedOrder.id, key, {
-      completed: true,
-      actor: 'Operador Lia',
-      notes: 'Atualizado no PWA offline-first'
-    });
-    setSyncMessage(`${checkpointButtonLabel(key)} salvo offline.`);
-    await refresh();
-  }
-
-  async function handleSync() {
-    const result = await syncPendingItems(apiClient);
-    setSyncMessage(`Sincronização concluída: ${result.synced} enviados, ${result.failed} falhas.`);
-    await refresh();
-  }
-
-  async function handlePhoto(file?: File) {
-    if (!file || !selectedOrder) return;
-    const blob = await compressImage(file);
-    await saveLocalAttachment(selectedOrder.id, {
-      kind: 'photo',
-      filename: file.name.replace(/\.[^.]+$/, '.webp'),
-      contentType: blob.type || 'image/webp',
-      blob
-    });
-    setSyncMessage('Foto compactada e salva offline para sincronização.');
-    await refresh();
-  }
-
-  async function handleSignature(blob: Blob) {
-    if (!selectedOrder) return;
-    await saveLocalAttachment(selectedOrder.id, {
-      kind: 'signature',
-      filename: `assinatura-${selectedOrder.id}.png`,
-      contentType: 'image/png',
-      blob
-    });
-    setSyncMessage('Assinatura salva offline para sincronização.');
-    await refresh();
-  }
-
-  async function handlePaymentIntent() {
-    if (!selectedOrder) return;
-    await enqueuePaymentIntent(selectedOrder.id);
-    setSyncMessage('Intenção de pagamento mock entrou na fila. Pagamento real requer conexão.');
-    await refresh();
-  }
-
-  const sharedProps = {
-    orders,
-    selectedOrder,
-    selectedAttachments,
-    queue,
-    draftNotes,
-    newOrderForm,
-    selectOrder,
-    setDraftNotes,
-    setNewOrderForm,
-    handleCreateOrder,
-    handleCheckpoint,
-    handleSaveNotes,
-    handlePaymentIntent,
-    handlePhoto,
-    handleSignature,
-    handleSync
-  };
-
-  const baseUrl = import.meta.env.BASE_URL;
-  const appHref = baseUrl;
-  const adapterHref = `${baseUrl}mock/`;
+  const allHealthy = useMemo(() => checks.every((check) => check.status === 'ok'), [checks]);
 
   return (
-    <main
-      className="app-shell"
-      style={{
-        '--tenant-primary': tenantConfig.primaryColor,
-        '--tenant-dark': tenantConfig.darkColor
-      } as CSSProperties}
-    >
-      <section className="phone-frame" aria-label="Aplicativo mobile Lia">
-        <header className="mobile-header">
-          <button className="icon-button" aria-label="Abrir menu">☰</button>
-          <strong className="brand">{tenantConfig.brandName}</strong>
-          <a className="mock-link" href={adapterHref}>Adapter</a>
-        </header>
-        <TenantBadge />
-
-        <div className="title-row">
-          <h1>{viewTitle(view)}</h1>
-          <button className="primary-button" onClick={() => setView('new')}>Novo pedido +</button>
-        </div>
-
-        <SyncBanner pendingSync={pendingSync} syncMessage={syncMessage} onSync={handleSync} />
-
-        <MobileContent view={view} {...sharedProps} />
-
-        <PrimaryNav view={view} onChange={setView} />
-      </section>
-
-      <section className="desktop-preview" aria-label="Painel administrativo Lia">
-        <header className="desktop-topbar">
-          <div>
-            <strong className="brand">{tenantConfig.brandName}</strong>
-            <TenantBadge />
-          </div>
-          <div className="account-chip"><span>{apiMode}</span> Mock browser-side</div>
-        </header>
-        <div className="desktop-body">
-          <aside className="sidebar" aria-label="Navegação administrativa">
-            {navItems.map((item) => (
-              <button className={view === item.key ? 'active' : ''} key={item.key} onClick={() => setView(item.key)}>
-                {item.label === 'Sync' ? 'Sincronização' : item.label}
-              </button>
-            ))}
-            <div className="sidebar-sync">
-              <strong>☁ Offline pendente</strong>
-              <span>{pendingSync} itens aguardando sincronização</span>
-              <button onClick={handleSync}>Sincronizar</button>
+    <main className="min-h-screen bg-background text-foreground">
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-5 py-8 md:px-8 lg:px-10">
+        <header className="flex flex-col gap-6 rounded-3xl border bg-card p-6 shadow-sm md:p-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex max-w-3xl flex-col gap-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge>aneety.com</Badge>
+                <Badge variant="outline">Cloudflare Free</Badge>
+                <Badge variant="outline">Supabase Free</Badge>
+                <Badge variant="outline">shadcn/ui</Badge>
+              </div>
+              <div className="flex flex-col gap-3">
+                <h1 className="text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+                  Lia — portal integrador da plataforma real
+                </h1>
+                <p className="max-w-2xl text-base text-muted-foreground md:text-lg">
+                  Este repositório orquestra a plataforma multi-repo. O backend real roda em Cloudflare Workers + Hono e persiste no Supabase/Postgres com Auth e RLS.
+                </p>
+              </div>
             </div>
-          </aside>
-
-          <DesktopContent view={view} {...sharedProps} />
-        </div>
-        <footer className="api-note">Modo ativo: {apiMode}. Backend real alvo: https://api.aneety.com. Adapter legado: <a href={adapterHref}>{adapterHref}</a></footer>
-      </section>
-    </main>
-  );
-}
-
-type SharedContentProps = {
-  orders: Order[];
-  selectedOrder?: Order;
-  selectedAttachments: Attachment[];
-  queue: SyncQueueItem[];
-  draftNotes: string;
-  newOrderForm: NewOrderForm;
-  selectOrder: (order: Order, nextView?: View) => void;
-  setDraftNotes: (notes: string) => void;
-  setNewOrderForm: (form: NewOrderForm) => void;
-  handleCreateOrder: (event: FormEvent<HTMLFormElement>) => void;
-  handleCheckpoint: (key: CheckpointKey) => void;
-  handleSaveNotes: () => void;
-  handlePaymentIntent: () => void;
-  handlePhoto: (file?: File) => void;
-  handleSignature: (blob: Blob) => void;
-  handleSync: () => void;
-};
-
-type ContentProps = SharedContentProps & { view: View };
-
-function MobileContent(props: ContentProps) {
-  if (props.view === 'new') return <NewOrderPanel {...props} compact />;
-  if (props.view === 'clinics') return <ClinicsAdminPanel {...props} compact />;
-  if (props.view === 'production') return <ProductionAdminPanel {...props} compact />;
-  if (props.view === 'pickup') return <WorkflowPanel title="Retirada" keys={['pickup_checkin', 'pickup_checkout']} {...props} compact />;
-  if (props.view === 'delivery') return <WorkflowPanel title="Entrega" keys={['delivery_checkin', 'delivery_checkout']} {...props} compact />;
-  if (props.view === 'sync') return <SyncQueuePanel {...props} compact />;
-  return <OrdersPanel {...props} compact />;
-}
-
-function DesktopContent(props: ContentProps) {
-  if (props.view === 'new') return <NewOrderPanel {...props} />;
-  if (props.view === 'clinics') return <ClinicsAdminPanel {...props} />;
-  if (props.view === 'production') return <ProductionAdminPanel {...props} />;
-  if (props.view === 'pickup') return <WorkflowPanel title="Retirada" keys={['pickup_checkin', 'pickup_checkout']} {...props} />;
-  if (props.view === 'delivery') return <WorkflowPanel title="Entrega" keys={['delivery_checkin', 'delivery_checkout']} {...props} />;
-  if (props.view === 'sync') return <SyncQueuePanel {...props} />;
-  return <OrdersPanel {...props} />;
-}
-
-function TenantBadge() {
-  return (
-    <aside className="tenant-badge" aria-label="Configuração white-label">
-      <strong>{tenantConfig.operationName}</strong>
-      <span>{tenantConfig.whiteLabelNote}</span>
-    </aside>
-  );
-}
-
-function SyncBanner({ pendingSync, syncMessage, onSync }: { pendingSync: number; syncMessage: string; onSync: () => void }) {
-  return (
-    <>
-      <aside className="sync-card" aria-live="polite">
-        <div>
-          <strong>☁ Offline pendente</strong>
-          <span>{pendingSync || 0} itens aguardando sincronização</span>
-        </div>
-        <button onClick={onSync}>Sincronizar</button>
-      </aside>
-      <p className="sync-message">{syncMessage}</p>
-    </>
-  );
-}
-
-function PrimaryNav({ view, onChange }: { view: View; onChange: (view: View) => void }) {
-  return (
-    <nav className="bottom-nav" aria-label="Navegação principal">
-      {navItems.map((item) => (
-        <button
-          key={item.key}
-          className={view === item.key ? 'active' : ''}
-          onClick={() => onChange(item.key)}
-        >
-          <span>{item.icon}</span>
-          {item.label}
-        </button>
-      ))}
-    </nav>
-  );
-}
-
-function OrdersPanel(props: SharedContentProps & { compact?: boolean }) {
-  return (
-    <section className={props.compact ? 'mobile-panel' : 'order-detail'} aria-label="Pedidos cadastrados">
-      <h2>Meus pedidos</h2>
-      <OrderList orders={props.orders} selectedOrder={props.selectedOrder} selectOrder={props.selectOrder} />
-      {props.selectedOrder ? (
-        <OrderDetailCard
-          order={props.selectedOrder}
-          attachments={props.selectedAttachments}
-          draftNotes={props.draftNotes}
-          setDraftNotes={props.setDraftNotes}
-          handleSaveNotes={props.handleSaveNotes}
-          handleCheckpoint={props.handleCheckpoint}
-          handlePaymentIntent={props.handlePaymentIntent}
-          handlePhoto={props.handlePhoto}
-          handleSignature={props.handleSignature}
-          compact={props.compact}
-        />
-      ) : null}
-    </section>
-  );
-}
-
-function OrderList({ orders, selectedOrder, selectOrder }: Pick<SharedContentProps, 'orders' | 'selectedOrder' | 'selectOrder'>) {
-  return (
-    <div className="order-list">
-      {orders.map((order) => (
-        <button
-          className={`order-card ${order.id === selectedOrder?.id ? 'selected' : ''}`}
-          key={order.id}
-          onClick={() => selectOrder(order, 'orders')}
-        >
-          <span className="order-id">#{order.id.slice(-8)}</span>
-          <strong>{order.product}</strong>
-          <span>Cliente: {order.customerName}</span>
-          <small className={`status ${order.paymentStatus}`}>{statusLabel(order)}</small>
-          <div className="mini-timeline" aria-label={`Progresso do pedido ${order.id}`}>
-            {order.checkpoints.map((checkpoint) => (
-              <i key={checkpoint.key} className={checkpoint.completed ? 'done' : ''} aria-label={checkpoint.label} />
-            ))}
+            <div className="flex flex-wrap gap-2">
+              <Button asChild size="lg">
+                <a href="https://dashboard.aneety.com/">
+                  Abrir dashboard
+                  <ArrowUpRight />
+                </a>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <a href="https://api.aneety.com/api/health">
+                  Ver API
+                  <ArrowUpRight />
+                </a>
+              </Button>
+            </div>
           </div>
-        </button>
-      ))}
-    </div>
-  );
-}
 
-function NewOrderPanel({ newOrderForm, setNewOrderForm, handleCreateOrder, compact }: SharedContentProps & { compact?: boolean }) {
-  function updateField(key: keyof NewOrderForm, value: string) {
-    setNewOrderForm({ ...newOrderForm, [key]: value });
-  }
+          <Alert>
+            <ShieldCheck />
+            <AlertTitle>Arquitetura vigente única</AlertTitle>
+            <AlertDescription>
+              Sem NestJS, VPS, Render, MongoDB/Mongoose, GridFS ou backend browser-local como alvo. Critérios de aceite usam Worker/Hono, Supabase/Postgres real e URLs públicas em aneety.com.
+            </AlertDescription>
+          </Alert>
+        </header>
 
-  return (
-    <section className={compact ? 'mobile-panel' : 'order-detail'} aria-label="Novo pedido">
-      <h2>Novo pedido</h2>
-      <form className="order-form" onSubmit={handleCreateOrder}>
-        <label>
-          Cliente
-          <input value={newOrderForm.customerName} onChange={(event) => updateField('customerName', event.target.value)} />
-        </label>
-        <label>
-          Telefone
-          <input value={newOrderForm.customerPhone} onChange={(event) => updateField('customerPhone', event.target.value)} />
-        </label>
-        <label>
-          Endereço de entrega
-          <input value={newOrderForm.deliveryAddress} onChange={(event) => updateField('deliveryAddress', event.target.value)} />
-        </label>
-        <label>
-          Produto
-          <input value={newOrderForm.product} onChange={(event) => updateField('product', event.target.value)} />
-        </label>
-        <label className="wide-field">
-          Observações do pedido
-          <textarea value={newOrderForm.notes} onChange={(event) => updateField('notes', event.target.value)} />
-        </label>
-        <div className="form-note">
-          <strong>Offline-first</strong>
-          <span>O pedido fica no IndexedDB e entra na fila do mock até sincronizar.</span>
-        </div>
-        <button className="primary-button" type="submit">Salvar novo pedido offline</button>
-      </form>
-    </section>
-  );
-}
-
-function ClinicsAdminPanel({ orders, compact }: SharedContentProps & { compact?: boolean }) {
-  const clinicNames = Array.from(new Set(orders.map((order) => order.customerName)));
-  const moldOrders = orders.filter((order) => order.product.toLocaleLowerCase('pt-BR').includes('molde'));
-  const pendingMolds = moldOrders.filter((order) => order.status !== 'delivered');
-
-  return (
-    <section className={compact ? 'mobile-panel admin-panel' : 'order-detail admin-panel'} aria-label="Consultórios e moldes">
-      <p className="breadcrumb">Administração › Consultórios e moldes</p>
-      <h2>{tenantConfig.clinicAdminTitle}</h2>
-      <p>{tenantConfig.clinicAdminSubtitle}</p>
-      <div className="admin-kpis">
-        <article>
-          <strong>{clinicNames.length}</strong>
-          <span>Consultórios e clientes ativos</span>
-        </article>
-        <article>
-          <strong>{moldOrders.length}</strong>
-          <span>Moldes em produção</span>
-        </article>
-        <article>
-          <strong>{pendingMolds.length}</strong>
-          <span>Pedidos aguardando conclusão</span>
-        </article>
-      </div>
-      <ul className="admin-list">
-        {orders.map((order) => (
-          <li key={order.id}>
-            <strong>{order.customerName}</strong>
-            <span>{order.product} · {statusLabel(order)} · {paymentLabel(order)}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function ProductionAdminPanel({ orders, compact }: SharedContentProps & { compact?: boolean }) {
-  const inProduction = orders.filter((order) =>
-    ['paid', 'picked_up', 'in_production', 'ready_for_delivery'].includes(order.status)
-  );
-  const readyForDelivery = orders.filter((order) =>
-    ['ready_for_delivery', 'delivery_scheduled', 'delivered'].includes(order.status) ||
-    order.checkpoints.some((checkpoint) => checkpoint.key === 'delivery_checkin' && checkpoint.completed)
-  );
-
-  return (
-    <section className={compact ? 'mobile-panel admin-panel' : 'order-detail admin-panel'} aria-label="Produção de próteses">
-      <p className="breadcrumb">Administração › Produção de próteses</p>
-      <h2>{tenantConfig.productionAdminTitle}</h2>
-      <p>{tenantConfig.productionAdminSubtitle}</p>
-      <div className="admin-kpis">
-        <article>
-          <strong>{orders.length}</strong>
-          <span>Pedidos no pipeline</span>
-        </article>
-        <article>
-          <strong>{inProduction.length}</strong>
-          <span>Próteses em produção</span>
-        </article>
-        <article>
-          <strong>{readyForDelivery.length}</strong>
-          <span>Próteses prontas para entrega</span>
-        </article>
-      </div>
-      <ol className="admin-list">
-        {orders.map((order) => (
-          <li key={order.id}>
-            <strong>#{order.id} · {order.product}</strong>
-            <span>{order.customerName} · pagamento {paymentLabel(order)} · {statusLabel(order)}</span>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
-function WorkflowPanel({ title, keys, selectedOrder, handleCheckpoint, compact }: SharedContentProps & { title: string; keys: CheckpointKey[]; compact?: boolean }) {
-  return (
-    <section className={compact ? 'mobile-panel workflow-panel' : 'order-detail'} aria-label={`${title} operacional`}>
-      <h2>{title}</h2>
-      {selectedOrder ? (
-        <div className="workflow-card">
-          <p className="breadcrumb">Pedido selecionado › #{selectedOrder.id}</p>
-          <h3>{selectedOrder.customerName}</h3>
-          <p>{selectedOrder.deliveryAddress}</p>
-          <div className="workflow-actions">
-            {keys.map((key) => {
-              const checkpoint = selectedOrder.checkpoints.find((item) => item.key === key);
-              return (
-                <article key={key} className={checkpoint?.completed ? 'checkpoint-card complete' : 'checkpoint-card'}>
-                  <strong>{checkpoint?.label ?? checkpointButtonLabel(key)}</strong>
-                  <span>{checkpoint?.completed ? `Concluído em ${fmt(checkpoint.timestamp)}` : 'Aguardando execução'}</span>
-                  {checkpoint?.actor ? <small>{checkpoint.actor}</small> : null}
-                  <button className="secondary-button" type="button" onClick={() => handleCheckpoint(key)}>
-                    {checkpointButtonLabel(key)}
-                  </button>
-                </article>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        <p>Nenhum pedido selecionado.</p>
-      )}
-    </section>
-  );
-}
-
-function SyncQueuePanel({ queue, handleSync, compact }: SharedContentProps & { compact?: boolean }) {
-  return (
-    <section className={compact ? 'mobile-panel sync-panel' : 'order-detail'} aria-label="Fila de sincronização">
-      <h2>Sincronização offline</h2>
-      <div className="queue-summary">
-        <strong>Itens pendentes: {queue.length}</strong>
-        <button className="primary-button" onClick={handleSync}>Sincronizar agora</button>
-      </div>
-      {queue.length ? (
-        <ol className="queue-list">
-          {queue.map((item) => (
-            <li key={item.id}>
-              <strong>{syncOperationLabels[item.operation]}</strong>
-              <code>{item.operation}</code>
-              <span>Pedido: {item.orderId}</span>
-              <span>Tentativas: {item.attempts}</span>
-              {item.lastError ? <small>Erro: {item.lastError}</small> : null}
-            </li>
+        <section className="grid gap-4 md:grid-cols-2">
+          {checks.map((check) => (
+            <StatusCard key={check.key} check={check} />
           ))}
-        </ol>
-      ) : (
-        <p className="empty-state">Fila vazia. Mock browser-side está sincronizado.</p>
-      )}
-    </section>
-  );
-}
+        </section>
 
-function OrderDetailCard({
-  order,
-  attachments,
-  draftNotes,
-  setDraftNotes,
-  handleSaveNotes,
-  handleCheckpoint,
-  handlePaymentIntent,
-  handlePhoto,
-  handleSignature,
-  compact
-}: {
-  order: Order;
-  attachments: Attachment[];
-  draftNotes: string;
-  setDraftNotes: (notes: string) => void;
-  handleSaveNotes: () => void;
-  handleCheckpoint: (key: CheckpointKey) => void;
-  handlePaymentIntent: () => void;
-  handlePhoto: (file?: File) => void;
-  handleSignature: (blob: Blob) => void;
-  compact?: boolean;
-}) {
-  return (
-    <article className={compact ? 'selected-order-detail' : undefined}>
-      <p className="breadcrumb">Pedidos › #{order.id}</p>
-      <section className="hero-card">
-        <div>
-          <h2>#{order.id.slice(-8)} · {order.product}</h2>
-          <p>Cliente: {order.customerName} <span className={`status ${order.paymentStatus}`}>{paymentLabel(order)}</span></p>
-        </div>
-        <button className="primary-button" onClick={handleSaveNotes}>Salvar edição</button>
-      </section>
+        <Tabs defaultValue="apps" className="flex flex-col gap-4">
+          <TabsList className="w-full justify-start overflow-x-auto md:w-fit">
+            <TabsTrigger value="apps">Apps publicados</TabsTrigger>
+            <TabsTrigger value="requirements">Checklist REQ.md</TabsTrigger>
+            <TabsTrigger value="coverage">Próxima cobertura</TabsTrigger>
+          </TabsList>
 
-      <div className="detail-grid">
-        <section className="panel">
-          <h3>Linha do tempo operacional</h3>
-          <ol className="timeline">
-            {order.checkpoints.map((checkpoint) => (
-              <li className={checkpoint.completed ? 'complete' : ''} key={checkpoint.key}>
-                <span aria-hidden="true">✓</span>
-                <div>
-                  <strong>{checkpoint.label}</strong>
-                  <p>{fmt(checkpoint.timestamp)}</p>
-                  {checkpoint.actor ? <p>{checkpoint.actor}</p> : null}
-                  <button type="button" className="secondary-button" onClick={() => handleCheckpoint(checkpoint.key)}>
-                    {checkpointButtonLabel(checkpoint.key)}
-                  </button>
-                </div>
-              </li>
+          <TabsContent value="apps" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {surfaces.map((surface) => (
+              <SurfaceCard key={surface.repo} surface={surface} />
             ))}
-          </ol>
-        </section>
+          </TabsContent>
 
-        <section className="panel details-panel">
-          <h3>Detalhes do pedido</h3>
-          <dl>
-            <dt>Tipo</dt><dd>{order.product}</dd>
-            <dt>Cliente</dt><dd>{order.customerName}</dd>
-            <dt>Telefone</dt><dd>{order.customerPhone}</dd>
-            <dt>Endereço de entrega</dt><dd>{order.deliveryAddress}</dd>
-            <dt>Status de pagamento</dt><dd><span className={`status ${order.paymentStatus}`}>{paymentLabel(order)}</span></dd>
-            <dt>Versão local</dt><dd>{order.version}</dd>
-          </dl>
-          <label className="field-block">
-            Observações
-            <textarea value={draftNotes} onChange={(event) => setDraftNotes(event.target.value)} />
-          </label>
-          <div className="payment-box">
-            <strong>▣ Pagamento online</strong>
-            <p>Ação disponível apenas com conexão à internet.</p>
-            <button className="primary-button" onClick={handlePaymentIntent}>Criar pagamento mock</button>
-          </div>
-          <div className="media-box">
-            <strong>Anexos offline</strong>
-            <input aria-label="Adicionar foto do molde" type="file" accept="image/*" onChange={(event) => handlePhoto(event.target.files?.[0])} />
-            <SignaturePad onSave={handleSignature} />
-            <p>{attachments.length} anexos locais deste pedido.</p>
-          </div>
-        </section>
-      </div>
-    </article>
-  );
-}
+          <TabsContent value="requirements">
+            <Card>
+              <CardHeader>
+                <CardTitle>Checklist rastreável do contrato</CardTitle>
+                <CardDescription>Itens derivados de REQ.md para validação contínua do monitor.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="grid gap-3 md:grid-cols-2">
+                  {requirements.map((item) => (
+                    <li key={item} className="flex items-start gap-3 rounded-lg border bg-background p-3">
+                      <CheckCircle2 className="mt-0.5 size-4 text-primary" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-function MockAdmin({ mode }: { mode: ApiMode }) {
-  const appHref = import.meta.env.BASE_URL;
-  const [state, setState] = useState<string>('Carregando mock...');
-  const [queue, setQueue] = useState<SyncQueueItem[]>([]);
+          <TabsContent value="coverage">
+            <Card>
+              <CardHeader>
+                <CardTitle>Evolução segura</CardTitle>
+                <CardDescription>Não ampliar E2E sem manter docs, smoke, Cloudflare, Supabase, shadcn e E2E existentes verdes.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ol className="grid gap-3 md:grid-cols-2">
+                  {nextCoverage.map((item, index) => (
+                    <li key={item} className="flex items-start gap-3 rounded-lg border bg-background p-3">
+                      <Badge variant="outline">{index + 1}</Badge>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ol>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
-  async function refresh() {
-    const [mockState, syncItems] = await Promise.all([exportMockBackendState(), getPendingSyncItems()]);
-    setState(JSON.stringify(mockState, null, 2));
-    setQueue(syncItems);
-  }
-
-  useEffect(() => {
-    void refresh();
-  }, []);
-
-  async function reset() {
-    await resetMockBackendState();
-    await refresh();
-  }
-
-  return (
-    <main className="mock-page">
-      <section className="mock-panel">
-        <a href={appHref}>← Voltar ao app</a>
-        <h1>Lia adapter local legado</h1>
-        <p>Modo ativo: <strong>{mode}</strong>. Este adapter legado roda no IndexedDB do navegador; a arquitetura alvo usa Cloudflare Workers + Supabase.</p>
-        <div className="mock-actions">
-          <button className="primary-button" onClick={refresh}>Atualizar export</button>
-          <button className="secondary-button" onClick={reset}>Resetar seed mock</button>
-        </div>
-        <p>Fila local pendente: {queue.length}</p>
-        <textarea readOnly value={state} aria-label="Export JSON do adapter local" />
+        <footer className="flex flex-col gap-3 rounded-2xl border bg-card p-5 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
+          <span>Status público: {allHealthy ? 'API e banco saudáveis' : 'verificação em andamento ou com erro'} · atualizado em {updatedAt}</span>
+          <Button variant="outline" size="sm" onClick={() => void refreshStatus()}>
+            <RefreshCw />
+            Atualizar status
+          </Button>
+        </footer>
       </section>
     </main>
   );
 }
 
-export default App;
+function createInitialChecks(): ServiceCheck[] {
+  return [
+    {
+      key: 'api',
+      label: 'Worker/Hono',
+      href: `${apiBaseUrl}/api/health`,
+      icon: Cloud,
+      status: 'checking',
+      detail: 'Consultando health público da API.'
+    },
+    {
+      key: 'database',
+      label: 'Supabase/Postgres',
+      href: `${apiBaseUrl}/api/db/health`,
+      icon: Database,
+      status: 'checking',
+      detail: 'Consultando db/health via Worker.'
+    }
+  ];
+}
+
+async function fetchJson(url: string): Promise<HealthResponse> {
+  const response = await fetch(url, { headers: { accept: 'application/json' } });
+  if (!response.ok) throw new Error(`GET ${url} failed with ${response.status}`);
+  return response.json() as Promise<HealthResponse>;
+}
+
+function StatusCard({ check }: { check: ServiceCheck }) {
+  const Icon = check.icon;
+  const badgeVariant = check.status === 'error' ? 'destructive' : check.status === 'ok' ? 'default' : 'outline';
+  const badgeLabel = check.status === 'checking' ? 'verificando' : check.status;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Icon className="size-4" />
+          {check.label}
+        </CardTitle>
+        <CardDescription>{check.href}</CardDescription>
+        <CardAction>
+          <Badge variant={badgeVariant}>{badgeLabel}</Badge>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">{check.detail}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SurfaceCard({ surface }: { surface: (typeof surfaces)[number] }) {
+  const Icon = surface.icon;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Icon className="size-4" />
+          {surface.name}
+        </CardTitle>
+        <CardDescription>{surface.repo}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <p className="text-sm text-muted-foreground">{surface.responsibility}</p>
+        <Separator />
+        <Button asChild variant="outline" size="sm" className="w-fit">
+          <a href={surface.href}>
+            Abrir superfície
+            <ArrowUpRight />
+          </a>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}

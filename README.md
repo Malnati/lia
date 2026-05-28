@@ -38,7 +38,7 @@ O repositório `lia` não deve concentrar backend, core, dashboard, desktop ou P
 
 ## Stack
 
-- **Portal/frontends:** React, Vite, TypeScript e Cloudflare Pages Free.
+- **Portal:** React, Vite, TypeScript, Tailwind, shadcn/ui e Cloudflare Pages Free.
 - **API:** Cloudflare Workers Free + Hono.
 - **Banco:** Supabase/Postgres Free.
 - **Auth:** Supabase Auth + RLS.
@@ -46,23 +46,13 @@ O repositório `lia` não deve concentrar backend, core, dashboard, desktop ou P
 
 ## Estado atual
 
-Este repositório ainda contém o PWA legado com persistência browser-side para preservar histórico e validações existentes enquanto os repos separados assumem a implementação real. Qualquer menção a mock/Pages antigo é dívida de migração, não critério de aceite, conforme [`REQ.md`](REQ.md).
+Este repositório publica somente o portal orquestrador em `https://aneety.com/`. O portal exibe navegação para os apps publicados, status do Worker/Hono e `db/health` do Supabase/Postgres real. Implementações de PWA, desktop, dashboard, core e backend vivem nos seus repositórios próprios.
 
-## Prints das telas
+## Print da tela
 
-Os prints abaixo são do PWA legado e devem ser regenerados quando houver mudança visual. Esta mudança alterou arquitetura/domínios/configuração, não layout.
+O print abaixo é regenerado quando houver mudança visual no portal.
 
-### App mobile PWA
-
-![Lia PWA em viewport mobile com white-label, consultórios, produção, fila offline e pedidos](docs/screenshots/lia-mobile.png)
-
-### Painel desktop/admin
-
-![Lia painel desktop/admin legado com white-label, consultórios, produção, checkpoints, pagamento operacional e anexos offline](docs/screenshots/lia-desktop.png)
-
-### Tela legado de adapter local
-
-![Lia adapter local legado com export JSON e fila local pendente](docs/screenshots/lia-mock-backend.png)
+![Portal Lia com status Worker/Hono, Supabase/Postgres e navegação multi-repo](docs/screenshots/lia-portal.png)
 
 ## Guias de usuário
 
@@ -79,7 +69,7 @@ pnpm dev
 
 URLs locais padrão:
 
-- Portal/PWA legado: <http://localhost:5173/>
+- Portal: <http://localhost:5173/>
 
 ## Variáveis de ambiente
 
@@ -98,7 +88,7 @@ URLs locais padrão:
 ## Scripts
 
 ```bash
-pnpm lint               # typecheck do portal/PWA legado
+pnpm lint               # typecheck do portal
 pnpm test               # testes unitários
 pnpm build              # build local padrão
 pnpm build:cloudflare   # build para Cloudflare Pages em aneety.com
@@ -124,7 +114,7 @@ Domínio esperado: `https://aneety.com/`.
 - `.env` é ignorado pelo Git.
 - `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_KEY` e `SUPABASE_DIRECT_CONNECTION_STRING` nunca devem entrar em bundle frontend.
 - Se secrets/rotas reais faltarem, bloquear deploy real e implementar apenas scaffolds, docs, tipos e testes.
-- Testes/rotas `/mock` existentes são legado e não contam como aceitação da arquitetura vigente.
+- E2E e validações de aceite usam apenas URLs públicas `aneety.com` e API real Worker/Hono.
 
 ## E2E publicado
 
