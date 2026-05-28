@@ -14,6 +14,8 @@
 - Credenciais são armazenadas apenas como hash forte e salgado, nunca em texto puro.
 - Sessões têm expiração, revogação, rotação e vínculo explícito com identidade, tenant e perfil efetivo.
 - Frontends e microfrontends Single SPA nunca acessam banco diretamente.
+- Mapas e rastreabilidade em tempo real usam eventos e snapshots com permissão por tenant/perfil; fornecedor de mapa não define regra de domínio.
+- Pedidos, moldes, próteses, retirada, entrega e evidências odontológicas são seeds/demo/test mass, não limite do modelo.
 
 ## Posse e isolamento
 
@@ -65,11 +67,15 @@ Associação entre perfil e permissões. Campos mínimos: `id`, `tenant_id`, `ac
 
 ### `orders`
 
-Pedido operacional. Campos mínimos: `id`, `tenant_id`, `client_reference`, `customer_name`, `customer_phone`, `delivery_address`, `product`, `status`, `payment_status`, `assigned_to`, `notes`, `version`, `created_at`, `updated_at`.
+Pedido customizado. Campos mínimos: `id`, `tenant_id`, `client_reference`, `consumer_name`, `consumer_phone`, `delivery_address`, `product_or_service`, `customization_spec`, `quality_status`, `status`, `payment_status`, `assigned_to`, `notes`, `version`, `created_at`, `updated_at`.
 
 ### `order_checkpoints`
 
-Etapas e evidências do pedido. Campos mínimos: `id`, `tenant_id`, `order_id`, `key`, `label`, `completed`, `actor_user_id`, `occurred_at`, `notes`, `created_at`, `updated_at`.
+Etapas e evidências do pedido. Campos mínimos: `id`, `tenant_id`, `order_id`, `key`, `label`, `completed`, `requires_quality_approval`, `actor_user_id`, `occurred_at`, `notes`, `created_at`, `updated_at`.
+
+### `quality_reviews`
+
+Revisões de qualidade do pedido ou item personalizado. Campos mínimos: `id`, `tenant_id`, `order_id`, `checkpoint_id`, `review_status`, `reviewer_user_id`, `notes`, `occurred_at`, `created_at`.
 
 ### `attachments`
 
@@ -85,7 +91,7 @@ Fila e auditoria de sincronização offline. Campos mínimos: `id`, `tenant_id`,
 
 ### `marketplace_actors`
 
-Consultórios, bureaus/produtores e entregadores listáveis. Campos mínimos: `id`, `tenant_id`, `actor_type`, `public_name`, `avatar_url`, `approx_location`, `price_label`, `score`, `contact_label`, `availability`, `status`, `created_at`, `updated_at`.
+Consumidores, produtores, operadores e entregadores listáveis. Campos mínimos: `id`, `tenant_id`, `actor_type`, `public_name`, `avatar_url`, `approx_location`, `price_label`, `score`, `contact_label`, `availability`, `status`, `created_at`, `updated_at`.
 
 ### `marketplace_favorites`
 
@@ -93,7 +99,7 @@ Favoritos por tenant/usuário. Campos mínimos: `id`, `tenant_id`, `app_user_id`
 
 ### `production_demands`
 
-Demandas para bureaus/produtores. Campos mínimos: `id`, `tenant_id`, `order_id`, `requested_by_actor_id`, `producer_actor_id`, `status`, `rejection_reason`, `created_at`, `updated_at`.
+Demandas para produtores, operadores ou equipes responsáveis pelo produto/serviço customizado. Campos mínimos: `id`, `tenant_id`, `order_id`, `requested_by_actor_id`, `producer_actor_id`, `status`, `rejection_reason`, `created_at`, `updated_at`.
 
 ### `delivery_demands`
 
@@ -103,14 +109,28 @@ Demandas para entregadores. Campos mínimos: `id`, `tenant_id`, `order_id`, `req
 
 Fotos e evidências de retirada/entrega. Campos mínimos: `id`, `tenant_id`, `delivery_demand_id`, `order_id`, `checkpoint_key`, `attachment_id`, `origin_label`, `destination_label`, `actor_user_id`, `occurred_at`, `created_at`.
 
+### `tracking_events`
+
+Eventos de rastreabilidade em tempo real para status, localização e evidências. Campos mínimos: `id`, `tenant_id`, `order_id`, `actor_user_id`, `event_type`, `status`, `latitude`, `longitude`, `accuracy_meters`, `occurred_at`, `metadata`, `created_at`.
+
+### `map_snapshots`
+
+Snapshots calculados para exibição de mapas e acompanhamento operacional. Campos mínimos: `id`, `tenant_id`, `order_id`, `delivery_demand_id`, `current_status`, `last_latitude`, `last_longitude`, `last_event_at`, `route_summary`, `visibility_scope`, `updated_at`.
+
 ### `audit_events`
 
 Auditoria de ações sensíveis. Campos mínimos: `id`, `tenant_id`, `actor_identity_id`, `actor_user_id`, `action`, `entity`, `entity_id`, `metadata`, `created_at`.
+
+### `demo_seed_cases`
+
+Catálogo de seeds e massas de teste. Campos mínimos: `id`, `tenant_id`, `scenario_key`, `vertical_label`, `description`, `payload`, `created_at`, `updated_at`.
 
 ## Índices mínimos
 
 - `tenant_id` em todas as tabelas operacionais.
 - `(tenant_id, status, updated_at desc)` em pedidos, demandas, pagamentos e sync.
+- `(tenant_id, order_id, occurred_at desc)` em eventos de rastreabilidade.
+- `(tenant_id, order_id, updated_at desc)` em snapshots de mapa.
 - FKs com índice líder.
 - `auth_sessions` por hash de token e expiração.
 - `app_identities` por `(tenant_id, email)` e `(tenant_id, phone)` quando aplicável.
@@ -123,4 +143,5 @@ Auditoria de ações sensíveis. Campos mínimos: `id`, `tenant_id`, `actor_iden
 - Escrita depende de permissão efetiva no perfil.
 - Admin de tenant não atravessa tenant.
 - Admin de plataforma opera com trilha de auditoria.
+- Dados de mapa e localização respeitam escopo de visibilidade por tenant, pedido, perfil e etapa.
 - Policies devem funcionar no schema do BFF e continuar portáveis para banco físico futuro.
