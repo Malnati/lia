@@ -1,5 +1,7 @@
 # REQ — Lia
 
+> **Status histórico:** este documento preserva o contrato e as decisões do MVP Lia até a migração para a organização Aneety. A documentação canônica futura e vigente do novo produto fica em [Aneety/.github/docs](https://github.com/Aneety/.github/tree/main/docs), com orquestrador limpo em [Aneety/ai](https://github.com/Aneety/ai). Não use este arquivo como fonte de novas implementações Aneety.
+
 ## Origem
 
 Exportado e atualizado nesta conversa em 2026-05-27.

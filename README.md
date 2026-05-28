@@ -1,5 +1,7 @@
 # Lia
 
+> **Status histórico:** este repositório está preservado como fonte histórica do MVP Lia. A nova plataforma nasce na organização [Aneety](https://github.com/Aneety), com documentação canônica em [Aneety/.github/docs](https://github.com/Aneety/.github/tree/main/docs) e orquestrador limpo em [Aneety/ai](https://github.com/Aneety/ai). Não use este repositório como contrato futuro de implementação.
+
 [![CI](https://github.com/Malnati/lia/actions/workflows/ci.yml/badge.svg)](https://github.com/Malnati/lia/actions/workflows/ci.yml)
 
 **Lia** é o portal integrador da plataforma white-label para pedidos, produção, retirada, entrega, anexos, pagamentos e administração de próteses dentárias.
@@ -10,8 +12,8 @@
 - PWA mobile: <https://pwa.aneety.com/>
 - Desktop operacional: <https://desktop.aneety.com/>
 - Dashboard administrativo: <https://dashboard.aneety.com/>
-- Documentação de transição do novo produto: [`docs/new`](docs/new/)
-- Contrato legado Lia: [`REQ.md`](REQ.md) — histórico, não contrato do novo produto Aneety.
+- Documentação canônica do novo produto: [Aneety/.github/docs](https://github.com/Aneety/.github/tree/main/docs)
+- Contrato legado Lia: [`REQ.md`](REQ.md) — histórico, não contrato futuro do novo produto Aneety.
 - Documentação canônica de arquitetura e repositórios: [`Aneety/.github`](https://github.com/Aneety/.github.git)
 
 > Decisão vigente: Cloudflare Pages Free para frontends estáticos, Cloudflare Workers Free + Hono para API, Supabase/Postgres Free para base real. Não usar NestJS, VPS, Render, MongoDB ou mock browser-side como arquitetura alvo.
