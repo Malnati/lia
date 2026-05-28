@@ -6,6 +6,10 @@
 - No MVP, a operação usa Supabase/Postgres com schema por BFF.
 - No futuro, a operação deve poder migrar para Postgres com banco de dados por BFF.
 - Cada schema pertence ao `db-<nome>` da mesma responsabilidade do BFF `worker-<nome>`.
+- Cada schema deve ser independente dos demais schemas.
+- Quando for necessário relacionar um dado com outro dado de outro schema, a ligação lógica deve usar identificadores externos com sufixo `_eid` (`External ID`), não dependência física direta entre schemas.
+- As modelagens devem assumir migração futura para bases de dados completamente separadas, inclusive em servidores Postgres distintos.
+- Essas definições são obrigatórias para todas as modelagens de dados.
 - Toda entidade operacional tem `tenant_id`.
 - Chaves primárias usam UUID.
 - Datas usam `timestamptz`.
