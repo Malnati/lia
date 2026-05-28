@@ -38,3 +38,17 @@
 - UI com estados de carregando, vazio, erro e sucesso.
 - E2E ou smoke executado quando houver URL publicada.
 - Sem segredos em diffs, logs ou bundle.
+
+## Gate de serviços externos
+
+Antes de aceitar qualquer dependência externa, confirmar:
+
+- função semântica classificada, sem usar marca como requisito de produto;
+- custo zero ou decisão explícita de bloqueio;
+- dados trafegados/armazenados e segredos envolvidos;
+- owner do módulo e contrato local versionado;
+- adapter substituível ou plano de saída;
+- testes smoke/E2E cobrindo a função e o modo de falha;
+- ausência de segredo privilegiado em frontend, Git, bundle, log ou screenshot.
+
+Se qualquer fornecedor exigir upgrade pago, runtime não permitido, lock-in de autenticação, lock-in de domínio ou acesso direto de frontend a banco/segredo, o incremento fica bloqueado até redesenho.

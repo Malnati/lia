@@ -72,3 +72,11 @@ Aneety Platform deve oferecer operação white-label de próteses dentárias, in
 - Frontends não exigem variável pública de banco para login.
 - Migrations e seeds ficam versionados no monorepo.
 - Cada app usa shadcn/ui e tokens semânticos.
+
+### Serviços externos por função semântica
+
+- Hospedagem, API, banco, storage, CI, DNS/CDN, pagamentos, mensagens, e-mail, mapas, IA, observabilidade, filas e analytics devem ser requisitos por função, não por fornecedor.
+- Qualquer serviço usado deve declarar dados tratados, segredos envolvidos, custo, alternativa de saída, contrato local e testes de degradação.
+- Serviços pagos ou upgrades de plano não são caminho obrigatório enquanto o requisito exigir custo zero.
+- Autenticação de usuário final pertence ao modelo de dados e à API Aneety; provedor externo de identidade pode existir apenas como adapter opcional futuro, nunca como requisito de login.
+- Se um serviço externo ficar indisponível, a plataforma deve preservar integridade do pedido, sessão, permissões, anexos e auditoria conforme o contrato local.

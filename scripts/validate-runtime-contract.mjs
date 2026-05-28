@@ -34,7 +34,11 @@ const violations = [];
 const requiredSemanticContractFiles = [
   ['lia/REQ.md', 'Política semântica de uso de serviços externos'],
   ['lia/README.md', 'Limites semânticos para serviços externos'],
-  ['lia/docs/COVERAGE_MATRIX.md', 'Política semântica de serviços externos']
+  ['lia/docs/COVERAGE_MATRIX.md', 'Política semântica de serviços externos'],
+  ['lia/docs/new/README.md', 'Serviços externos por semântica'],
+  ['lia/docs/new/01-arquitetura.md', 'Limites semânticos de serviços externos'],
+  ['lia/docs/new/02-requisitos.md', 'Serviços externos por função semântica'],
+  ['lia/docs/new/03-processos.md', 'Gate de serviços externos']
 ];
 
 for (const [relativeFile, phrase] of requiredSemanticContractFiles) {

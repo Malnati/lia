@@ -27,6 +27,27 @@ packages/ui-tokens Tokens white-label, temas e contratos visuais compartilhávei
 - Pagamentos como adapter; pedido e conciliação permanecem no domínio Aneety.
 - Observabilidade, mensagens, mapas e integrações futuras entram por interfaces substituíveis.
 
+## Limites semânticos de serviços externos
+
+Cloudflare, GitHub, Supabase, provedores de storage, pagamento, e-mail, mapas, IA, observabilidade ou qualquer serviço equivalente são **meios substituíveis**, não requisitos de produto por marca. A decisão arquitetural deve sempre registrar a função semântica exercida:
+
+- hospedagem estática de frontend/core;
+- runtime stateless de API;
+- banco transacional relacional;
+- autenticação e autorização modeladas no banco da plataforma;
+- armazenamento de bytes com metadados e permissão no Postgres;
+- versionamento, PR e CI;
+- DNS/CDN;
+- integrações auxiliares como pagamentos, mensagens, e-mail, mapas, IA, filas, analytics e observabilidade.
+
+Limites obrigatórios:
+
+- nenhum serviço pago, proprietário ou específico de fornecedor pode virar caminho obrigatório de aceite;
+- SDK, claim, id de usuário, URL ou recurso exclusivo de fornecedor não pode definir regra de domínio;
+- cada integração deve ter contrato local, dados tratados, segredos, custo, owner, testes e plano de saída;
+- smoke/E2E validam a função semântica, não apenas o nome do fornecedor;
+- frontends nunca dependem de banco, IdP externo ou chave pública de fornecedor para autenticação.
+
 ## Fluxo de dados
 
 1. Usuário entra por portal, PWA, desktop ou dashboard.
