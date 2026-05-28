@@ -13,6 +13,7 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 5. [Modelagem de banco de dados](04-modelagem-banco.md)
 6. [Estrutura de repositórios](05-estrutura-repositorios.md)
 7. [Ciclos de desenvolvimento por cobertura](06-ciclos-cobertura.md)
+8. [Descrição do produto](07-descricao-produto.md)
 
 ## Fronteira dos documentos
 
