@@ -7,6 +7,8 @@ const publicApps = [
   { name: 'dashboard', url: 'https://dashboard.aneety.com/', text: /Lia Dashboard/i }
 ];
 
+const forbiddenGitHubRuntime = /github\.io|gh-pages|pages\.github/i;
+
 test('validates the published portal and real Worker health on aneety.com', async ({ page, request }) => {
   await page.goto('/');
 
@@ -28,6 +30,9 @@ test('validates the published portal and real Worker health on aneety.com', asyn
   await page.getByRole('tab', { name: 'Próxima cobertura' }).click();
   await expect(page.getByText('Estados visíveis shadcn para loading, erro, vazio e sucesso.')).toBeVisible();
   await page.getByRole('tab', { name: 'Apps publicados' }).click();
+  for (const href of await page.locator('a').evaluateAll((links) => links.map((link) => link.href))) {
+    expect(href).not.toMatch(forbiddenGitHubRuntime);
+  }
 
   const health = await request.get('https://api.aneety.com/api/health');
   await expect(health).toBeOK();
@@ -45,8 +50,12 @@ test('validates the published portal and real Worker health on aneety.com', asyn
 
 for (const app of publicApps) {
   test(`validates published ${app.name} surface on aneety.com`, async ({ request }) => {
+    expect(app.url).not.toMatch(forbiddenGitHubRuntime);
+    expect(new URL(app.url).hostname).toMatch(/(^|\.)aneety\.com$/);
     const response = await request.get(app.url);
     await expect(response).toBeOK();
+    expect(response.url()).not.toMatch(forbiddenGitHubRuntime);
+    expect(new URL(response.url()).hostname).toMatch(/(^|\.)aneety\.com$/);
     const body = await response.text();
     expect(body).toMatch(app.text);
   });

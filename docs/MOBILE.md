@@ -5,6 +5,8 @@
 - PWA mobile: <https://pwa.aneety.com/>
 - API real: <https://api.aneety.com/>
 
+GitHub Pages, se existir para este conteúdo, é somente guia de usuário. O PWA real roda no Cloudflare Pages em `pwa.aneety.com`.
+
 ## Fluxo alvo
 
 1. Acessar `pwa.aneety.com` no celular.

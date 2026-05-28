@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 
@@ -63,6 +63,14 @@ describe('Lia portal integrador', () => {
       'https://dashboard.aneety.com/'
     ]) {
       expect(document.querySelector(`a[href="${href}"]`)).toBeTruthy();
+    }
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Checklist REQ.md' }));
+    await waitFor(() =>
+      expect(screen.getByText(/GitHub é versionamento\/CI; GitHub Pages só pode ser guia, nunca app Lia/i)).toBeInTheDocument()
+    );
+    for (const link of Array.from(document.querySelectorAll('a[href]'))) {
+      expect(link.getAttribute('href')).not.toMatch(/github\.io|gh-pages/i);
     }
   });
 });
