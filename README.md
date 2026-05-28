@@ -76,6 +76,7 @@ O print abaixo é regenerado quando houver mudança visual no portal.
 
 - [Guia mobile/PWA](docs/MOBILE.md)
 - [Guia desktop/admin](docs/DESKTOP.md)
+- [Marketplace operacional](docs/MARKETPLACE_OPERACIONAL.md)
 - [Matriz de cobertura](docs/COVERAGE_MATRIX.md)
 
 ## Setup local

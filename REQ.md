@@ -22,6 +22,7 @@ Atualização operacional de 2026-05-27: o projeto Supabase `mqxwdyhtsvzzehmdfht
 - produção de moldes por consultórios ou equipes associadas;
 - produção de próteses por laboratórios/bureaus;
 - retirada, entrega e rastreio operacional;
+- marketplace operacional para listar consultórios, bureaus/produtores de próteses e entregadores, conforme `docs/MARKETPLACE_OPERACIONAL.md`;
 - pagamento online;
 - administração de usuários, perfis, permissões, tenants e operação.
 
