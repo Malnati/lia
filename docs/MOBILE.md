@@ -11,7 +11,7 @@ GitHub Pages, se existir para este conteúdo, é somente guia de usuário. O PWA
 
 1. Acessar `pwa.aneety.com` no celular.
 2. Instalar como PWA quando o navegador oferecer.
-3. Entrar com Supabase Auth.
+3. Entrar com autenticação Lia modelada no banco de dados.
 4. Criar pedido.
 5. Registrar retirada, produção, entrega e anexos mesmo offline.
 6. Manter fila local offline-first no app `lia-pwa`.
@@ -24,6 +24,11 @@ GitHub Pages, se existir para este conteúdo, é somente guia de usuário. O PWA
 - Anexos devem respeitar limite de 5 MB e tipos `image/webp`, `image/jpeg`, `image/png`.
 - Service role nunca pode aparecer no PWA.
 - O portal `lia` apenas aponta para o PWA; a implementação mobile pertence ao repo `lia-pwa`.
+
+
+## Limites de serviços no guia mobile/PWA
+
+O usuário deve usar os domínios `aneety.com`; nomes de fornecedores são detalhe operacional. Qualquer serviço externo usado por hospedagem, API, banco, storage, autenticação, pagamento ou telemetria deve respeitar o contrato semântico do `REQ.md`: custo zero, dados e secrets documentados, adapter substituível e sem dependência de IdP externo para login.
 
 ## Estado atual
 

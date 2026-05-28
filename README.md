@@ -45,12 +45,26 @@ O repositório `lia` não deve concentrar backend, core, dashboard, desktop ou P
 - **Código/PR/CI:** GitHub.
 - **Guias de usuário:** GitHub Pages é permitido somente como documentação, nunca como app, smoke ou E2E.
 
+
+## Limites semânticos para serviços externos
+
+Cloudflare, GitHub, Supabase e qualquer serviço similar são meios substituíveis, não requisitos de produto por marca. A aceitação considera a função semântica:
+
+- frontend/core deve ser hospedagem estática em `aneety.com`, sem preview de fornecedor como runtime;
+- API deve ser HTTP stateless em `api.aneety.com`, sem containers/add-ons pagos;
+- banco deve preservar Postgres relacional, migrations SQL e plano de exportação;
+- autenticação deve pertencer ao modelo de dados da Lia, não a IdP externo;
+- versionamento/CI não pode virar runtime operacional;
+- storage, pagamentos, mensagens, observabilidade, filas e analytics só entram como adapters com dados, custo, secrets, owner, testes e plano de saída documentados.
+
+Qualquer serviço novo precisa declarar categoria semântica, dados tratados, segredos, custo zero, contrato local versionado e degradação esperada antes de virar critério de aceite.
+
 ## Stack
 
 - **Portal:** React, Vite, TypeScript, Tailwind, shadcn/ui e Cloudflare Pages Free.
 - **API:** Cloudflare Workers Free + Hono.
 - **Banco:** Supabase/Postgres Free.
-- **Auth:** Supabase Auth + RLS.
+- **Auth:** autenticação modelada no banco de dados da Lia; autorização por RLS/policies + Worker, sem dependência de provedor externo de autenticação ou IdP externo.
 - **Segredos:** somente `.env` local ou Cloudflare secrets; nunca Git/frontend.
 
 ## Estado atual
@@ -98,8 +112,8 @@ URLs locais padrão:
 | `CLOUDFLARE_ACCOUNT_ID` | Deploy local Cloudflare | local/secret |
 | `CLOUDFLARE_API_TOKEN` ou `CLOUDFLARE_KEY` | Deploy local Cloudflare | secret |
 | `SUPABASE_KEY` | PAT local para MCP/Codex | secret local, nunca frontend |
-| `SUPABASE_PROJECT_URL` | Projeto Supabase; mapear para `SUPABASE_URL`/`VITE_SUPABASE_URL` | público |
-| `SUPABASE_PUBLISHABLE_KEY` | Chave pública; mapear para `VITE_SUPABASE_PUBLISHABLE_KEY` ou compat `VITE_SUPABASE_ANON_KEY` | público |
+| `SUPABASE_PROJECT_URL` | Projeto Supabase/Postgres; mapear para `SUPABASE_URL` do Worker/MCP quando necessário | público |
+| `SUPABASE_PUBLISHABLE_KEY` | Compatibilidade técnica temporária; não é requisito de login dos frontends | público |
 | `SUPABASE_DIRECT_CONNECTION_STRING` | Diagnóstico/migrations controladas Postgres | secret local |
 | `SUPABASE_SERVICE_ROLE_KEY` | Worker/admin only via Cloudflare secret quando disponível | secret backend |
 | `VITE_API_URL` | API pública | `https://api.aneety.com` |
@@ -114,7 +128,7 @@ pnpm build              # build local padrão
 pnpm build:cloudflare   # build para Cloudflare Pages em aneety.com
 pnpm deploy:cloudflare  # deploy local para Cloudflare Pages Free
 pnpm test:e2e           # Playwright contra URL publicada em PLAYWRIGHT_BASE_URL ou aneety.com
-pnpm test:runtime-contract # valida que GitHub Pages não é runtime de app
+pnpm test:runtime-contract # valida GitHub Pages/runtime, auth por banco e política semântica de serviços
 ```
 
 ## Deploy Cloudflare Pages Free
@@ -145,8 +159,6 @@ PLAYWRIGHT_BASE_URL=https://aneety.com/ pnpm test:e2e
 
 Por padrão, o smoke público valida portal, Worker/Hono, `db/health` e superfícies publicadas. Para a cobertura real cross-app, habilitar `LIA_E2E_ENABLED=1` com secrets de CI/local:
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_PUBLISHABLE_KEY`
 - `LIA_E2E_ADMIN_EMAIL`
 - `LIA_E2E_ADMIN_PASSWORD`
 - `LIA_E2E_API_URL=https://api.aneety.com`
@@ -154,6 +166,8 @@ Por padrão, o smoke público valida portal, Worker/Hono, `db/health` e superfí
 - `LIA_E2E_PWA_URL=https://pwa.aneety.com`
 - `LIA_E2E_DASHBOARD_URL=https://dashboard.aneety.com`
 
-A cobertura cross-app cria pedido via API real, valida portal, opera checkpoint/anexo no desktop publicado, verifica login/superfície do PWA e CRUD base do dashboard, e confirma o estado final na API/Postgres.
+Qualquer E2E que ainda exija variáveis `VITE_SUPABASE_*` para login deve ser tratado como lacuna de migração para `/api/auth/*`.
+
+A cobertura cross-app cria pedido via API real, valida portal, opera checkpoint/anexo no desktop publicado, verifica login via modelo de banco/superfície do PWA e CRUD base do dashboard, e confirma o estado final na API/Postgres.
 
 E2E nunca deve usar localhost como alvo final.
