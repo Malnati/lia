@@ -2,21 +2,21 @@
 
 ## Objetivo da governança
 
-Controlar a execução da Aneety Platform com rastreabilidade objetiva entre contrato, arquitetura, processos, ciclos, evidências e trabalho operacional.
+Controlar a execução da Aneety Platform com rastreabilidade objetiva entre arquitetura, requisitos, processos, ciclos, evidências e trabalho operacional.
 
 GitHub Issues e GitHub Projects devem organizar o trabalho visível, mas não substituem os documentos normativos. Cada item executado precisa apontar para fonte documental, critério de aceite, ciclo de cobertura, evidência esperada e evidência final.
 
-Este documento é governança de transição. A documentação canônica futura deve viver em `Aneety/.github`; este repositório mantém o contrato enquanto a migração do MVP Lia para Aneety Platform estiver em andamento.
+Este documento é governança de transição. A documentação canônica futura deve viver em `Aneety/.github`; `docs/new` mantém a base normativa do novo produto enquanto a migração do MVP Lia para Aneety Platform estiver em andamento.
 
 ## Fontes de verdade e precedência
 
 A precedência documental é:
 
-1. `../../REQ.md` — contrato vigente da transição Lia/Aneety e decisões bloqueantes.
-2. `01-arquitetura.md` — decisões estruturais, runtime, responsabilidades, submódulos, limites de fornecedores e documentação canônica.
-3. `02-requisitos.md` — requisitos de produto, técnicos, não funcionais e critérios de aceite.
-4. `03-processos.md` — modo de execução, gates operacionais e sequência de validação.
-5. `06-ciclos-cobertura.md` — ordem incremental dos ciclos, gates de E2E e critérios de conclusão.
+1. `01-arquitetura.md` — decisões estruturais, runtime, responsabilidades, submódulos, NFR estruturais, limites de fornecedores e documentação canônica.
+2. `02-requisitos.md` — requisitos de produto, técnicos e critérios verificáveis de aceite.
+3. `03-processos.md` — modo de execução, gates operacionais e sequência de validação.
+4. `06-ciclos-cobertura.md` — ordem incremental dos ciclos, gates de E2E e critérios de conclusão.
+5. `07-descricao-produto.md` — descrição funcional e comercial do produto Aneety Platform.
 
 Regras:
 
@@ -64,7 +64,7 @@ Exemplos:
 
 Toda issue deve conter:
 
-- **Fonte documental:** link para `REQ.md`, `01-arquitetura.md`, `02-requisitos.md`, `03-processos.md` ou `06-ciclos-cobertura.md`.
+- **Fonte documental:** link para `01-arquitetura.md`, `02-requisitos.md`, `03-processos.md`, `06-ciclos-cobertura.md` ou `07-descricao-produto.md`.
 - **Ciclo:** um valor da ordem fixa definida em `06-ciclos-cobertura.md`.
 - **Responsabilidade:** domínio ou capacidade em `aneety-platform/apps/<responsabilidade>/...`.
 - **Owner:** pessoa responsável por conduzir a issue até fechamento.
