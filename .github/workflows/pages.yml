@@ -74,3 +74,12 @@ jobs:
         run: pnpm test:e2e
         env:
           PLAYWRIGHT_BASE_URL: https://aneety.com/
+          LIA_E2E_ENABLED: "1"
+          LIA_E2E_API_URL: https://api.aneety.com
+          LIA_E2E_DESKTOP_URL: https://desktop.aneety.com
+          LIA_E2E_PWA_URL: https://pwa.aneety.com
+          LIA_E2E_DASHBOARD_URL: https://dashboard.aneety.com
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          LIA_E2E_ADMIN_EMAIL: ${{ secrets.LIA_E2E_ADMIN_EMAIL }}
+          LIA_E2E_ADMIN_PASSWORD: ${{ secrets.LIA_E2E_ADMIN_PASSWORD }}
