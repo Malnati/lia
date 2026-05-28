@@ -14,6 +14,12 @@ Este diretório registra a estratégia para descontinuar o MVP atual sem apagar 
 6. [Estrutura de repositórios](05-estrutura-repositorios.md)
 7. [Ciclos de desenvolvimento por cobertura](06-ciclos-cobertura.md)
 
+## Fronteira dos documentos
+
+- `01-arquitetura.md`: decisões estruturais permanentes, runtime, módulos, submódulos, serviços externos e limites de fornecedor.
+- `02-requisitos.md`: requisitos de produto, requisitos técnicos, requisitos não funcionais e critérios de aceite.
+- `03-processos.md`: modo de execução, ordem de trabalho e gates operacionais; não deve ser fonte exclusiva de regra normativa.
+
 ## Fontes aproveitadas
 
 - `REQ.md` — contrato vigente da plataforma Lia.

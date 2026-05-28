@@ -1,36 +1,26 @@
 # Processos — Aneety Platform
 
+Este arquivo descreve **como executar** a transição e os incrementos. Regras arquiteturais permanentes ficam em `01-arquitetura.md`; requisitos, requisitos não funcionais e critérios de aceite ficam em `02-requisitos.md`.
+
 ## Desenvolvimento
 
-1. Contrato primeiro: requisito, interface e critério de aceite antes da implementação.
-2. Responsabilidade primeiro: definir `aneety-platform/apps/<responsabilidade>/...` antes de criar módulo.
-3. Repositório primeiro: quando uma responsabilidade virar implementação própria, criar repo na org `https://github.com/Aneety`, clonar em `/Users/mal/GitHub/Aneety/<repo>` e linkar como submódulo em `Aneety/ai`.
-4. Clone root primeiro: todo projeto/repositório Aneety deve respeitar o par `https://github.com/Aneety/<repo>` -> `/Users/mal/GitHub/Aneety/<repo>`.
-5. Documentação central primeiro: registrar cada projeto/repositório em `Aneety/.github` (`/Users/mal/GitHub/Aneety/.github`) com objetivo, owner, status, runtime, dados, contratos e links antes de tratá-lo como responsabilidade ativa.
-6. Assets centrais primeiro: registrar todo asset reutilizável em SVG no repo `Aneety/assets` (`/Users/mal/GitHub/Aneety/assets`) antes de reutilizá-lo em microfrontends, documentação, apresentação, marketing ou operação.
-7. Banco antes da UI: schema do BFF, migrations, RLS, seeds e fixtures antes do microfrontend que depende dos dados.
-8. BFF antes do microfrontend: endpoints, erros, permissões e testes de contrato antes de fluxos visuais.
-9. Gateway antes da integração pública: rota, CORS, versão de contrato e encaminhamento pelo `worker-gateway` antes do E2E publicado.
-10. Integrações opcionais do MVP por responsabilidade: Gmail só entra por `comunicacao-email/int-gmail`; Google SSO só entra por `identidade-federada/int-google-sso`.
-11. Microfrontends em incrementos pequenos: cada `mfe-<nome>` evolui por fatias testáveis e integradas ao Single SPA.
-12. Mapas e rastreabilidade em tempo real por contrato: eventos de localização, status e evidência devem ter schema, permissão e teste antes da UI.
-13. Testes por módulo: unitários em contratos/pacotes, integração nos BFFs, E2E público por fluxo crítico.
-14. Deploy por ambiente: build, smoke, publicação e E2E com evidência objetiva.
-15. Revisão de copy: telas finais usam linguagem de produto e tarefa; detalhes técnicos ficam fora da UI comum.
+1. Registrar requisito, interface e critério de aceite em `02-requisitos.md` antes de implementar.
+2. Classificar responsabilidade, módulo, repo e submódulo conforme `01-arquitetura.md`.
+3. Registrar documentação e assets nos destinos canônicos definidos em `01-arquitetura.md` quando o incremento precisar deles.
+4. Para responsabilidades com dados e UI, executar na ordem: DB -> BFF/worker -> gateway/contrato público -> microfrontend.
+5. Validar contrato, permissões, erros, estados de UI e copy conforme `02-requisitos.md`.
+6. Testar por camada: unitários em contratos/pacotes, integração nos BFFs e E2E público por fluxo crítico quando houver URL publicada.
+7. Fechar incremento somente com evidência objetiva de build, smoke, publicação e testes do escopo tocado.
 
 ## Operação
 
-- Seed E2E controlado, idempotente e sem segredos no Git.
-- Smoke público para microfrontend, gateway, BFF, banco, login, pedido, checkpoint, anexo, mapa, rastreabilidade e administração.
-- Verificação de secrets antes de deploy real, sem imprimir valores.
-- Backup/export Postgres documentado antes de dados reais relevantes.
-- Monitoramento recorrente orientado ao contrato, não a histórico de implementação.
-- Registro de bloqueios objetivos: DNS, secret ausente, policy falha, migration pendente, E2E sem credencial, mapa indisponível ou evento de rastreabilidade atrasado.
-- Todos os projetos/repositórios Aneety ficam clonados em `/Users/mal/GitHub/Aneety/*`.
-- Documentação oficial vive em `Aneety/.github` e no clone local `/Users/mal/GitHub/Aneety/.github`; GitHub Pages, se existir, publica ou aponta somente para documentação originada dessa fonte.
-- Assets reutilizáveis vivem em `Aneety/assets` e no clone local `/Users/mal/GitHub/Aneety/assets`, com SVG canônico e histórico versionado.
-- Gmail e Google SSO devem ter operação em modo desligado validada antes de qualquer ativação por tenant.
-- Segredos de Gmail e Google SSO devem ser verificados sem imprimir valores e nunca podem aparecer em frontend, Git, bundle, log, screenshot ou guia de usuário final.
+1. Preparar massa controlada e idempotente para smoke/E2E quando o incremento exigir.
+2. Verificar secrets antes de deploy real sem imprimir valores.
+3. Confirmar backup/export antes de usar dados reais relevantes.
+4. Rodar smoke público dos componentes afetados.
+5. Conferir monitoramento recorrente contra o contrato vigente.
+6. Registrar bloqueios com causa objetiva e próxima ação.
+7. Validar modo desligado de integrações opcionais antes de ativação por tenant.
 
 ## Migração do MVP para Aneety Platform
 
@@ -39,58 +29,41 @@
 3. Reclassificar pedidos, moldes, próteses, retirada, entrega e evidências odontológicas como demo, seeds e massas de teste.
 4. Ignorar decisões temporárias que pertenciam ao protótipo.
 5. Definir responsabilidades genéricas antes de criar diretórios concretos.
-6. Criar repositórios próprios na org `Aneety` somente quando houver responsabilidade, owner, dados, custo zero sempre e aceite.
-7. Clonar cada repo próprio em `/Users/mal/GitHub/Aneety/<repo>`.
-8. Linkar cada repo de responsabilidade como submódulo no orquestrador `Aneety/ai`, clonado em `/Users/mal/GitHub/Aneety/ai`.
-9. Documentar o repo, a responsabilidade e seus contratos em `Aneety/.github`, clonado em `/Users/mal/GitHub/Aneety/.github`.
-10. Migrar ou redesenhar assets reutilizáveis em SVG no repo `Aneety/assets`, clonado em `/Users/mal/GitHub/Aneety/assets`.
-11. Implementar primeiro contratos compartilhados, `db-<nome>` e `worker-<nome>` da responsabilidade.
-12. Integrar o `mfe-<nome>` Single SPA somente depois do BFF e do schema estarem verificáveis.
-13. Migrar evidências úteis: screenshots, E2E, nomes de status, permissões, fluxos, mapas, rastreabilidade e componentes shadcn.
-14. Não copiar código sem revisar contrato, segurança, isolamento por tenant e copy de usuário final.
+6. Criar repo, clone local, submódulo, documentação e assets somente quando os contratos de `01-arquitetura.md` e `02-requisitos.md` estiverem atendidos.
+7. Implementar primeiro contratos compartilhados, DB e BFF da responsabilidade.
+8. Integrar microfrontend Single SPA somente depois de BFF e schema verificáveis.
+9. Migrar evidências úteis: screenshots, E2E, nomes de status, permissões, fluxos, mapas, rastreabilidade e componentes shadcn.
+10. Copiar código legado somente depois de revisar contrato, segurança, isolamento por tenant e copy de usuário final.
 
 ## Gate de conclusão por incremento
 
-- Requisito rastreado.
-- Responsabilidade registrada em `aneety-platform/apps/<responsabilidade>/...`.
-- Repositório próprio na org `Aneety` definido quando houver implementação própria.
-- Clone local definido em `/Users/mal/GitHub/Aneety/<repo>` quando o repo existir.
-- Submódulo linkado em `Aneety/ai` quando o repo existir.
-- Documentação do projeto/repositório registrada em `Aneety/.github` e mantida no clone local `/Users/mal/GitHub/Aneety/.github`.
-- Assets reutilizáveis registrados em SVG no repo `Aneety/assets` e mantidos no clone local `/Users/mal/GitHub/Aneety/assets`.
-- Prefixo técnico conforme contrato de nomes.
-- Migration aplicada em ambiente de teste.
-- RLS/policies verificadas.
-- BFF com teste de 401/403 e caso feliz.
-- Eventos de mapa e rastreabilidade testados quando o fluxo exigir localização ou status em tempo real.
-- Microfrontend com estados de carregando, vazio, erro e sucesso quando houver UI.
-- E2E ou smoke executado quando houver URL publicada.
-- Documentação publicada ou apontada a partir de `Aneety/.github` quando houver guia, especificação ou documentação de desenvolvedor.
-- Sem segredos em diffs, logs ou bundle.
+Executar o gate como checklist operacional, apontando a evidência para `01-arquitetura.md` e `02-requisitos.md`:
+
+1. Requisito rastreado e critério de aceite definido.
+2. Responsabilidade, módulo, repo/submódulo, documentação e assets conferidos contra a arquitetura.
+3. Migration, RLS/policies, permissões e isolamento verificados quando houver dados.
+4. BFF/worker com caso feliz e erros esperados verificados quando houver API.
+5. Mapas e rastreabilidade testados quando o fluxo exigir localização ou status em tempo real.
+6. Microfrontend validado com estados de carregamento, vazio, erro e sucesso quando houver UI.
+7. Smoke ou E2E executado quando houver URL publicada.
+8. Diff, logs e bundle revisados para ausência de segredos.
 
 ## Gate de serviços externos
 
-Antes de aceitar qualquer dependência externa, confirmar:
+Antes de aceitar qualquer dependência externa, executar:
 
-- função semântica classificada, sem usar marca como requisito de produto;
-- custo zero sempre ou redesenho do incremento;
-- dados trafegados/armazenados e segredos envolvidos;
-- owner do módulo e contrato local versionado;
-- adapter substituível ou plano de saída;
-- testes smoke/E2E cobrindo a função e o modo de falha;
-- ausência de segredo privilegiado em frontend, Git, bundle, log ou screenshot.
-
-Se qualquer fornecedor exigir upgrade pago, runtime não permitido, lock-in de autenticação, lock-in de domínio, lock-in de mapas ou acesso direto de frontend a banco/segredo, o incremento fica bloqueado até redesenho.
+1. Classificar função semântica em `01-arquitetura.md`.
+2. Confirmar requisitos de custo, dados, segredos, contrato local, degradação e plano de saída em `02-requisitos.md`.
+3. Registrar owner, adapter e testes do modo feliz e do modo de falha.
+4. Se houver violação de requisito ou limite arquitetural, bloquear o incremento e redesenhar.
 
 ## Gate de integração opcional do MVP
 
-Antes de ativar Gmail ou Google SSO, confirmar:
+Antes de ativar Gmail ou Google SSO:
 
-- responsabilidade separada registrada: `comunicacao-email` para Gmail, `identidade-federada` para Google SSO;
-- adapter explícito e substituível: `int-gmail` ou `int-google-sso`;
-- contrato local versionado, owner, dados tratados, segredos, custo zero sempre e plano de saída;
-- teste de degradação com o fornecedor indisponível, recusando acesso ou excedendo limite;
-- E2E ou smoke comprovando que a plataforma funciona sem Gmail e sem Google SSO;
-- para Gmail: pedido, evidência, auditoria e estado operacional persistem fora do Gmail;
-- para Google SSO: sessão final, tenant, perfil, permissões, expiração e revogação permanecem no modelo próprio Aneety;
-- nenhum segredo privilegiado aparece em frontend, Git, bundle, log, screenshot, fixture pública ou documentação de usuário final.
+1. Conferir responsabilidade e adapter na arquitetura.
+2. Conferir requisitos técnicos e não funcionais da integração.
+3. Validar modo desligado por smoke ou E2E.
+4. Validar degradação com fornecedor indisponível, recusando acesso ou excedendo limite.
+5. Conferir que dados de domínio, sessão final, permissões e auditoria permanecem no modelo Aneety.
+6. Revisar evidências para ausência de segredos privilegiados.

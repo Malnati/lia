@@ -33,6 +33,17 @@ Aneety/ai -> /Users/mal/GitHub/Aneety/ai
 
 Cada diretório folha representa um submódulo Git quando existir implementação própria. A lista define categorias possíveis; não obriga toda responsabilidade a possuir todos os módulos. Cada responsabilidade será criada somente quando houver contrato, owner, dados, aceite, custo zero sempre e limite de escopo.
 
+## Contrato estrutural permanente
+
+- Toda responsabilidade começa com requisito, interface e critério de aceite antes da implementação.
+- Toda responsabilidade deve ser classificada em `aneety-platform/apps/<responsabilidade>/...` antes de criar módulo, repo ou submódulo.
+- Quando uma responsabilidade virar implementação própria, ela deve ter repo na org `https://github.com/Aneety`, clone em `/Users/mal/GitHub/Aneety/<repo>` e submódulo no orquestrador `Aneety/ai`.
+- Todo projeto/repositório Aneety deve respeitar o par remoto/local `https://github.com/Aneety/<repo>` -> `/Users/mal/GitHub/Aneety/<repo>`.
+- A documentação canônica de projeto/repositório vive em `Aneety/.github`, com objetivo, owner, status, runtime, dados, contratos, critérios de aceite e links operacionais.
+- Assets reutilizáveis vivem em `Aneety/assets`, com SVG canônico e histórico versionado antes de uso por microfrontends, documentação, apresentação, marketing ou operação.
+- Dependências entre responsabilidades passam por gateway, BFF ou contrato compartilhado versionado; microfrontend não chama banco nem serviço externo privilegiado diretamente.
+- Para responsabilidades com dados e UI, a dependência arquitetural é schema/migrations/RLS -> BFF/worker -> gateway/contrato público -> microfrontend.
+
 ## Runtime alvo do MVP
 
 - Todos os frontends operacionais serão microfrontends Single SPA.
