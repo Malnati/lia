@@ -19,7 +19,7 @@ Resposta curta: **não para “tudo/100%”**. **Sim para baseline operacional a
 - **Smoke/E2E existentes cobrem:**
   - portal + URLs publicadas;
   - API health/db health;
-  - login Supabase;
+  - login via modelo de banco;
   - CRUD usuários/perfis;
   - 401 sem token e 403 sem permissão em parte do backend;
   - PWA offline happy path;

@@ -9,6 +9,8 @@
 | GitHub Pages como documentação | Permitido apenas para guias de usuário/documentação; páginas assim devem apontar o uso real para `*.aneety.com`. | Permitido com restrição |
 | E2E publicado | Playwright deve usar `aneety.com` e falhar se links/app URLs resolverem para `github.io` ou branch `gh-pages`. | Obrigatório |
 | Guias de usuário | Guias mobile, desktop e dashboard devem explicar que app real roda em Cloudflare Pages e API real em Worker/Hono. | Obrigatório |
+| Política semântica de serviços externos | `REQ.md` define limites por função: hospedagem estática, runtime de API, banco transacional, autenticação, storage, versionamento/CI, DNS/CDN e integrações. Qualquer serviço novo deve declarar dados, custo, secrets, owner, contrato local, testes e plano de saída. | Obrigatório |
+| Autenticação modelada no banco | `REQ.md` exige identidades, credenciais e sessões/tokens como entidades do domínio, sem depender de provedor externo de autenticação ou IdP externo. Implementação e E2E ainda devem migrar de qualquer fluxo legado para `/api/auth/*`. | Lacuna planejada |
 | Marketplace operacional | `docs/MARKETPLACE_OPERACIONAL.md` registra fluxo de listagem, favoritos, demandas para bureaus/produtores, entregadores e evidências por foto. Ainda não há schema/API/UI/E2E; próxima etapa deve quebrar em requisitos implementáveis por repo. | Lacuna planejada |
 
 ## Checklist incremental

@@ -14,10 +14,11 @@ Criar uma matriz versionada de cobertura para impedir declarações genéricas d
   - escolher a próxima exceção de maior prioridade somente quando baseline atual estiver verde.
 
 ## Cobertura inicial esperada na matriz
-- Completa/parcial: portal, URLs publicadas, health/db health, login Supabase, CRUD usuários/perfis, pedido, checkpoint, anexo, PWA offline/sync happy path, pagamento pendente.
+- Completa/parcial: portal, URLs publicadas, health/db health, login via modelo de banco, CRUD usuários/perfis, pedido, checkpoint, anexo, PWA offline/sync happy path, pagamento pendente.
 - Lacunas explícitas: token expirado/malformado, usuário inativo, isolamento tenant/RLS, payload inválido, upload inválido/grande, falha storage, conflito/retry offline, pagamento sucesso/falha/cancelamento/webhook, estados shadcn erro/vazio/loading por superfície.
 
 ## Test Plan
+- Validar política semântica de serviços externos: função, dados, secrets, custo, adapter e plano de saída.
 - `pnpm lint`
 - `pnpm test`
 - `pnpm build`
@@ -27,4 +28,4 @@ Criar uma matriz versionada de cobertura para impedir declarações genéricas d
 ## Assumptions
 - Não mudar schema/API neste PR.
 - Não adicionar novo E2E funcional junto com a matriz; a matriz define a próxima cobertura incremental.
-- `auth_leaked_password_protection` segue como única exceção aceita por custo zero se continuar sendo o único security advisor.
+- `auth_leaked_password_protection` deve ser registrado como limitação externa do provedor; autenticação de aceite deve migrar para modelo de banco da Lia.

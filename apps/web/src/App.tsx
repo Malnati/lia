@@ -95,19 +95,21 @@ const surfaces = [
 
 const requirements = [
   'Supabase/Postgres real com RLS como fonte de dados operacional.',
-  'Supabase Auth nos frontends; service role apenas em Cloudflare Worker secret.',
+  'Auth modelada no banco via API Lia; service role apenas em Cloudflare Worker secret.',
   'API real Cloudflare Workers Free + Hono em api.aneety.com.',
   'Frontends React/Vite/TypeScript/Tailwind com shadcn/ui por repositório.',
   'Publicação independente por repo em aneety.com, sem Containers, VPS ou serviços pagos.',
   'E2E somente contra URLs públicas aneety.com.',
-  'GitHub é versionamento/CI; GitHub Pages só pode ser guia, nunca app Lia.'
+  'GitHub é versionamento/CI; GitHub Pages só pode ser guia, nunca app Lia.',
+  'Serviços externos são adapters substituíveis por semântica: função, dados, custo, secrets e plano de saída.'
 ];
 
 const nextCoverage = [
-  'Login Supabase Auth publicado.',
+  'Login via autenticação modelada no banco publicado.',
   'CRUD usuários/perfis no dashboard via Worker + RLS.',
   'Pedido, checkpoints, anexos, pagamento e sync real via Postgres.',
-  'Estados visíveis shadcn para loading, erro, vazio e sucesso.'
+  'Estados visíveis shadcn para loading, erro, vazio e sucesso.',
+  'Cobertura da política semântica para qualquer novo serviço externo.'
 ];
 
 export default function App() {
@@ -183,7 +185,7 @@ export default function App() {
                   Lia — portal integrador da plataforma real
                 </h1>
                 <p className="max-w-2xl text-base text-muted-foreground md:text-lg">
-                  Este repositório orquestra a plataforma multi-repo. O backend real roda em Cloudflare Workers + Hono e persiste no Supabase/Postgres com Auth e RLS.
+                  Este repositório orquestra a plataforma multi-repo. O backend real roda em Cloudflare Workers + Hono e persiste no Supabase/Postgres com autenticação modelada no banco e RLS.
                 </p>
               </div>
             </div>

@@ -12,7 +12,7 @@ GitHub Pages, se existir para este conteúdo, é somente guia de usuário. O apl
 ## Fluxo operacional alvo
 
 1. Acessar `desktop.aneety.com`.
-2. Entrar com Supabase Auth.
+2. Entrar com autenticação Lia modelada no banco de dados.
 3. Listar pedidos do tenant autorizado.
 4. Abrir pedido.
 5. Atualizar dados operacionais, status e checkpoints.
@@ -29,6 +29,11 @@ GitHub Pages, se existir para este conteúdo, é somente guia de usuário. O apl
 5. Associar usuário, perfil e tenant.
 6. Configurar marca, cores, textos e operação white-label.
 7. Validar métricas por consultório, clínica ou bureau.
+
+
+## Limites de serviços no guia desktop/admin
+
+O usuário deve usar os domínios `aneety.com`; nomes de fornecedores são detalhe operacional. Qualquer serviço externo usado por hospedagem, API, banco, storage, autenticação, pagamento ou telemetria deve respeitar o contrato semântico do `REQ.md`: custo zero, dados e secrets documentados, adapter substituível e sem dependência de IdP externo para login.
 
 ## Estado atual
 
