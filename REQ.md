@@ -10,7 +10,7 @@ Link de referência inicial: <https://chatgpt.com/share/6a16552b-9da0-83e9-be3f-
 
 `REQ.md` é a fonte de verdade da plataforma Lia. Em caso de divergência entre código, README, automações, testes ou deploys, este arquivo prevalece.
 
-A decisão vigente substitui o escopo antigo mock-first/MongoDB/NestJS/VPS/GitHub Pages: **Lia deve evoluir para Supabase/Postgres real, Supabase Auth, API serverless leve em Cloudflare Workers Free + Hono, frontends estáticos no Cloudflare Pages Free e domínios sob `aneety.com`**. O termo “mock backend” não deve ser usado para a base principal daqui em diante. Qualquer instrução operacional que mande validar `/lia/mock/`, `VITE_API_MODE=mock`, pagamento mock, backend browser-side ou E2E contra adapter local é obsoleta e deve ser substituída por validação contra Supabase/Postgres real + API Worker.
+A decisão vigente é única: **Lia deve usar Supabase/Postgres real, Supabase Auth, API real em Cloudflare Workers Free + Hono, frontends estáticos no Cloudflare Pages Free e domínios sob `aneety.com`**. Definições anteriores de protótipo browser-local, MongoDB/Mongoose, NestJS, VPS, Render ou GitHub Pages como arquitetura final estão encerradas. Critérios de aceite devem validar Supabase/Postgres real, Worker `lia-backend` em `https://api.aneety.com`, Cloudflare Pages em `aneety.com` e publicação por repositório.
 
 Atualização operacional de 2026-05-27: o projeto Supabase `mqxwdyhtsvzzehmdfhtj` está conectado ao Codex via MCP usando `SUPABASE_KEY` como PAT local (`bearer_token_env_var`, sem OAuth obrigatório). O banco real recebeu as migrations `0001_initial_schema`, `0002_harden_database_functions` e `0003_add_foreign_key_indexes`. O monitoramento deve tratar esse estado como baseline vigente, não como experimento.
 
@@ -32,7 +32,7 @@ A operação inicial é Lia, mas a plataforma deve permitir configuração por t
 | Repositório | URL pública | Responsabilidade |
 | --- | --- | --- |
 | `Malnati/lia` | <https://aneety.com/> | Portal orquestrador/integrador, contrato `REQ.md`, navegação entre apps, status público e documentação de arquitetura. |
-| `Malnati/lia-backend` | <https://api.aneety.com/> | API Cloudflare Worker + Hono conectada ao Supabase/Postgres. Não é mock. |
+| `Malnati/lia-backend` | <https://api.aneety.com/> | API real em Cloudflare Worker + Hono conectada ao Supabase/Postgres. |
 | `Malnati/lia-core` | <https://core.aneety.com/> | ESM estático com tipos, validações, tenants, roles, permissões e cliente compartilhado. |
 | `Malnati/lia-pwa` | <https://pwa.aneety.com/> | PWA mobile/offline-first para operação em campo. |
 | `Malnati/lia-desktop` | <https://desktop.aneety.com/> | App desktop operacional para atendimento, produção e logística. |
@@ -52,9 +52,10 @@ Cada projeto deve ser implementado, testado, commitado, enviado e publicado no s
 ## Stack alvo
 
 - Package manager: `pnpm`.
-- Frontends: React + Vite + TypeScript, publicados como assets estáticos no Cloudflare Pages Free.
+- Frontends: React + Vite + TypeScript + Tailwind CSS + shadcn/ui, publicados como assets estáticos no Cloudflare Pages Free.
+- UI system: shadcn/ui é o padrão obrigatório para componentes de interface dos frontends; cada app React deve ter `components.json` versionado, aliases corretos e componentes shadcn copiados como código-fonte do próprio repo.
 - PWA: mobile-first, offline-first, service worker e IndexedDB para fila local.
-- Core: ESM estático publicado via Cloudflare Pages Free.
+- Core: ESM estático publicado via Cloudflare Pages Free, contendo contratos/tokens compartilháveis de UI, domínio e permissões sem acoplar componentes React específicos.
 - Backend: Cloudflare Workers Free + Hono + TypeScript.
 - Banco real: Supabase/Postgres Free, projeto `mqxwdyhtsvzzehmdfhtj`.
 - Autenticação: Supabase Auth.
@@ -70,6 +71,33 @@ Cada projeto deve ser implementado, testado, commitado, enviado e publicado no s
 - Não usar Cloudflare Pages Functions para servir assets estáticos.
 - O Worker deve permanecer dentro do plano Free; se a solução exigir plano pago, bloquear e reportar.
 - Supabase deve permanecer no plano Free; se exigir upgrade, bloquear e reportar.
+
+## Design system e shadcn/ui
+
+shadcn/ui é o padrão obrigatório de UI para `lia`, `lia-pwa`, `lia-desktop` e `lia-dashboard`.
+
+Requisitos:
+
+- Cada frontend React deve ser inicializado com `pnpm dlx shadcn@latest init` ou configuração equivalente, preservando `components.json` no repositório correto.
+- O CLI shadcn deve ser executado com `pnpm dlx shadcn@latest`; não usar npm/yarn quando o repo declara `pnpm`.
+- Componentes adicionados pelo shadcn são código-fonte do projeto; devem ser revisados, testados, versionados e mantidos em `src/components/ui` ou alias equivalente registrado em `components.json`.
+- Antes de criar componente customizado, buscar/compor componentes shadcn existentes. Componentes customizados só são aceitos quando não houver equivalente adequado.
+- Usar tokens semânticos de Tailwind/shadcn (`bg-background`, `text-muted-foreground`, `border-border`, `bg-primary`, etc.); evitar cores utilitárias soltas em componentes de produto.
+- Formulários devem usar padrões shadcn de acessibilidade e validação: `Field`, `FieldGroup`, `aria-invalid`, mensagens de erro e labels associados.
+- Overlays devem usar componentes shadcn/Radix adequados (`Dialog`, `Sheet`, `Drawer`, `Popover`, `DropdownMenu`) com títulos acessíveis.
+- Estados de feedback devem usar componentes shadcn equivalentes: `Alert`, `Badge`, `Skeleton`, `Progress`, `sonner`/toast, `Empty` quando aplicável.
+- Navegação operacional deve priorizar `Sidebar`, `NavigationMenu`, `Tabs`, `Breadcrumb` e composição shadcn; não criar menus ad hoc quando houver componente shadcn adequado.
+- Tabelas, listas administrativas e CRUD devem usar composição shadcn com `Table`, `Card` apenas quando o card representar interação/contexto claro, `Dialog`/`Sheet` para edição e `Badge` para status.
+- O visual deve continuar white-label: tokens CSS e tema devem ser parametrizáveis por tenant, usando `lia-core` para contratos/tokens compartilhados quando útil.
+- `lia-core` não deve virar biblioteca visual pesada; deve expor tipos, tokens, contratos e helpers. Componentes React shadcn pertencem a cada app frontend.
+- Se shadcn ou Tailwind exigir configuração incompatível com custo zero/Cloudflare Pages estático, registrar bloqueio antes de introduzir serviço pago.
+
+Componentes mínimos por superfície:
+
+- `lia` portal: `Button`, `NavigationMenu` ou `Tabs`, `Card`/`Separator` com parcimônia, `Badge`, `Alert`.
+- `lia-pwa`: `Button`, `Input`, `Textarea`, `Select`, `Sheet`/`Drawer`, `Dialog`, `Badge`, `Alert`, `Progress`, `Skeleton`.
+- `lia-desktop`: `Sidebar`, `Table`, `Tabs`, `Button`, `Dialog`/`Sheet`, `Badge`, `DropdownMenu`, `Alert`.
+- `lia-dashboard`: `Sidebar`, `Table`, `Form`/`Field`, `Dialog`/`Sheet`, `Tabs`, `Card`, `Badge`, `DropdownMenu`, `sonner`.
 
 ## Atores envolvidos
 
@@ -167,6 +195,8 @@ Regras:
 Requisitos:
 
 - Mobile-first.
+- UI construída com shadcn/ui + Tailwind, incluindo `components.json` versionado no repo `lia-pwa`.
+- Usar `Sheet`/`Drawer`, `Dialog`, `Field`, `Button`, `Badge`, `Alert`, `Progress` e `Skeleton` para navegação, formulários, feedback e sync.
 - Offline-first para operação em campo.
 - Fila local em IndexedDB para pedidos, checkpoints, anexos e pagamentos pendentes.
 - Sincronização com API real quando online.
@@ -180,6 +210,8 @@ Requisitos:
 Requisitos:
 
 - App operacional desktop para atendimento, produção e logística.
+- UI construída com shadcn/ui + Tailwind, incluindo `components.json` versionado no repo `lia-desktop`.
+- Usar `Sidebar`, `Table`, `Tabs`, `Dialog`/`Sheet`, `DropdownMenu`, `Badge` e `Alert` como base dos fluxos operacionais.
 - Login Supabase.
 - Listagem e edição de pedidos.
 - Checkpoints de produção de molde, produção de prótese, retirada e entrega.
@@ -191,6 +223,8 @@ Requisitos:
 Requisitos:
 
 - Administrativo para consultórios, clínicas e bureau.
+- UI construída com shadcn/ui + Tailwind, incluindo `components.json` versionado no repo `lia-dashboard`.
+- CRUD administrativo deve usar composição shadcn com `Table`, `Form`/`Field`, `Dialog`/`Sheet`, `Tabs`, `Badge`, `DropdownMenu`, `Alert` e `sonner`.
 - Login Supabase.
 - CRUD de usuários.
 - CRUD de perfis de acesso.
@@ -204,6 +238,7 @@ Requisitos:
 Deve publicar ESM estático com:
 
 - tipos de domínio;
+- contratos/tokens de UI compatíveis com shadcn/Tailwind para white-label;
 - roles e permissões;
 - validações comuns;
 - config de tenants;
@@ -310,9 +345,17 @@ Por repo alterado:
 - `pnpm test` quando existir;
 - `pnpm build` quando existir.
 
+Frontends/shadcn:
+
+- `components.json` deve existir e estar versionado em cada frontend React (`lia`, `lia-pwa`, `lia-desktop`, `lia-dashboard`);
+- `pnpm dlx shadcn@latest info` deve reconhecer o projeto antes de ampliar UI;
+- componentes shadcn usados em código devem existir no repo e respeitar os aliases de `components.json`;
+- telas novas devem preferir componentes shadcn antes de custom markup;
+- smoke visual/screenshot deve ser regenerado quando componentes shadcn alterarem UI;
+- lint/build/test não podem depender de CDN ou serviço pago para shadcn/Tailwind.
+
 Backend/Supabase:
 
-- `pnpm wrangler check`;
 - `pnpm wrangler deploy --dry-run`;
 - MCP `supabase` configurado com `bearer_token_env_var=SUPABASE_KEY` e projeto `mqxwdyhtsvzzehmdfhtj`;
 - `list_migrations` deve mostrar `0001_initial_schema`, `0002_harden_database_functions` e `0003_add_foreign_key_indexes`;
@@ -323,7 +366,7 @@ Backend/Supabase:
 - RLS habilitado;
 - policies testadas;
 - `GET /api/health` OK;
-- `GET /api/db/health` OK ou `not_configured` se faltarem secrets/route;
+- `GET /api/db/health` OK quando `SUPABASE_SERVICE_ROLE_KEY` estiver configurado no Cloudflare Worker; `not_configured` é lacuna/bloqueio objetivo, não aceite final;
 - JWT ausente/inválido retorna 401;
 - usuário sem permissão retorna 403;
 - isolamento cross-tenant comprovado.
@@ -331,7 +374,7 @@ Backend/Supabase:
 E2E publicado:
 
 - E2E alvo deve usar apenas URLs publicadas em `aneety.com` e API/Supabase real;
-- testes contra `/mock`, adapter local, pagamento mock ou backend browser-side não contam como cobertura vigente e devem ser migrados/removidos gradualmente;
+- testes que dependam de rotas, modos ou adaptadores legados do protótipo browser-local não contam como cobertura vigente e devem ser migrados/removidos gradualmente;
 - portal abre todos os links em `aneety.com`;
 - login Supabase;
 - CRUD usuários/perfis;
@@ -349,14 +392,15 @@ O monitoramento deve:
 1. Ler este `REQ.md` inteiro em todo ciclo e tratar este arquivo como contrato superior a automações antigas.
 2. Validar repos locais e remotos, branch/SHA/PR e trabalho humano pendente antes de alterar qualquer coisa, garantindo que cada projeto esteja no seu repositório próprio em `/Users/mal/GitHub/malnati` e não concentrado no orquestrador `lia`.
 3. Comparar requisitos com código, docs, workflows, Cloudflare Pages, Worker API e Supabase real.
-4. Verificar MCP Supabase sem expor segredos: `codex mcp get supabase`, `codex mcp list`, `list_migrations`, `list_tables`, `get_advisors(security)` e `get_advisors(performance)` quando a ferramenta estiver disponível; nunca executar/source `.env` inteiro, apenas parsear chaves necessárias.
-5. Validar que regras antigas de mock foram substituídas: não seguir instruções que mandem chamar `/lia/mock/`, `VITE_API_MODE=mock`, adapter browser-side ou GitHub Pages antigo como alvo de aceitação.
-6. Priorizar lacunas de arquitetura, banco, RLS, migrations, secrets Cloudflare e Worker API antes de novos E2E.
-7. Não declarar 100% sem evidência objetiva por arquivo/linha, comando, MCP output, URL, workflow ou screenshot.
-8. Validar publicação por repositório: `lia` → `https://aneety.com`, `lia-backend` → `https://api.aneety.com`, `lia-core` → `https://core.aneety.com`, `lia-pwa` → `https://pwa.aneety.com`, `lia-desktop` → `https://desktop.aneety.com` e `lia-dashboard` → `https://dashboard.aneety.com`.
-9. Se faltarem DNS, routes, secrets Cloudflare ou acesso Supabase, registrar bloqueio objetivo e implementar apenas partes sem segredo: REQ, scaffolds, migrations SQL, tipos, testes unitários e docs.
-10. Só ampliar E2E quando REQ, docs, screenshots, smoke, Supabase advisors, Cloudflare deploy e E2E vigente estiverem verdes.
+4. Validar shadcn em cada frontend: `components.json`, aliases, componentes em `src/components/ui` ou equivalente, uso de tokens semânticos, ausência de UI customizada quando houver componente shadcn adequado e `pnpm dlx shadcn@latest info` quando aplicável.
+5. Verificar MCP Supabase sem expor segredos: `codex mcp get supabase`, `codex mcp list`, `list_migrations`, `list_tables`, `get_advisors(security)` e `get_advisors(performance)` quando a ferramenta estiver disponível; nunca executar/source `.env` inteiro, apenas parsear chaves necessárias.
+6. Validar que regras antigas pré-Workers foram substituídas: o alvo de aceitação é sempre Supabase/Postgres real, Worker `lia-backend` em `https://api.aneety.com` e frontends publicados em `aneety.com`.
+7. Priorizar lacunas de arquitetura, banco, RLS, migrations, secrets Cloudflare, Worker API e design system shadcn antes de novos E2E.
+8. Não declarar 100% sem evidência objetiva por arquivo/linha, comando, MCP output, URL, workflow ou screenshot.
+9. Validar publicação por repositório: `lia` → `https://aneety.com`, `lia-backend` → `https://api.aneety.com`, `lia-core` → `https://core.aneety.com`, `lia-pwa` → `https://pwa.aneety.com`, `lia-desktop` → `https://desktop.aneety.com` e `lia-dashboard` → `https://dashboard.aneety.com`.
+10. Se faltarem DNS, routes, secrets Cloudflare ou acesso Supabase, registrar bloqueio objetivo e implementar apenas partes sem segredo: REQ, scaffolds, migrations SQL, tipos, testes unitários, shadcn config e docs.
+11. Só ampliar E2E quando REQ, docs, screenshots, smoke, Supabase advisors, Cloudflare deploy, shadcn/design system e E2E vigente estiverem verdes.
 
-## Histórico legado
+## Histórico removido do aceite vigente
 
-O scaffold inicial usava frontend mock-first browser-side, IndexedDB, MongoDB/Mongoose, GitHub Pages e API NestJS separada. Esse histórico explica commits antigos, screenshots e testes legados, mas não é mais arquitetura alvo nem critério de aceite. Qualquer menção a `mock`, `VITE_API_MODE=mock`, `/lia/mock/`, pagamento mock, adapter browser-side, GitHub Pages como hosting alvo, NestJS, VPS, Render, MongoDB, Mongoose ou GridFS deve ser tratada como dívida de migração quando aparecer em código, testes, README, automações ou workflows. A única exceção permitida é documentação histórica claramente marcada como legado; mesmo assim, monitoramento não deve executar essas rotas como validação de sucesso.
+O scaffold inicial anterior à decisão atual usava protótipo browser-local, IndexedDB, MongoDB/Mongoose, GitHub Pages como alvo principal e API NestJS separada. Esse histórico explica commits, screenshots e testes antigos, mas não é arquitetura alvo nem critério de aceite. Qualquer instrução operacional baseada nesse desenho antigo deve ser tratada como dívida de migração quando aparecer em código, testes, README, automações ou workflows. O monitoramento não deve executar rotas ou modos desse desenho antigo como validação de sucesso.
