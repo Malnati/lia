@@ -2,6 +2,25 @@
 
 Este arquivo descreve **como executar** a transição e os incrementos. Regras arquiteturais permanentes ficam em `01-arquitetura.md`; requisitos, requisitos não funcionais e critérios de aceite ficam em `02-requisitos.md`.
 
+## Fluxos operacionais
+
+Os SVGs abaixo são artefatos renderizados dos fluxos Mermaid mantidos em `assets/diagrams/`.
+
+| Fluxo | SVG | Fonte Mermaid | JPEG |
+| --- | --- | --- | --- |
+| Pedidos customizados | ![Fluxo de pedidos customizados](assets/diagrams/fluxo-pedidos-customizados.svg) | [MMD](assets/diagrams/fluxo-pedidos-customizados.mmd) | [JPEG](assets/diagrams/fluxo-pedidos-customizados.jpg) |
+| Produção ou execução | ![Fluxo de produção ou execução](assets/diagrams/fluxo-producao-execucao.svg) | [MMD](assets/diagrams/fluxo-producao-execucao.mmd) | [JPEG](assets/diagrams/fluxo-producao-execucao.jpg) |
+| Garantia de qualidade | ![Fluxo de garantia de qualidade](assets/diagrams/fluxo-garantia-qualidade.svg) | [MMD](assets/diagrams/fluxo-garantia-qualidade.mmd) | [JPEG](assets/diagrams/fluxo-garantia-qualidade.jpg) |
+| Retirada, entrega e mapas | ![Fluxo de retirada, entrega e mapas](assets/diagrams/fluxo-retirada-entrega-mapas.svg) | [MMD](assets/diagrams/fluxo-retirada-entrega-mapas.mmd) | [JPEG](assets/diagrams/fluxo-retirada-entrega-mapas.jpg) |
+| Anexos e evidências | ![Fluxo de anexos e evidências](assets/diagrams/fluxo-anexos-evidencias.svg) | [MMD](assets/diagrams/fluxo-anexos-evidencias.mmd) | [JPEG](assets/diagrams/fluxo-anexos-evidencias.jpg) |
+| Pagamentos | ![Fluxo de pagamentos](assets/diagrams/fluxo-pagamentos.svg) | [MMD](assets/diagrams/fluxo-pagamentos.mmd) | [JPEG](assets/diagrams/fluxo-pagamentos.jpg) |
+| Marketplace operacional | ![Fluxo de marketplace operacional](assets/diagrams/fluxo-marketplace-operacional.svg) | [MMD](assets/diagrams/fluxo-marketplace-operacional.mmd) | [JPEG](assets/diagrams/fluxo-marketplace-operacional.jpg) |
+| White-label por tenant | ![Fluxo white-label por tenant](assets/diagrams/fluxo-white-label-tenant.svg) | [MMD](assets/diagrams/fluxo-white-label-tenant.mmd) | [JPEG](assets/diagrams/fluxo-white-label-tenant.jpg) |
+| Carga inicial de demonstração e testes | ![Fluxo de carga inicial de demonstração e testes](assets/diagrams/fluxo-carga-demo-testes.svg) | [MMD](assets/diagrams/fluxo-carga-demo-testes.mmd) | [JPEG](assets/diagrams/fluxo-carga-demo-testes.jpg) |
+| Administração | ![Fluxo de administração](assets/diagrams/fluxo-administracao.svg) | [MMD](assets/diagrams/fluxo-administracao.mmd) | [JPEG](assets/diagrams/fluxo-administracao.jpg) |
+| Integração opcional Gmail | ![Fluxo de integração opcional Gmail](assets/diagrams/fluxo-integracao-gmail.svg) | [MMD](assets/diagrams/fluxo-integracao-gmail.mmd) | [JPEG](assets/diagrams/fluxo-integracao-gmail.jpg) |
+| Integração opcional Google SSO | ![Fluxo de integração opcional Google SSO](assets/diagrams/fluxo-integracao-google-sso.svg) | [MMD](assets/diagrams/fluxo-integracao-google-sso.mmd) | [JPEG](assets/diagrams/fluxo-integracao-google-sso.jpg) |
+
 ## Desenvolvimento
 
 1. Registrar requisito, interface e critério de aceite em `02-requisitos.md` antes de implementar.
