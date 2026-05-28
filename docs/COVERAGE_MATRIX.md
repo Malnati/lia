@@ -9,6 +9,7 @@
 | GitHub Pages como documentação | Permitido apenas para guias de usuário/documentação; páginas assim devem apontar o uso real para `*.aneety.com`. | Permitido com restrição |
 | E2E publicado | Playwright deve usar `aneety.com` e falhar se links/app URLs resolverem para `github.io` ou branch `gh-pages`. | Obrigatório |
 | Guias de usuário | Guias mobile, desktop e dashboard devem explicar que app real roda em Cloudflare Pages e API real em Worker/Hono. | Obrigatório |
+| Marketplace operacional | `docs/MARKETPLACE_OPERACIONAL.md` registra fluxo de listagem, favoritos, demandas para bureaus/produtores, entregadores e evidências por foto. Ainda não há schema/API/UI/E2E; próxima etapa deve quebrar em requisitos implementáveis por repo. | Lacuna planejada |
 
 ## Checklist incremental
 
